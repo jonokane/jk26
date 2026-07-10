@@ -18,13 +18,14 @@ Personal design/career portfolio for **Jono Kane** (jonokane.com). A ground-up r
 | Package manager | **pnpm** (do not use npm/yarn) |
 | Deploy | Vercel |
 
-3D hero engine (likely React Three Fiber) is **not yet installed** — deferred until the hero is designed. See `PLAN.md`.
+The hero is built: a living variable-font wordmark (TotalBlack Variable via Adobe Fonts, per-letter weight animation on the GSAP ticker — spec in `docs/superpowers/specs/2026-07-10-variable-font-hero-design.md`). A 3D layer (likely React Three Fiber) is parked as a possible future addition; nothing 3D is installed. See `PLAN.md`.
 
 ## Commands
 
 ```bash
 pnpm dev      # Velite builds content in watch mode, then next dev
 pnpm build    # Velite build, then next build (run this to verify before committing)
+pnpm test     # vitest unit tests (engine math + config)
 pnpm start    # serve production build
 pnpm lint     # eslint
 ```
@@ -58,8 +59,10 @@ Why pnpm: a global content-addressable store hard-linked into the project (faste
 content/work/*.mdx        Case studies (source of truth for work)
 src/app/                  Routes: / , /work , /work/[slug]
 src/app/globals.css       Tailwind entry + theme tokens
-src/components/           smooth-scroll, mdx-content
+src/components/           smooth-scroll, mdx-content, hero-wordmark, wordmark-tune-panel
 src/lib/gsap.ts           GSAP plugin registration
+src/lib/hero-config.ts   Hero wordmark tunables (single source of truth)
+src/lib/wordmark-engine.ts  Per-letter weight animation engine (runs on the GSAP ticker)
 velite.config.ts          Content schema + MDX plugins
 ```
 
