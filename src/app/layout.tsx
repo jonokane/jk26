@@ -33,6 +33,13 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <link rel="preconnect" href="https://use.typekit.net" />
+      <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
+      <link
+        rel="stylesheet"
+        href="https://use.typekit.net/aqv1jgr.css"
+        precedence="default"
+      />
       <body className="min-h-full flex flex-col">
         <SmoothScroll>{children}</SmoothScroll>
       </body>
