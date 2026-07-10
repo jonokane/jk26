@@ -29,6 +29,21 @@ pnpm start    # serve production build
 pnpm lint     # eslint
 ```
 
+## Package management
+
+This project uses **pnpm** — always. Do **not** run `npm install`/`npm run` here: npm would create a competing `package-lock.json` and a flat, non-strict `node_modules`, defeating pnpm's phantom-dependency protection. The `packageManager` field in `package.json` pins the pnpm version; Vercel auto-detects pnpm from `pnpm-lock.yaml`.
+
+Why pnpm: a global content-addressable store hard-linked into the project (faster installs, far less disk), and strict resolution — you can only import packages declared in `package.json`, which catches phantom deps early.
+
+| Task | Command |
+|---|---|
+| Install all deps | `pnpm install` |
+| Add a dependency | `pnpm add <pkg>` |
+| Add a dev dependency | `pnpm add -D <pkg>` |
+| Remove a dependency | `pnpm remove <pkg>` |
+| Run a script | `pnpm <script>` (the `run` is optional for non-colliding names) |
+| One-off tool (npx equivalent) | `pnpm dlx <tool>` |
+
 ## How it fits together
 
 - **Content pipeline.** `.mdx` files in `content/work/` are validated against the schema in `velite.config.ts` and compiled into `.velite/` (git-ignored, regenerated). Import typed data from `#site/content` (e.g. `import { work } from "#site/content"`).
