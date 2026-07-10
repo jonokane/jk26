@@ -49,3 +49,5 @@ next-env.d.ts
 
 # superpowers visual-companion sessions
 .superpowers/
+# playwright-mcp session output (console logs, traces)
+.playwright-mcp/
