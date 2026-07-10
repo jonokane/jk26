@@ -4,9 +4,11 @@ import {
   type AmbientConfig,
   type EaseName,
   type FalloffName,
+  type HeroConfig,
   type HoverConfig,
   type HoverMode,
 } from "@/lib/hero-config";
+import { gsap } from "@/lib/gsap";
 
 // ---------------------------------------------------------------------------
 // Pure math — ported verbatim from the browser prototype validated in the
@@ -91,4 +93,127 @@ export function blendWeight(
 ): number {
   const target = mode === "carve" ? AXIS_MIN : AXIS_MAX;
   return clampToAxis(ambientW + (target - ambientW) * influence);
+}
+
+// ---------------------------------------------------------------------------
+// Engine
+// ---------------------------------------------------------------------------
+
+interface LetterState {
+  el: HTMLElement;
+  from: number;
+  to: number;
+  t0: number; // ms timestamp the current move starts
+  dur: number; // ms length of the current move
+  ambientW: number;
+  influence: number; // smoothed cursor influence [0, 1]
+}
+
+export interface WordmarkEngine {
+  /** Register on gsap.ticker (idempotent). */
+  start(): void;
+  /** Unregister from gsap.ticker (idempotent). Safe to start() again. */
+  stop(): void;
+  /** Advance to an absolute time in ms. start() drives this from the ticker;
+   *  exposed so tests can drive time deterministically. */
+  tick(nowMs: number): void;
+  setPointer(x: number, y: number): void;
+  clearPointer(): void;
+  /** Live-patch config (tune panel). Ambient changes apply from the next
+   *  retarget; hover changes apply immediately. */
+  updateConfig(patch: Partial<HeroConfig>): void;
+}
+
+export function createWordmarkEngine(
+  letterEls: HTMLElement[],
+  config: HeroConfig,
+  random: () => number = Math.random,
+): WordmarkEngine {
+  let cfg: HeroConfig = structuredClone(config);
+  let states: LetterState[] | null = null;
+  let pointer: { x: number; y: number } | null = null;
+  let lastNow: number | null = null;
+  let tickerFn: ((time: number) => void) | null = null;
+
+  function retargetState(s: LetterState, nowMs: number) {
+    s.from = s.to;
+    s.to = nextTarget(s.from, cfg.ambient, random);
+    s.dur = moveDuration(cfg.ambient, random);
+    s.t0 = nowMs + restDelay(cfg.ambient, random);
+  }
+
+  function init(nowMs: number) {
+    states = letterEls.map((el, i) => ({
+      el,
+      from: 400,
+      to: 400,
+      t0: nowMs + i * cfg.ambient.staggerMs,
+      dur: 1,
+      ambientW: 400,
+      influence: 0,
+    }));
+    for (const s of states) retargetState(s, s.t0);
+  }
+
+  function tick(nowMs: number) {
+    if (states === null) init(nowMs);
+    const dt = lastNow === null ? 16.7 : Math.min(64, Math.max(0, nowMs - lastNow));
+    lastNow = nowMs;
+    const ease = EASES[cfg.ambient.ease];
+
+    for (const s of states!) {
+      // 1. Advance the ambient move.
+      const p = (nowMs - s.t0) / s.dur;
+      if (p >= 1) {
+        s.ambientW = s.to;
+        retargetState(s, nowMs);
+      } else if (p >= 0) {
+        s.ambientW = s.from + (s.to - s.from) * ease(p);
+      }
+
+      // 2. Raw cursor influence from pointer→letter-center distance.
+      let raw = 0;
+      if (pointer) {
+        const r = s.el.getBoundingClientRect();
+        const dx = pointer.x - (r.left + r.width / 2);
+        const dy = pointer.y - (r.top + r.height / 2);
+        raw = rawInfluence(Math.hypot(dx, dy), cfg.hover);
+      }
+
+      // 3. Smooth influence toward raw (the "liquid" lag).
+      s.influence += (raw - s.influence) * smoothingFactor(dt, cfg.hover.lagMs);
+
+      // 4. Blend and write. One inline-style write per letter per frame.
+      const w = blendWeight(s.ambientW, s.influence, cfg.hover.mode);
+      s.el.style.fontVariationSettings = `'wght' ${w}`;
+    }
+  }
+
+  return {
+    start() {
+      if (tickerFn) return;
+      lastNow = null;
+      tickerFn = (time: number) => tick(time * 1000); // gsap.ticker time is seconds
+      gsap.ticker.add(tickerFn);
+    },
+    stop() {
+      if (!tickerFn) return;
+      gsap.ticker.remove(tickerFn);
+      tickerFn = null;
+    },
+    tick,
+    setPointer(x: number, y: number) {
+      pointer = { x, y };
+    },
+    clearPointer() {
+      pointer = null;
+    },
+    updateConfig(patch: Partial<HeroConfig>) {
+      cfg = {
+        ambient: { ...cfg.ambient, ...patch.ambient },
+        hover: { ...cfg.hover, ...patch.hover },
+        reducedMotion: patch.reducedMotion ?? cfg.reducedMotion,
+      };
+    },
+  };
 }
