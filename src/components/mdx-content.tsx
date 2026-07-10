@@ -20,6 +20,10 @@ export function MDXContent({
   code: string;
   components?: Record<string, ComponentType>;
 }) {
+  // Each MDX body compiles to its own component, so the identity changing
+  // with `code` is the point. This is a server component (SSG) — there is no
+  // client re-render churn for the rule to protect against.
   const Component = useMDXComponent(code);
+  // eslint-disable-next-line react-hooks/static-components
   return <Component components={{ ...mdxComponents, ...components }} />;
 }
