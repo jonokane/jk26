@@ -36,6 +36,14 @@ export function HeroWordmark({ className }: { className?: string }) {
   const engineRef = useRef<WordmarkEngine | null>(null);
   const [fontState, setFontState] = useState<FontState>("loading");
   const [entranceDone, setEntranceDone] = useState(false);
+  // Hydration guard: the server cannot know the visitor's reduced-motion
+  // preference, so the first client render must match the server's 400s;
+  // the frozen weights apply right after mount.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
   const reducedMotion = useReducedMotion() ?? false;
 
   // The wordmark must never appear in a fallback font mid-animation: stay
@@ -127,7 +135,7 @@ export function HeroWordmark({ className }: { className?: string }) {
                   ? undefined
                   : {
                       fontVariationSettings: `'wght' ${
-                        reducedMotion
+                        mounted && reducedMotion
                           ? (heroConfig.reducedMotion.weights[letterIndex] ?? 400)
                           : 400
                       }`,
