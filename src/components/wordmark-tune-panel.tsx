@@ -78,7 +78,8 @@ function Select<T extends string>(props: {
 /**
  * Dev-only floating tuning panel for the hero wordmark. Only ever rendered
  * behind a NODE_ENV === "development" gate (see hero-wordmark.tsx), so it is
- * dead-code-eliminated from production builds.
+ * dead-code-eliminated from production builds. Even in dev it is opt-in:
+ * append `?tune` to the URL (e.g. localhost:3000/?tune) to show it.
  */
 export function WordmarkTunePanel({
   initial,

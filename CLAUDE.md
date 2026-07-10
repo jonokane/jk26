@@ -20,6 +20,8 @@ Personal design/career portfolio for **Jono Kane** (jonokane.com). A ground-up r
 
 The hero is built: a living variable-font wordmark (TotalBlack Variable via Adobe Fonts, per-letter weight animation on the GSAP ticker — spec in `docs/superpowers/specs/2026-07-10-variable-font-hero-design.md`). A 3D layer (likely React Three Fiber) is parked as a possible future addition; nothing 3D is installed. See `PLAN.md`.
 
+**Tuning the hero:** in dev, append `?tune` to the URL (`localhost:3000/?tune`) to open the wordmark tuning panel (hidden otherwise; never ships to production). Dial in the sliders, hit *copy config JSON*, and paste the values into `src/lib/hero-config.ts` to make them permanent.
+
 ## Commands
 
 ```bash

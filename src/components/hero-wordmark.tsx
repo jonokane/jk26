@@ -40,9 +40,13 @@ export function HeroWordmark({ className }: { className?: string }) {
   // preference, so the first client render must match the server's 400s;
   // the frozen weights apply right after mount.
   const [mounted, setMounted] = useState(false);
+  // Dev-only: the tune panel is opt-in via a ?tune URL param (read post-mount
+  // so the server render, which has no URL, stays hydration-identical).
+  const [tuneRequested, setTuneRequested] = useState(false);
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+    setTuneRequested(new URLSearchParams(window.location.search).has("tune"));
   }, []);
   const reducedMotion = useReducedMotion() ?? false;
 
@@ -177,7 +181,7 @@ export function HeroWordmark({ className }: { className?: string }) {
           ),
         )}
       </motion.h1>
-      {process.env.NODE_ENV === "development" && (
+      {process.env.NODE_ENV === "development" && tuneRequested && (
         <WordmarkTunePanel
           initial={heroConfig}
           onChange={(patch) => engineRef.current?.updateConfig(patch)}
