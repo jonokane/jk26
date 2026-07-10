@@ -1,6 +1,6 @@
 # jonokane.com — Rebuild Plan
 
-_Last updated: 2026-07-09_
+_Last updated: 2026-07-10_
 
 ## Goals
 
@@ -25,11 +25,11 @@ The scaffold is complete and `pnpm build` passes clean. In place:
 - Velite content pipeline proven end-to-end with two placeholder case studies.
 - Tailwind v4 theme tokens, Geist font, light/dark via `prefers-color-scheme`.
 
-**Not yet built:** shared nav/header/footer, About/contact, real content, a real design system beyond defaults, and the 3D hero (still a text placeholder).
+**Not yet built:** shared nav/header/footer, About/contact, real content, and a real design system beyond defaults. The hero is built: a living variable-font wordmark (see `docs/superpowers/specs/2026-07-10-variable-font-hero-design.md`).
 
 ## Open decisions
 
-- **3D hero engine.** Leaning **React Three Fiber** over Spline (lighter bundle, more control). Deferred — nothing 3D installed yet. Decide and install only once the hero concept is designed, so the tool fits the vision rather than the reverse.
+- **3D hero layer.** Parked. The hero concept is decided and shipped as the animated variable-font wordmark; a 3D layer (likely React Three Fiber) remains a possible future evolution *behind* the wordmark. Nothing 3D is installed.
 
 ## Roadmap
 
@@ -39,7 +39,7 @@ Ordered by leverage. Content is the biggest lever (goal #1); motion decorates co
 2. **Deploy to Vercel** — get a live URL early so every later step is previewable. Quick, high-leverage.
 3. **Content & information architecture** — decide the case study list, each study's narrative arc, and the homepage structure. Migrate/rewrite from old-site source material (Jono to provide). Write real case studies as MDX.
 4. **Design system** — typography, color, spacing, nav/footer. Establish the visual identity content fills into.
-5. **The hero** — design the "wow" concept, then pick and install the 3D engine (likely R3F), then build it.
+5. **The hero** — done 2026-07-10: animated variable-font wordmark in TotalBlack Variable (ambient weight loop + cursor carve), tunable via dev panel. Spec: `docs/superpowers/specs/2026-07-10-variable-font-hero-design.md`.
 6. **Connective tissue & polish** — About, contact, meta/OG images, performance pass, reduced-motion audit, accessibility.
 
 ## Source material
