@@ -208,9 +208,15 @@ describe("createWordmarkEngine", () => {
     engine.start();
     engine.start();
     expect(add).toHaveBeenCalledTimes(1);
+    const tickerFn = add.mock.calls[0][0];
+    // gsap.ticker.add internally calls remove(callback) to dedupe, so clear
+    // the spy's count before asserting stop's removal.
+    remove.mockClear();
     engine.stop();
     expect(remove).toHaveBeenCalledTimes(1);
-    expect(remove.mock.calls[0][0]).toBe(add.mock.calls[0][0]);
+    expect(remove).toHaveBeenCalledWith(tickerFn);
+    engine.stop(); // idempotent — no second removal
+    expect(remove).toHaveBeenCalledTimes(1);
   });
 
   it("the ticker callback converts seconds to ms", () => {
