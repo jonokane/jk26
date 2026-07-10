@@ -121,7 +121,8 @@ export interface WordmarkEngine {
   clearPointer(): void;
   /** Live-patch config (tune panel). Hover changes and `ambient.ease` apply
    *  immediately; other ambient fields are consumed at each letter's next
-   *  retarget. */
+   *  retarget. (`staggerMs` is consumed only at engine init; a live patch
+   *  never applies.) */
   updateConfig(patch: Partial<HeroConfig>): void;
 }
 

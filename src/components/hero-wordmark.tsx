@@ -50,18 +50,33 @@ export function HeroWordmark({ className }: { className?: string }) {
   // invisible until the webfont is confirmed, and give up after ~3s.
   useEffect(() => {
     let cancelled = false;
-    const timeout = new Promise<"fallback">((resolve) =>
-      setTimeout(() => resolve("fallback"), FONT_TIMEOUT_MS),
-    );
-    const load = document.fonts
-      .load(FONT_LOAD_SPEC)
-      .then((faces): FontState => (faces.length > 0 ? "ready" : "fallback"))
-      .catch((): FontState => "fallback");
-    Promise.race([load, timeout]).then((state) => {
-      if (!cancelled) setFontState(state === "ready" ? "ready" : "fallback");
-    });
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const deadline = performance.now() + FONT_TIMEOUT_MS;
+
+    // The Typekit stylesheet may not have parsed when this first runs, in
+    // which case fonts.load() resolves empty — retry until the deadline.
+    const attempt = () => {
+      document.fonts
+        .load(FONT_LOAD_SPEC)
+        .then((faces) => {
+          if (cancelled) return;
+          if (faces.length > 0) {
+            setFontState("ready");
+          } else if (performance.now() < deadline) {
+            timer = setTimeout(attempt, 150);
+          } else {
+            setFontState("fallback");
+          }
+        })
+        .catch(() => {
+          if (!cancelled) setFontState("fallback");
+        });
+    };
+    attempt();
+
     return () => {
       cancelled = true;
+      if (timer !== undefined) clearTimeout(timer);
     };
   }, []);
 
@@ -103,6 +118,19 @@ export function HeroWordmark({ className }: { className?: string }) {
     };
   }, [fontState, entranceDone, reducedMotion]);
 
+  // Closes a race on live reduced-motion toggles: a ticker frame can land
+  // between React's style commit and the engine effect's cleanup, leaving
+  // stray weights. All cleanups run before any effect re-runs, so writing
+  // here always lands after the engine's final frame.
+  useEffect(() => {
+    if (!reducedMotion || fontState !== "ready") return;
+    const h1 = h1Ref.current;
+    if (!h1) return;
+    h1.querySelectorAll<HTMLElement>("[data-letter]").forEach((el, i) => {
+      el.style.fontVariationSettings = `'wght' ${heroConfig.reducedMotion.weights[i] ?? 400}`;
+    });
+  }, [reducedMotion, fontState]);
+
   const visible = fontState !== "loading";
 
   return (
@@ -124,7 +152,9 @@ export function HeroWordmark({ className }: { className?: string }) {
       >
         {GLYPHS.map(({ ch, letterIndex }, i) =>
           letterIndex === null ? (
-            <span key={i} aria-hidden="true" className="inline-block w-[0.32em]" />
+            <span key={i} aria-hidden="true" className="inline-block w-[0.32em]">
+              {" "}
+            </span>
           ) : (
             <span
               key={i}
