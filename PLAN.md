@@ -16,11 +16,11 @@ Constraint: no CMS or database. Content is version-controlled MDX.
 
 Next.js 16 on Vercel · TypeScript · Tailwind v4 · MDX via Velite · Motion + GSAP/ScrollTrigger + Lenis · pnpm. See `CLAUDE.md` for how it all fits together.
 
-## Current state (as of 2026-07-09)
+## Current state (as of 2026-07-10)
 
 The scaffold is complete and `pnpm build` passes clean. In place:
 
-- Working routes: `/` (animated hero placeholder), `/work` (index), `/work/[slug]` (case study template with typed frontmatter → SEO metadata).
+- Working routes: `/` (living variable-font hero wordmark), `/work` (index), `/work/[slug]` (case study template with typed frontmatter → SEO metadata).
 - Canonical Lenis + GSAP smooth-scroll integration wired and sharing one RAF loop.
 - Velite content pipeline proven end-to-end with two placeholder case studies.
 - Tailwind v4 theme tokens, Geist font, light/dark via `prefers-color-scheme`.
