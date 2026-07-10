@@ -119,8 +119,9 @@ export interface WordmarkEngine {
   tick(nowMs: number): void;
   setPointer(x: number, y: number): void;
   clearPointer(): void;
-  /** Live-patch config (tune panel). Ambient changes apply from the next
-   *  retarget; hover changes apply immediately. */
+  /** Live-patch config (tune panel). Hover changes and `ambient.ease` apply
+   *  immediately; other ambient fields are consumed at each letter's next
+   *  retarget. */
   updateConfig(patch: Partial<HeroConfig>): void;
 }
 
