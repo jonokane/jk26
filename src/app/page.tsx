@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
+import { HeroWordmark } from "@/components/hero-wordmark";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -20,14 +21,7 @@ export default function Home() {
             Designer · Portfolio
           </motion.p>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease, delay: 0.08 }}
-            className="mt-6 text-5xl font-semibold leading-[1.05] tracking-tight sm:text-7xl lg:text-8xl"
-          >
-            Jono Kane
-          </motion.h1>
+          <HeroWordmark className="mt-6 text-5xl leading-[1.05] sm:text-7xl lg:text-8xl" />
 
           <motion.p
             initial={{ opacity: 0, y: 24 }}
