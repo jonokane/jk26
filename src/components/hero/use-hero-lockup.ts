@@ -36,8 +36,14 @@ export function useHeroLockup({ innerRef, wordmarkRef, kickerRef, taglineRef, ac
       const fourth = letters[3].getBoundingClientRect();
       const last = letters[letters.length - 1].getBoundingClientRect();
 
+      const innerStyle = getComputedStyle(inner);
+      const availPx =
+        inner.clientWidth -
+        parseFloat(innerStyle.paddingLeft) -
+        parseFloat(innerStyle.paddingRight);
+
       const result = computeLockup({
-        availPx: inner.clientWidth,
+        availPx,
         wordmarkPx: last.right - first.left,
         wordmarkFontPx: parseFloat(getComputedStyle(wordmark).fontSize),
         jonoPx: fourth.right - first.left,

@@ -4,6 +4,11 @@
  * - the kicker's width locks to the JONO segment;
  * - the tagline sets on one line spanning the full JONOKANE width.
  * All inputs are pixel measurements taken by use-hero-lockup.ts.
+ *
+ * Degenerate-input behavior: transient zero-width layouts (e.g. `availPx`
+ * or `wordmarkPx` briefly 0 during measurement) must never collapse the
+ * hero to invisible text. In those cases this function falls back to the
+ * current/base sizes it was given rather than scaling to 0.
  */
 export interface LockupInput {
   /** Available content width (the hero inner box). */
@@ -30,13 +35,15 @@ const TAGLINE_FILL = 0.995; // slight underfill so the line never wraps
 
 export function computeLockup(input: LockupInput): LockupResult {
   const scale =
-    input.wordmarkPx > 0 ? Math.min(1, input.availPx / input.wordmarkPx) : 1;
+    input.availPx > 0 && input.wordmarkPx > 0
+      ? Math.min(1, input.availPx / input.wordmarkPx)
+      : 1;
   const wordmarkFontPx = input.wordmarkFontPx * scale;
   const jonoScaled = input.jonoPx * scale;
   const fullScaled = input.wordmarkPx * scale;
 
   const kickerFontPx =
-    input.kickerPx > 0
+    input.kickerPx > 0 && jonoScaled > 0
       ? (input.kickerFontPx * jonoScaled) / input.kickerPx
       : input.kickerFontPx;
 

@@ -43,4 +43,16 @@ describe("computeLockup", () => {
     expect(r.kickerFontPx).toBe(16);
     expect(r.taglineFontPx).toBeGreaterThan(0);
   });
+
+  it("falls back to base sizes when availPx is zero (transient layout)", () => {
+    const r = computeLockup({ ...base, availPx: 0 });
+    expect(r.wordmarkFontPx).toBe(100);
+    expect(r.kickerFontPx).toBeGreaterThan(0);
+    expect(r.taglineFontPx).toBeGreaterThan(0);
+  });
+
+  it("keeps the kicker size when jonoPx is zero", () => {
+    const r = computeLockup({ ...base, jonoPx: 0 });
+    expect(r.kickerFontPx).toBe(16);
+  });
 });
