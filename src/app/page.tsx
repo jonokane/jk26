@@ -26,13 +26,13 @@ export default function Home() {
       <SiteHeader />
       <main>
         <Hero />
-        <AnchorSection id="about" title="About">
+        <AnchorSection id="about" title={siteContent.titles.about}>
           {siteContent.placeholders.about}
         </AnchorSection>
-        <AnchorSection id="work" title="Selected Work">
+        <AnchorSection id="work" title={siteContent.titles.work}>
           {siteContent.placeholders.work}
         </AnchorSection>
-        <AnchorSection id="contact" title="Contact">
+        <AnchorSection id="contact" title={siteContent.titles.contact}>
           {siteContent.placeholders.contact}
         </AnchorSection>
       </main>

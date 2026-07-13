@@ -12,6 +12,12 @@ export const siteContent = {
     { label: "Work", target: "work" },
     { label: "Contact", target: "contact" },
   ],
+  /** Section heading titles (nav labels differ deliberately: "Work" vs "Selected Work"). */
+  titles: {
+    about: "About",
+    work: "Selected Work",
+    contact: "Contact",
+  },
   placeholders: {
     about: "The story assembles here next — four beats collecting into an About wall.",
     work: "The work shelf arrives here — five case studies, read in full, on one horizontal shelf.",
