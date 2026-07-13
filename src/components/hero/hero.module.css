@@ -1,0 +1,53 @@
+/* src/components/hero/hero.module.css — hero-only styles (spec §15) */
+.section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center; /* mid-left hero, locked in prototyping */
+}
+
+.inner {
+  padding-left: 7vw;
+  padding-right: 7vw;
+  max-width: 100%;
+}
+
+.kicker {
+  display: block;
+  margin-bottom: 1.1rem;
+  opacity: 0;
+  transition: opacity 0.8s ease 0.1s;
+}
+
+/* the in-flow wordmark reserves layout + provides measurement; the fixed
+   live layer (Task 6 morph) renders on top of it */
+.wordmark {
+  font-family: var(--wordmark-family);
+  line-height: 1.1;
+  white-space: nowrap;
+  color: var(--ink);
+  text-shadow: 0 2px 30px var(--text-glow);
+}
+
+.wordmark span {
+  display: inline-block;
+  opacity: 0; /* revealed by the build-in (or instantly under reduced motion) */
+  will-change: transform, opacity, filter;
+}
+
+.tagline {
+  display: block;
+  margin-top: 1.3rem;
+  line-height: 1.45;
+  white-space: nowrap;
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 0.8s ease 0.25s;
+}
+
+.section[data-settled="true"] .kicker {
+  opacity: 1;
+}
+
+.section[data-settled="true"] .tagline {
+  opacity: 0.85;
+}
