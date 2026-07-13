@@ -54,6 +54,7 @@ Why pnpm: a global content-addressable store hard-linked into the project (faste
 - **MDX rendering.** `src/components/mdx-content.tsx` executes the compiled MDX body. Register custom components available to all MDX in its `mdxComponents` map.
 - **Smooth scroll + GSAP.** `src/components/smooth-scroll.tsx` wraps the app and drives Lenis from GSAP's ticker so both share one synchronized RAF loop. This is the canonical integration — build scroll choreography with ScrollTrigger on top of it; don't add a second RAF loop or `autoRaf`.
 - **GSAP plugins** are registered once in `src/lib/gsap.ts` (guarded against SSR). Import `gsap`/`ScrollTrigger` from there.
+- **The living sky.** `SceneProvider` (`src/components/sky/scene-provider.tsx`) samples the visitor's clock once a minute and calls `applySceneToRoot` (`src/lib/scene-engine.ts`), which interpolates the 8 keyframes in `src/lib/scene-config.ts` and writes ~24 CSS custom properties (`--sky-*`, `--ink`, `--card-bg`, `--w-*`, …) onto `<html>`. Everything scene-colored reads those vars; sky layers are CSS-animated components under `src/components/sky/`. No RAF anywhere in this system — don't add one.
 
 ## Structure
 

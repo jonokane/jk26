@@ -180,6 +180,11 @@ Final near-full-viewport slide on the scrim: **"Thanks for stopping by. Have a l
 - Intro beat heading copy is placeholder-final from Jono (titles may be refined in content pass).
 - Scrubber visual design; tray hint styling; dot/caption refinement; slab padding rhythm pass.
 - Verify Mae rendering weights across platforms (the 140/180 axis values were tuned on macOS Chrome).
+- **Pre-hydration scene flash** (from Phase 1 review): SSR paints the Midnight token defaults until the client clock runs; add a tiny inline `<head>` script writing the five gradient/ink vars from a compact hour table so first paint matches the visitor's time.
+- **Fonts-loaded gating for `font-variation-settings`** (Phase 2): body text at wght 140 renders near-Thin if Typekit is blocked and Geist takes over; scope the variation settings behind a fonts-loaded class rather than gating only the wordmark.
+- **Zero-weight sky layers keep animating invisibly** (Phase 5 perf audit): gate layers to `visibility: hidden` when their `--w-*` weight is 0 (writer sets a data attribute).
+- **SceneProvider fake-timer tests** (early Phase 2 task): interval tick, hidden-tab skip, scrub freezes clock, resume re-samples.
+- **Inter-phase deployment posture**: until Phase 2 recolors page content with scene tokens, night scenes render the current placeholder copy at very low contrast — hold the first production deploy until Phase 2, or bridge by switching the page text to `text-ink`/`text-sub`.
 
 ## 15. Code organization & editability (execution constraint)
 
