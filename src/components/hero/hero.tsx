@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { loadAreaFont } from "@/lib/area-font";
 import { WORDMARK_TEXT, wordmarkConfig, wordmarkFvs } from "@/lib/wordmark-config";
+import { createCarveEngine, type CarveEngine } from "@/lib/carve-engine";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { useHeroLockup } from "@/components/hero/use-hero-lockup";
@@ -23,6 +24,7 @@ export function Hero() {
   const wordmarkRef = useRef<HTMLDivElement>(null);
   const kickerRef = useRef<HTMLSpanElement>(null);
   const taglineRef = useRef<HTMLSpanElement>(null);
+  const carveRef = useRef<CarveEngine | null>(null);
   const [fontState, setFontState] = useState<FontState>("loading");
   const [settled, setSettled] = useState(false);
   const reducedMotion = useReducedMotionPref();
@@ -78,6 +80,40 @@ export function Hero() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- build-in runs once per font resolution; reducedMotion is read at that moment
   }, [fontState]);
+
+  /* Cursor weight-carve (spec §5): pointer-only, starts once the wordmark
+     has settled and the font is ready. IntersectionObserver starts/stops
+     the engine with hero visibility so it never ticks off-screen. */
+  useEffect(() => {
+    if (!settled || fontState !== "ready" || reducedMotion) return;
+    if (!window.matchMedia("(hover: hover)").matches) return; // touch: inert
+    const letterEls = Array.from(
+      wordmarkRef.current?.querySelectorAll<HTMLElement>("[data-letter]") ?? [],
+    );
+    if (letterEls.length === 0) return;
+    const engine = createCarveEngine(letterEls);
+    carveRef.current = engine;
+
+    const io = new IntersectionObserver(([entry]) =>
+      entry.isIntersecting ? engine.start() : engine.stop(),
+    );
+    if (sectionRef.current) io.observe(sectionRef.current);
+    const onMove = (e: PointerEvent) => engine.setPointer(e.clientX, e.clientY);
+    const onLeave = () => engine.clearPointer();
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.documentElement.addEventListener("mouseleave", onLeave);
+    const onResize = () => engine.refreshRects();
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener("pointermove", onMove);
+      document.documentElement.removeEventListener("mouseleave", onLeave);
+      window.removeEventListener("resize", onResize);
+      engine.stop();
+      carveRef.current = null;
+    };
+  }, [settled, fontState, reducedMotion]);
 
   const letters = [...WORDMARK_TEXT];
   const kerns = wordmarkConfig.pairKernsMem;
