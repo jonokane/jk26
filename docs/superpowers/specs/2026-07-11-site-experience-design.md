@@ -181,7 +181,18 @@ Final near-full-viewport slide on the scrim: **"Thanks for stopping by. Have a l
 - Scrubber visual design; tray hint styling; dot/caption refinement; slab padding rhythm pass.
 - Verify Mae rendering weights across platforms (the 140/180 axis values were tuned on macOS Chrome).
 
-## 15. Implementation phases
+## 15. Code organization & editability (execution constraint)
+
+The codebase must stay human-editable: modular, semantically correct, content separated from style and layout. Binding rules for every implementation plan:
+
+- **Content never lives in JSX.** Case studies are MDX (§9); all site copy (beats, About, farewell strings, nav labels, contact strings) lives in typed `src/lib/site-content.ts`; tunables live in config modules (`scene-config.ts`, `wordmark-config.ts`). Editing words or values never requires touching a component.
+- **Design decisions live in CSS, not markup.** Scene tokens are CSS custom properties; the Tailwind v4 `@theme` block in `globals.css` maps them to utilities so there is one source of truth. Recurring materials and type roles get semantic component classes in `@layer components` (`.slab`, `.pill`, `.pill-secondary`, `.heading-display`, `.beat-title`, …) composed from tokens — never a 12-utility string repeated across files.
+- **Tailwind utilities are for one-off layout only** (spacing, flex/grid placement). Anything that appears twice, or expresses a design-system idea, is promoted to a named class. If a class string needs a comment to be understood, it should have been a component class.
+- **Semantic markup**: `header/nav/main/section/article`, real heading hierarchy, `dl` for case study meta, `button`/`a` used for what they are — the document must read sensibly with CSS off.
+- **Modular units**: one component per file; scroll/motion choreography isolated in dedicated hooks/modules (e.g., `use-shelf-scroll.ts`); pure math in engine modules with unit tests (scene sampling, influence math) — the `wordmark-engine.ts` pattern is the house style.
+- Files stay small and single-purpose; a file you have to scroll to understand is a file to split.
+
+## 16. Implementation phases
 
 1. **Scene engine + tokens + type system** — config, engine (unit-tested math), sky layers, slab material, `?tune`.
 2. **Hero + header** — wordmark build-in, font gating, nav pill, FLIP morph, scroll-spy, deep links, `/work` redirect.
