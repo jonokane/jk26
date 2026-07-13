@@ -66,6 +66,119 @@
   }
 }
 
+/* ---------- god rays: the "wash", one object anchored to the sun ---------- */
+.rays {
+  opacity: var(--w-rays);
+  overflow: hidden;
+}
+
+.raysAnchor {
+  position: absolute;
+  left: var(--sun-x);
+  top: var(--sun-y);
+  width: 0;
+  height: 0;
+}
+
+.wash {
+  position: absolute;
+  left: -1300px;
+  top: -1300px;
+  width: 2600px;
+  height: 2600px;
+  mix-blend-mode: screen;
+  filter: blur(14px);
+  -webkit-mask: radial-gradient(circle, #000 0 42%, transparent 70%);
+  mask: radial-gradient(circle, #000 0 42%, transparent 70%);
+  animation: sway 16s ease-in-out infinite alternate;
+}
+
+@keyframes sway {
+  from {
+    transform: rotate(-2.5deg) scale(1);
+  }
+  to {
+    transform: rotate(2.5deg) scale(1.04);
+  }
+}
+
+/* ---------- sun & moon ---------- */
+.sunLayer {
+  opacity: var(--w-sun);
+}
+
+.moonLayer {
+  opacity: var(--w-moon);
+}
+
+.sun {
+  position: absolute;
+  left: calc(var(--sun-x) - 65px);
+  top: calc(var(--sun-y) - 65px);
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 238, 175, 0.95) 0 26%,
+    rgba(255, 215, 125, 0.35) 46%,
+    transparent 70%
+  );
+  filter: blur(1.5px);
+}
+
+.moon {
+  position: absolute;
+  left: calc(var(--moon-x) - 35px);
+  top: calc(var(--moon-y) - 35px);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #f5f7ff 0 55%, #c7d1ef 100%);
+  box-shadow: 0 0 44px 10px rgba(219, 229, 255, 0.35);
+}
+
+/* ---------- birds ---------- */
+.birds {
+  opacity: calc(var(--w-birds) * 0.85);
+  color: var(--sub);
+}
+
+.bird {
+  position: absolute;
+  animation: fly var(--d) linear var(--dl) infinite;
+}
+
+.bird svg {
+  display: block;
+  animation: flap 0.55s ease-in-out infinite alternate;
+}
+
+@keyframes fly {
+  from {
+    transform: translate(-12vw, 0);
+  }
+  to {
+    transform: translate(118vw, -7vh);
+  }
+}
+
+@keyframes flap {
+  from {
+    transform: scaleY(0.5);
+  }
+  to {
+    transform: scaleY(1.2);
+  }
+}
+
+/* birds vanish (not freeze mid-air) under reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .birds {
+    display: none;
+  }
+}
+
 /* ---------- reduced motion: correct scene, still sky (spec §12) ---------- */
 @media (prefers-reduced-motion: reduce) {
   .sky *,
