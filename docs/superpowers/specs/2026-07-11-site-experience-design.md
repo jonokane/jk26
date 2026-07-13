@@ -81,23 +81,36 @@ All vector, all crisp-edged (no blur filters on shapes), all animated with plain
 
 | Role | Face | Values |
 |---|---|---|
-| Wordmark | `aktiv-grotesk-extended` | weight 500, `JONOKANE` (all caps, one word), 7vw, tracking 0.16em, line-height 1.06; nav size 1.05rem |
+| Wordmark | `area-variable` (re-registered as `area-full`, see §5) | `JONOKANE` — wght 274 · wdth 195 · INKT 8 · slnt 0, tracking 0.05em, 7vw shrink-to-fit, hand-tuned pair kerning; nav size 1.05rem |
 | Display (headings, beat titles, case titles, anchor name) | `mae-variable` | base display weight **180** with role boosts: section headings +260, case titles +300, anchor name +160, beat statements +60, impact lines +100, beat titles +220 |
 | Body / UI | `mae-variable` | base weight **140**; legibility bumps: tagline +90, kicker +150, work intro +90 |
 
-Weights are single-source tunables (`--dw`, `--bw` in tokens; weight variants may be revisited later). Geist remains only as fallback stack. All four kit fonts load from Typekit kit `aqv1jgr` (CDN-only license — never self-host). Fonts gate rendering with the established retry-until-deadline `document.fonts.load()` pattern (specs: `500 1rem "aktiv-grotesk-extended"`, `140 1rem "mae-variable"`).
+Weights are single-source tunables (`--dw`, `--bw` in tokens; weight variants may be revisited later). Geist remains only as fallback stack. All kit fonts load from Typekit kit `aqv1jgr` (CDN-only license — never self-host). Fonts gate rendering: `mae-variable` uses the established retry-until-deadline `document.fonts.load()` pattern (`140 1rem "mae-variable"`); the wordmark gates on the `area-full` FontFace's own `load()` promise (§5). Unused trial families in the kit (aktiv-grotesk-extended, config-variable, and — if the parked engine's placeholder use ends — fredoka/cofo) can be pruned by Jono before launch to trim payload.
 
-## 5. Hero: build-in, then still
+## 5. Hero: build-in, then still (but touchable)
 
-Wordmark recipe (locked):
+**Face: Area** (`area-variable`, Blaze Type), CDN-served from the kit. Adobe's generated `@font-face` clamps the registered `wdth`/`slnt` axes (`font-stretch: normal`, `font-style: normal`), so at runtime we fetch the kit CSS, extract Area's own CDN URL, and re-register it via the FontFace API as `area-full` with honest descriptor ranges (`weight: 100 900`, `stretch: 100% 200%`, `style: oblique 0deg 10deg`). The font still loads exclusively from Adobe's CDN — this corrects CSS metadata only, never self-hosts — and is documented here as a deliberate licensing call. The wordmark render-gates on this FontFace's `load()` promise.
+
+Locked recipe (tuned in wordmark lab v12):
 
 ```json
-{ "font": "aktiv-grotesk-extended", "text": "JONOKANE", "ease": "expo (cubic-bezier(0.16, 1, 0.3, 1))",
-  "order": "left-to-right", "dur": 1250, "stag": 130, "scale": 2, "blur": 14, "drop": -18,
-  "track": 0.16, "weight": 500, "size": "7vw" }
+{ "family": "area-full, area-variable", "text": "JONOKANE",
+  "axes": { "wght": 274, "wdth": 195, "INKT": 8, "slnt": 0 },
+  "track": "0.05em", "size": "7vw",
+  "pairKernsMem": [30, 0, 0, 0, 165, 45, -70],
+  "build": { "dur": 1250, "stag": 130, "scale": 2, "blur": 14, "drop": -18,
+             "order": "left-to-right", "ease": "cubic-bezier(0.16, 1, 0.3, 1)" },
+  "hover": { "mode": "carve", "radius": 240, "strengthPct": 65, "lagMs": 220 } }
 ```
 
-Sequence on load (after font gate): each letter animates from `opacity 0, scale 2, translateY(-18vh), blur(14px)` to rest, 1250ms each, 130ms stagger, expo-out. Kicker ("Product Design Leader & Strategist") and tagline ("I shape strategy, build teams, lead design, and code the front end that brings it to life.") fade in as the name settles (~80% through). **After settling, the wordmark never animates ambiently** — hero layout is mid-left.
+- **Build-in** (once, on load, after font gate): each letter animates from `opacity 0, scale 2, translateY(-18vh), blur(14px)` to rest — 1250ms per letter, 130ms stagger, expo-out, left to right. Kicker and tagline fade in as the name settles (~80% through).
+- **At rest the wordmark holds still — no ambient motion.** It is *reactive*: on pointer devices the cursor carves letters lighter (wght 274 → toward 100) with smooth distance falloff (radius 240px, strength 65%) and 220ms exponential lag — the same influence math as the parked TotalBlack engine, which is reused. Pointer-only: inert on touch and disabled under `prefers-reduced-motion`.
+- **Kerning:** per-letter spans disable font kerning (and Area ships no kern pairs for these glyphs); the seven pair gaps are hand-tuned constants applied as margins, in thousandths of an em: J·O +30, O·N 0, N·O 0, O·K 0, K·A +165, A·N +45, N·E −70.
+- **Type lockup** (measured from the rendered wordmark; recomputed on resize and axis change):
+  - Kicker ("Product Design Leader & Strategist") scales so its width exactly equals the **JONO** segment.
+  - Tagline ("I shape strategy, build teams, lead design, and code the front end that brings it to life.") sets on **one line**, font-size scaled to span exactly the full JONOKANE width.
+  - The wordmark itself shrinks to fit the hero measure when needed; it never grows past 7vw.
+- Hero layout mid-left. The nav-pill wordmark renders at 1.05rem as a plain text run (no per-letter spans or kern margins needed at that size).
 
 ## 6. Header & navigation
 
@@ -150,7 +163,7 @@ Final near-full-viewport slide on the scrim: **"Thanks for stopping by. Have a l
 
 ## 12. Accessibility, mobile, performance
 
-- **Reduced motion** (`prefers-reduced-motion`): wordmark appears by simple fade (no per-letter flight); no pinning or scrubbed choreography — beats, About wall, and case study panels flow as a plain vertical document; sky shows the correct scene as a static gradient (element animations off); farewell still time-correct. `/work/[slug]` pages are the long-form reading path.
+- **Reduced motion** (`prefers-reduced-motion`): wordmark appears by simple fade (no per-letter flight) and the cursor carve is disabled; no pinning or scrubbed choreography — beats, About wall, and case study panels flow as a plain vertical document; sky shows the correct scene as a static gradient (element animations off); farewell still time-correct. `/work/[slug]` pages are the long-form reading path.
 - **Touch/mobile**: shelf becomes native horizontal swipe with scroll-snap; header condenses (study pills scrollable); collector travel shortened; hover-dependent affordances have tap equivalents. Layouts single-column under ~760px.
 - **Performance**: one RAF loop (gsap ticker — Lenis integration unchanged); animations transform/opacity only; scene engine writes tokens ~1/min; sky layers are compositor-driven CSS animations, paused (`IntersectionObserver` / `visibilitychange`) when hidden; `content-visibility` on off-screen sections evaluated in build.
 - **A11y semantics**: one `h1` (visually-hidden "Jono Kane" alongside the decorative wordmark), landmark nav, `aria-current` on spy states, shelf panels reachable by keyboard (arrow keys + focus order), form fields labeled.
