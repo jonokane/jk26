@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { preHydrationSceneScript } from "@/lib/pre-hydration-scene";
+import { FontsReady } from "@/components/fonts-ready";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +43,11 @@ export default function RootLayout({
         precedence="default"
       />
       <body className="min-h-full flex flex-col">
+        <script
+          id="scene-first-paint"
+          dangerouslySetInnerHTML={{ __html: preHydrationSceneScript }}
+        />
+        <FontsReady />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

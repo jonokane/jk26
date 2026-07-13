@@ -65,7 +65,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body), system-ui, sans-serif;
-  font-variation-settings: "wght" var(--bw);
 }
 
 /* Lenis wants the html element to own scrolling; disable native smoothing so
@@ -117,7 +116,6 @@ html.lenis body {
   /* Display headings: Mae at the section-heading role weight, scene glow. */
   .heading-display {
     font-family: var(--font-display);
-    font-variation-settings: "wght" calc(var(--dw) + 260);
     text-shadow: 0 2px 26px var(--text-glow);
   }
 
@@ -126,7 +124,6 @@ html.lenis body {
     text-transform: uppercase;
     letter-spacing: 0.22em;
     color: var(--sub);
-    font-variation-settings: "wght" calc(var(--bw) + 150);
   }
 
   /* The nav pill rides in when the wordmark morph (or its reduced-motion
@@ -146,5 +143,19 @@ html.lenis body {
     transform: none;
     visibility: visible;
     transition-delay: 0s;
+  }
+
+  /* Mae axis weights apply only once Mae is confirmed rendering —
+     the fallback face would render near-Thin at these values. */
+  html.fonts-mae body {
+    font-variation-settings: "wght" var(--bw);
+  }
+
+  html.fonts-mae .heading-display {
+    font-variation-settings: "wght" calc(var(--dw) + 260);
+  }
+
+  html.fonts-mae .text-kicker {
+    font-variation-settings: "wght" calc(var(--bw) + 150);
   }
 }
