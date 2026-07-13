@@ -18,5 +18,8 @@ export default async function nextConfig(): Promise<NextConfig> {
     images: {
       remotePatterns: [{ protocol: "https", hostname: "**" }],
     },
+    async redirects() {
+      return [{ source: "/work", destination: "/#work", permanent: false }];
+    },
   };
 }
