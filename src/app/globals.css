@@ -11,6 +11,13 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-wordmark: "totalblack-variable", var(--font-geist-sans), sans-serif;
+  --color-ink: var(--ink);
+  --color-sub: var(--sub);
+  --color-surface: var(--surface);
+  --color-card: var(--card-bg);
+  --color-card-border: var(--card-border);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,10 +27,44 @@
   }
 }
 
+/* ---------- scene tokens (written live by applySceneToRoot; defaults = Midnight) ---------- */
+:root {
+  --sky-top: #050818;
+  --sky-mid: #16173f;
+  --sky-hor: #2c4a78;
+  --ink: #edf2ff;
+  --sub: #a9b6e6;
+  --surface: #060a19;
+  --scrim: #060a1994;
+  --card-bg: rgba(10, 13, 28, 0.55);
+  --card-border: rgba(255, 255, 255, 0.15);
+  --text-glow: rgba(4, 7, 18, 0.55);
+  --elev: rgba(3, 6, 16, 0.5);
+  --cover-a: #16173f;
+  --cover-b: #2c4a78;
+  --w-stars: 1;
+  --w-rays: 0;
+  --w-clouds: 0;
+  --w-birds: 0;
+  --w-sun: 0;
+  --w-moon: 1;
+  --sun-x: 6vw;
+  --sun-y: 78vh;
+  --moon-x: 50vw;
+  --moon-y: 20vh;
+
+  /* type system (spec §4): Mae for display + body, tunable base weights */
+  --font-display: "mae-variable", var(--font-geist-sans), sans-serif;
+  --font-body: "mae-variable", var(--font-geist-sans), sans-serif;
+  --dw: 180;
+  --bw: 140;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-variation-settings: "wght" var(--bw);
 }
 
 /* Lenis wants the html element to own scrolling; disable native smoothing so
@@ -35,4 +76,55 @@ html.lenis body {
 
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
+}
+
+/* ---------- scene-aware materials & type roles (spec §3.2, §4, §15) ---------- */
+@layer components {
+  /* Frosted slab: the system's contrast material (nav pill, forms, text slabs). */
+  .slab {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 26px 28px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 12px 40px var(--elev);
+  }
+
+  /* Pill buttons/chips — primary carries the slab material. */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8125rem 1.625rem;
+    border-radius: 9999px;
+    background: var(--card-bg);
+    color: var(--ink);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 8px 28px var(--elev);
+  }
+
+  /* Secondary CTA: outline-only variant of .pill (use together: class="pill pill-secondary"). */
+  .pill-secondary {
+    background: transparent;
+    box-shadow: none;
+    border-width: 1.5px;
+  }
+
+  /* Display headings: Mae at the section-heading role weight, scene glow. */
+  .heading-display {
+    font-family: var(--font-display);
+    font-variation-settings: "wght" calc(var(--dw) + 260);
+    text-shadow: 0 2px 26px var(--text-glow);
+  }
+
+  /* Uppercase kicker/label style. */
+  .text-kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--sub);
+    font-variation-settings: "wght" calc(var(--bw) + 150);
+  }
 }
