@@ -44,10 +44,13 @@ async function doLoadAreaFont(): Promise<boolean> {
       document.fonts.add(face);
       return true;
     })();
-    const timeout = new Promise<boolean>((resolve) =>
-      setTimeout(() => resolve(false), LOAD_TIMEOUT_MS),
-    );
-    return await Promise.race([attempt, timeout]);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<boolean>((resolve) => {
+      timer = setTimeout(() => resolve(false), LOAD_TIMEOUT_MS);
+    });
+    /* Promise.race never cancels the loser — clear the timer so a fast
+       load doesn't leave a stray 4s timeout behind */
+    return await Promise.race([attempt, timeout]).finally(() => clearTimeout(timer));
   } catch {
     return false;
   }
