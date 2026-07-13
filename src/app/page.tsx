@@ -3,12 +3,16 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import { HeroWordmark } from "@/components/hero-wordmark";
+import { SceneProvider } from "@/components/sky/scene-provider";
+import { Sky } from "@/components/sky/sky";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col">
+    <SceneProvider>
+      <Sky />
+      <main className="flex flex-1 flex-col">
       {/* Hero */}
       <section className="flex min-h-[90vh] flex-col justify-center px-6 sm:px-10 lg:px-16">
         <div className="mx-auto w-full max-w-5xl">
@@ -74,6 +78,7 @@ export default function Home() {
           </motion.p>
         </div>
       </section>
-    </main>
+      </main>
+    </SceneProvider>
   );
 }

@@ -1,0 +1,22 @@
+/* src/components/sky/sky.module.css — all sky visuals live here (spec §15) */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.sky > * {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.gradient {
+  background: linear-gradient(
+    180deg,
+    var(--sky-top) 0%,
+    var(--sky-mid) 55%,
+    var(--sky-hor) 100%
+  );
+}
