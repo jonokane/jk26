@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { loadAreaFont } from "@/lib/area-font";
 import { WORDMARK_TEXT, wordmarkConfig, wordmarkFvs } from "@/lib/wordmark-config";
@@ -64,11 +64,17 @@ export function Hero() {
     active: settled,
   });
 
+  /* stable identity: an inline closure here would re-key the morph effect on
+     every render and rebuild the ScrollTrigger mid-scroll */
+  const onMorphProgress = useCallback((p: number) => {
+    carveRef.current?.setEnabled(p === 0);
+  }, []);
+
   useWordmarkMorph({
     liveRef: liveWordmarkRef,
     flowRef: wordmarkRef,
     active: settled && fontState === "ready" && !reducedMotion,
-    onProgress: (p) => carveRef.current?.setEnabled(p === 0),
+    onProgress: onMorphProgress,
   });
 
   useEffect(() => {

@@ -34,7 +34,9 @@ export function SiteHeader() {
         type="button"
         onClick={() => {
           history.pushState(null, "", location.pathname);
-          getLenis()?.scrollTo(0);
+          const lenis = getLenis();
+          if (lenis) lenis.scrollTo(0);
+          else window.scrollTo(0, 0);
         }}
         className="border-0 bg-transparent p-0 text-left"
         aria-label="Back to top"
