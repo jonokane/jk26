@@ -30,17 +30,23 @@ describe("loadAreaFont", () => {
   it("registers area-full with honest descriptor ranges and resolves true", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ text: () => Promise.resolve(KIT_FIXTURE) }));
     const load = vi.fn().mockResolvedValue(undefined);
-    const ctor = vi.fn().mockImplementation(() => ({ load }));
-    vi.stubGlobal("FontFace", ctor);
+    const ctorCalls: unknown[][] = [];
+    class FontFaceStub {
+      load = load;
+      constructor(...args: unknown[]) {
+        ctorCalls.push(args);
+      }
+    }
+    vi.stubGlobal("FontFace", FontFaceStub);
     const add = vi.fn();
     Object.defineProperty(document, "fonts", { configurable: true, value: { add } });
 
     await expect(loadAreaFont()).resolves.toBe(true);
-    expect(ctor).toHaveBeenCalledWith(
+    expect(ctorCalls[0]).toEqual([
       "area-full",
       expect.stringContaining("use.typekit.net"),
       { weight: "100 900", stretch: "100% 200%", style: "oblique 0deg 10deg" },
-    );
+    ]);
     expect(add).toHaveBeenCalled();
   });
 
