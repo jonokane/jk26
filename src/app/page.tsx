@@ -10,6 +10,8 @@ import { Rays } from "@/components/sky/rays";
 import { Stars } from "@/components/sky/stars";
 import { Clouds } from "@/components/sky/clouds";
 import { Birds } from "@/components/sky/birds";
+import { TimeScrubber } from "@/components/sky/time-scrubber";
+import { SceneTunePanel } from "@/components/sky/scene-tune-panel";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -90,6 +92,8 @@ export default function Home() {
         </div>
       </section>
       </main>
+      <TimeScrubber />
+      <SceneTunePanel />
     </SceneProvider>
   );
 }

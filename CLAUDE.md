@@ -20,7 +20,7 @@ Personal design/career portfolio for **Jono Kane** (jonokane.com). A ground-up r
 
 The hero is built: a living variable-font wordmark (TotalBlack Variable via Adobe Fonts, per-letter weight animation on the GSAP ticker — spec in `docs/superpowers/specs/2026-07-10-variable-font-hero-design.md`). A 3D layer (likely React Three Fiber) is parked as a possible future addition; nothing 3D is installed. See `PLAN.md`.
 
-**Tuning the hero:** in dev, append `?tune` to the URL (`localhost:3000/?tune`) to open the wordmark tuning panel (hidden otherwise; never ships to production). Dial in the sliders, hit *copy config JSON*, and paste the values into `src/lib/hero-config.ts` to make them permanent.
+**Tuning (dev):** append `?tune` to the URL (`localhost:3000/?tune`) to open the dev tuning panels (hidden otherwise; never ship to production): the wordmark panel (values → `src/lib/hero-config.ts`) and the scene palette panel (values → `src/lib/scene-config.ts`). Dial in, hit *copy JSON*, paste into the config module.
 
 ## Commands
 
@@ -62,9 +62,12 @@ content/work/*.mdx        Case studies (source of truth for work)
 src/app/                  Routes: / , /work , /work/[slug]
 src/app/globals.css       Tailwind entry + theme tokens
 src/components/           smooth-scroll, mdx-content, hero-wordmark, wordmark-tune-panel
+src/components/sky/       living time-of-day background: scene-provider, sky + element layers, time-scrubber, scene-tune-panel
 src/lib/gsap.ts           GSAP plugin registration
 src/lib/hero-config.ts   Hero wordmark tunables (single source of truth)
 src/lib/wordmark-engine.ts  Per-letter weight animation engine (runs on the GSAP ticker)
+src/lib/scene-config.ts   scene keyframes (single source of truth for the 8 scenes)
+src/lib/scene-engine.ts   scene sampling + token derivation (pure, unit-tested)
 velite.config.ts          Content schema + MDX plugins
 ```
 
