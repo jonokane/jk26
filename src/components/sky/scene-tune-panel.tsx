@@ -35,7 +35,7 @@ export function SceneTunePanel() {
   }
 
   return (
-    <div className="slab fixed right-4 bottom-20 z-50 w-64 space-y-2 text-xs text-ink">
+    <div className="slab fixed left-4 bottom-4 z-50 w-64 space-y-2 text-xs text-ink">
       <p className="text-kicker text-[10px]">Scene tune</p>
       <select
         value={selected}

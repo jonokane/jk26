@@ -105,7 +105,7 @@ export function WordmarkTunePanel({
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-h-[80vh] w-64 space-y-2 overflow-y-auto rounded-lg border border-zinc-700 bg-zinc-900/95 p-3 shadow-xl backdrop-blur">
+    <div className="fixed top-4 right-4 z-50 max-h-[70vh] w-64 space-y-2 overflow-y-auto rounded-lg border border-zinc-700 bg-zinc-900/95 p-3 shadow-xl backdrop-blur">
       <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-300">
         Wordmark tune
       </p>
