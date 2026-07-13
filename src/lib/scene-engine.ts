@@ -87,3 +87,95 @@ export function sampleScene(
   for (const k of WEIGHT_KEYS) sample[k] = lerp(from[k], to[k], t);
   return sample;
 }
+
+export interface SceneTokens {
+  ink: string;
+  sub: string;
+  surface: string;
+  scrim: string;
+  cardBg: string;
+  cardBorder: string;
+  textGlow: string;
+  elev: string;
+  coverA: string;
+  coverB: string;
+  inkLight: boolean;
+}
+
+/** Derived UI tokens (spec §3.2) — every formula is locked by the spec. */
+export function deriveTokens(s: SceneSample): SceneTokens {
+  const inkLight = luminance(s.ink) > 0.5;
+  const surface = mixHex(s.top, inkLight ? "#07091a" : "#f8fafe", 0.6);
+  return {
+    ink: s.ink,
+    sub: s.sub,
+    surface,
+    scrim: surface + "94",
+    cardBg: inkLight ? "rgba(10,13,28,.55)" : "rgba(255,255,255,.62)",
+    cardBorder: inkLight ? "rgba(255,255,255,.15)" : "rgba(12,24,48,.13)",
+    textGlow: inkLight ? "rgba(4,7,18,.55)" : "rgba(255,255,255,.5)",
+    elev: inkLight ? "rgba(3,6,16,.5)" : "rgba(25,50,95,.28)",
+    coverA: s.mid,
+    coverB: s.hor,
+    inkLight,
+  };
+}
+
+/** Sun arc: rises 5.5h, sets 20.5h; horizon at 78vh, apex at 20vh. */
+export function sunPosition(hour: number): { xVw: number; yVh: number } {
+  const f = Math.max(0, Math.min(1, (hour - 5.5) / 15));
+  return { xVw: lerp(6, 94, f), yVh: 78 - Math.sin(f * Math.PI) * 58 };
+}
+
+/** Moon arc across the 19.5h → 7h window. */
+export function moonPosition(hour: number): { xVw: number; yVh: number; visible: boolean } {
+  const m = (hour + 24 - 19.5) % 24;
+  if (m >= 11.5) return { xVw: 0, yVh: 0, visible: false };
+  const f = m / 11.5;
+  return { xVw: lerp(8, 92, f), yVh: 72 - Math.sin(f * Math.PI) * 52, visible: true };
+}
+
+/**
+ * The single DOM writer: samples the scene at `hour` and writes every scene
+ * CSS custom property onto `root`. Called by SceneProvider ~once a minute
+ * and on scrub — never per frame.
+ */
+export function applySceneToRoot(
+  root: HTMLElement,
+  hour: number,
+  keyframes: readonly SceneKeyframe[] = SCENE_KEYFRAMES,
+): void {
+  const s = sampleScene(hour, keyframes);
+  const tk = deriveTokens(s);
+  const set = (name: string, value: string | number) =>
+    root.style.setProperty(name, String(value));
+
+  set("--sky-top", s.top);
+  set("--sky-mid", s.mid);
+  set("--sky-hor", s.hor);
+  set("--ink", tk.ink);
+  set("--sub", tk.sub);
+  set("--surface", tk.surface);
+  set("--scrim", tk.scrim);
+  set("--card-bg", tk.cardBg);
+  set("--card-border", tk.cardBorder);
+  set("--text-glow", tk.textGlow);
+  set("--elev", tk.elev);
+  set("--cover-a", tk.coverA);
+  set("--cover-b", tk.coverB);
+  set("--w-stars", s.stars);
+  set("--w-rays", s.rays);
+  set("--w-clouds", s.clouds);
+  set("--w-birds", s.birds);
+  set("--w-sun", s.sun);
+  set("--w-moon", s.moon);
+
+  const sun = sunPosition(hour);
+  set("--sun-x", `${sun.xVw.toFixed(2)}vw`);
+  set("--sun-y", `${sun.yVh.toFixed(2)}vh`);
+  const moon = moonPosition(((hour % 24) + 24) % 24);
+  if (moon.visible) {
+    set("--moon-x", `${moon.xVw.toFixed(2)}vw`);
+    set("--moon-y", `${moon.yVh.toFixed(2)}vh`);
+  }
+}

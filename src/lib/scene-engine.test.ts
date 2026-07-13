@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
 import {
+  applySceneToRoot,
+  deriveTokens,
   hourFromDate,
   luminance,
   mixHex,
+  moonPosition,
   sampleScene,
   smoothstep,
+  sunPosition,
 } from "@/lib/scene-engine";
+import { SCENE_KEYFRAMES } from "@/lib/scene-config";
 
 describe("mixHex", () => {
   it("returns endpoints at t=0 and t=1", () => {
@@ -75,5 +80,64 @@ describe("hourFromDate", () => {
   it("converts local time to fractional hours", () => {
     expect(hourFromDate(new Date(2026, 0, 1, 14, 30))).toBeCloseTo(14.5, 5);
     expect(hourFromDate(new Date(2026, 0, 1, 0, 0))).toBe(0);
+  });
+});
+
+describe("deriveTokens", () => {
+  it("derives dark-scene tokens at Midnight (light ink)", () => {
+    const tk = deriveTokens(sampleScene(0));
+    expect(tk.inkLight).toBe(true);
+    expect(tk.surface).toBe(mixHex("#050818", "#07091a", 0.6));
+    expect(tk.scrim).toBe(tk.surface + "94");
+    expect(tk.cardBg).toBe("rgba(10,13,28,.55)");
+    expect(tk.cardBorder).toBe("rgba(255,255,255,.15)");
+    expect(tk.textGlow).toBe("rgba(4,7,18,.55)");
+    expect(tk.elev).toBe("rgba(3,6,16,.5)");
+    expect(tk.coverA).toBe("#16173f");
+    expect(tk.coverB).toBe("#2c4a78");
+  });
+
+  it("derives light-scene tokens at Midday (dark ink)", () => {
+    const tk = deriveTokens(sampleScene(12.5));
+    expect(tk.inkLight).toBe(false);
+    expect(tk.surface).toBe(mixHex("#3e9bf4", "#f8fafe", 0.6));
+    expect(tk.cardBg).toBe("rgba(255,255,255,.62)");
+    expect(tk.textGlow).toBe("rgba(255,255,255,.5)");
+  });
+});
+
+describe("celestial positions", () => {
+  it("puts the sun at apex at solar noon (h=13)", () => {
+    const p = sunPosition(13);
+    expect(p.xVw).toBeCloseTo(50, 5);
+    expect(p.yVh).toBeCloseTo(20, 5);
+  });
+  it("clamps the sun to the horizon outside daylight", () => {
+    expect(sunPosition(3).xVw).toBeCloseTo(6, 5);
+    expect(sunPosition(3).yVh).toBeCloseTo(78, 5);
+  });
+  it("tracks the moon across the night window", () => {
+    expect(moonPosition(19.5).visible).toBe(true);
+    expect(moonPosition(19.5).xVw).toBeCloseTo(8, 5);
+    expect(moonPosition(12).visible).toBe(false);
+  });
+});
+
+describe("applySceneToRoot", () => {
+  it("writes gradient, token, weight, and position variables", () => {
+    const root = document.createElement("div");
+    applySceneToRoot(root, 0);
+    expect(root.style.getPropertyValue("--sky-top")).toBe("#050818");
+    expect(root.style.getPropertyValue("--ink")).toBe("#edf2ff");
+    expect(root.style.getPropertyValue("--card-bg")).toBe("rgba(10,13,28,.55)");
+    expect(root.style.getPropertyValue("--w-stars")).toBe("1");
+    expect(root.style.getPropertyValue("--w-moon")).toBe("1");
+    expect(root.style.getPropertyValue("--moon-x")).toMatch(/vw$/);
+  });
+  it("accepts keyframe overrides (tune panel path)", () => {
+    const root = document.createElement("div");
+    const custom = SCENE_KEYFRAMES.map((k) => ({ ...k, top: "#123456" }));
+    applySceneToRoot(root, 0, custom);
+    expect(root.style.getPropertyValue("--sky-top")).toBe("#123456");
   });
 });
