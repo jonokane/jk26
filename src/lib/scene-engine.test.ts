@@ -120,6 +120,22 @@ describe("celestial positions", () => {
     expect(moonPosition(19.5).visible).toBe(true);
     expect(moonPosition(19.5).xVw).toBeCloseTo(8, 5);
     expect(moonPosition(12).visible).toBe(false);
+    // Noon (m=16.5) is on the morning side of the outside-window
+    // midpoint (17.75), so it clamps to the moon's set point (f=1).
+    expect(moonPosition(12).xVw).toBeCloseTo(92, 5);
+  });
+
+  it("clamps the moon to its rise point just before the geometric window opens", () => {
+    // hour=18 → m=22.5, on the evening side of the midpoint (17.75),
+    // so it clamps to the moon's rise point (f=0) rather than a stale position.
+    const p = moonPosition(18);
+    expect(p.visible).toBe(false);
+    expect(p.xVw).toBe(8);
+  });
+
+  it("normalizes out-of-range hours the same way sampleScene does", () => {
+    expect(sunPosition(29)).toEqual(sunPosition(5));
+    expect(moonPosition(-4)).toEqual(moonPosition(20));
   });
 });
 
@@ -139,5 +155,10 @@ describe("applySceneToRoot", () => {
     const custom = SCENE_KEYFRAMES.map((k) => ({ ...k, top: "#123456" }));
     applySceneToRoot(root, 0, custom);
     expect(root.style.getPropertyValue("--sky-top")).toBe("#123456");
+  });
+  it("always writes moon position, clamped to the rise point before the window opens", () => {
+    const root = document.createElement("div");
+    applySceneToRoot(root, 18);
+    expect(root.style.getPropertyValue("--moon-x")).toBe("8.00vw");
   });
 });

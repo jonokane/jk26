@@ -123,16 +123,33 @@ export function deriveTokens(s: SceneSample): SceneTokens {
 
 /** Sun arc: rises 5.5h, sets 20.5h; horizon at 78vh, apex at 20vh. */
 export function sunPosition(hour: number): { xVw: number; yVh: number } {
-  const f = Math.max(0, Math.min(1, (hour - 5.5) / 15));
+  const h = ((hour % 24) + 24) % 24;
+  const f = Math.max(0, Math.min(1, (h - 5.5) / 15));
   return { xVw: lerp(6, 94, f), yVh: 78 - Math.sin(f * Math.PI) * 58 };
 }
 
-/** Moon arc across the 19.5h → 7h window. */
+/**
+ * Moon arc across the 19.5h → 7h window.
+ *
+ * Always returns usable, clamped coordinates — even outside the geometric
+ * window. The scene keyframes (scene-config.ts) start ramping the moon's
+ * opacity weight (`--w-moon`) up at the 17.8h "Golden hour" keyframe, well
+ * before this window opens at 19.5h. If positions were only computed inside
+ * the window, the moon would fade in at a stale/default position (or at
+ * yesterday's set point) instead of at its rise point. So outside the
+ * window we clamp `f` to whichever endpoint (rise or set) is nearer.
+ */
 export function moonPosition(hour: number): { xVw: number; yVh: number; visible: boolean } {
-  const m = (hour + 24 - 19.5) % 24;
-  if (m >= 11.5) return { xVw: 0, yVh: 0, visible: false };
-  const f = m / 11.5;
-  return { xVw: lerp(8, 92, f), yVh: 72 - Math.sin(f * Math.PI) * 52, visible: true };
+  const h = ((hour % 24) + 24) % 24;
+  const m = (h + 24 - 19.5) % 24;
+  if (m < 11.5) {
+    const f = m / 11.5;
+    return { xVw: lerp(8, 92, f), yVh: 72 - Math.sin(f * Math.PI) * 52, visible: true };
+  }
+  // Outside the window: clamp to the nearer endpoint. m ranges (11.5, 24);
+  // its midpoint (17.75) splits "just past set" (f=1) from "about to rise" (f=0).
+  const f = m >= 17.75 ? 0 : 1;
+  return { xVw: lerp(8, 92, f), yVh: 72 - Math.sin(f * Math.PI) * 52, visible: false };
 }
 
 /**
@@ -145,10 +162,14 @@ export function applySceneToRoot(
   hour: number,
   keyframes: readonly SceneKeyframe[] = SCENE_KEYFRAMES,
 ): void {
-  const s = sampleScene(hour, keyframes);
+  const h = ((hour % 24) + 24) % 24;
+  const s = sampleScene(h, keyframes);
   const tk = deriveTokens(s);
-  const set = (name: string, value: string | number) =>
-    root.style.setProperty(name, String(value));
+  const set = (name: string, value: string) => root.style.setProperty(name, value);
+  // Weights are lerped floats and can accumulate float noise (e.g.
+  // 0.6499999999999999); round to at most 4 decimals before writing.
+  const setWeight = (name: string, value: number) =>
+    set(name, String(Number(value.toFixed(4))));
 
   set("--sky-top", s.top);
   set("--sky-mid", s.mid);
@@ -163,19 +184,17 @@ export function applySceneToRoot(
   set("--elev", tk.elev);
   set("--cover-a", tk.coverA);
   set("--cover-b", tk.coverB);
-  set("--w-stars", s.stars);
-  set("--w-rays", s.rays);
-  set("--w-clouds", s.clouds);
-  set("--w-birds", s.birds);
-  set("--w-sun", s.sun);
-  set("--w-moon", s.moon);
+  setWeight("--w-stars", s.stars);
+  setWeight("--w-rays", s.rays);
+  setWeight("--w-clouds", s.clouds);
+  setWeight("--w-birds", s.birds);
+  setWeight("--w-sun", s.sun);
+  setWeight("--w-moon", s.moon);
 
-  const sun = sunPosition(hour);
+  const sun = sunPosition(h);
   set("--sun-x", `${sun.xVw.toFixed(2)}vw`);
   set("--sun-y", `${sun.yVh.toFixed(2)}vh`);
-  const moon = moonPosition(((hour % 24) + 24) % 24);
-  if (moon.visible) {
-    set("--moon-x", `${moon.xVw.toFixed(2)}vw`);
-    set("--moon-y", `${moon.yVh.toFixed(2)}vh`);
-  }
+  const moon = moonPosition(h);
+  set("--moon-x", `${moon.xVw.toFixed(2)}vw`);
+  set("--moon-y", `${moon.yVh.toFixed(2)}vh`);
 }
