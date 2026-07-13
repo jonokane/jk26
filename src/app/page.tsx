@@ -5,13 +5,18 @@ import { motion } from "motion/react";
 import { HeroWordmark } from "@/components/hero-wordmark";
 import { SceneProvider } from "@/components/sky/scene-provider";
 import { Sky } from "@/components/sky/sky";
+import { Stars } from "@/components/sky/stars";
+import { Clouds } from "@/components/sky/clouds";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function Home() {
   return (
     <SceneProvider>
-      <Sky />
+      <Sky>
+        <Stars />
+        <Clouds />
+      </Sky>
       <main className="flex flex-1 flex-col">
       {/* Hero */}
       <section className="flex min-h-[90vh] flex-col justify-center px-6 sm:px-10 lg:px-16">

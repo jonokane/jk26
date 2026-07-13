@@ -20,3 +20,57 @@
     var(--sky-hor) 100%
   );
 }
+
+/* ---------- stars ---------- */
+.stars {
+  opacity: var(--w-stars);
+}
+
+.star,
+.sparkle {
+  position: absolute;
+  animation: twinkle var(--d) ease-in-out var(--dl) infinite;
+}
+
+.star {
+  background: #fff;
+  border-radius: 50%;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+/* ---------- clouds ---------- */
+.clouds {
+  opacity: calc(var(--w-clouds) * 0.92);
+}
+
+.cloud {
+  position: absolute;
+  animation: drift var(--d) linear var(--dl) infinite;
+}
+
+@keyframes drift {
+  from {
+    transform: translateX(-30vw) scale(var(--s));
+  }
+  to {
+    transform: translateX(135vw) scale(var(--s));
+  }
+}
+
+/* ---------- reduced motion: correct scene, still sky (spec §12) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .sky *,
+  .sky *::before,
+  .sky *::after {
+    animation: none !important;
+  }
+}
