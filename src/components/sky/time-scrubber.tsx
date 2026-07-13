@@ -3,7 +3,7 @@
 import { useScene } from "@/components/sky/scene-provider";
 
 function formatHour(hour: number): string {
-  const hh = String(Math.floor(hour)).padStart(2, "0");
+  const hh = String(Math.floor(hour) % 24).padStart(2, "0");
   const mm = String(Math.floor((hour % 1) * 60)).padStart(2, "0");
   return `${hh}:${mm}`;
 }

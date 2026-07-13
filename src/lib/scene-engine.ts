@@ -22,9 +22,6 @@ export interface SceneSample {
   t: number;
 }
 
-const COLOR_KEYS = ["top", "mid", "hor", "ink", "sub"] as const;
-const WEIGHT_KEYS = ["stars", "rays", "clouds", "birds", "sun", "moon"] as const;
-
 function hexToRgb(hex: string): [number, number, number] {
   return [
     parseInt(hex.slice(1, 3), 16),
@@ -82,10 +79,22 @@ export function sampleScene(
   const span = (to.h - from.h + 24) % 24 || 24;
   const t = smoothstep(((h - from.h + 24) % 24) / span);
 
-  const sample = { from, to, t } as SceneSample;
-  for (const k of COLOR_KEYS) sample[k] = mixHex(from[k], to[k], t);
-  for (const k of WEIGHT_KEYS) sample[k] = lerp(from[k], to[k], t);
-  return sample;
+  return {
+    top: mixHex(from.top, to.top, t),
+    mid: mixHex(from.mid, to.mid, t),
+    hor: mixHex(from.hor, to.hor, t),
+    ink: mixHex(from.ink, to.ink, t),
+    sub: mixHex(from.sub, to.sub, t),
+    stars: lerp(from.stars, to.stars, t),
+    rays: lerp(from.rays, to.rays, t),
+    clouds: lerp(from.clouds, to.clouds, t),
+    birds: lerp(from.birds, to.birds, t),
+    sun: lerp(from.sun, to.sun, t),
+    moon: lerp(from.moon, to.moon, t),
+    from,
+    to,
+    t,
+  };
 }
 
 export interface SceneTokens {

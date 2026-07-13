@@ -50,8 +50,9 @@
   --w-moon: 1;
   --sun-x: 6vw;
   --sun-y: 78vh;
-  --moon-x: 50vw;
-  --moon-y: 20vh;
+  /* moonPosition(0) — keep in sync with scene-engine */
+  --moon-x: 40.87vw;
+  --moon-y: 23.00vh;
 
   /* type system (spec §4): Mae for display + body, tunable base weights */
   --font-display: "mae-variable", var(--font-geist-sans), sans-serif;

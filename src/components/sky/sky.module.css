@@ -54,6 +54,7 @@
 
 .cloud {
   position: absolute;
+  transform: translateX(var(--x, 0vw)) scale(var(--s));
   animation: drift var(--d) linear var(--dl) infinite;
 }
 

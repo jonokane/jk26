@@ -16,19 +16,23 @@ function CloudShape() {
   );
 }
 
-/** scale, top (vh), drift duration (s), negative delay (s) — from the approved prototype. */
-const CLOUDS: Array<[number, number, number, number]> = [
-  [0.9, 10, 150, -40],
-  [0.65, 24, 205, -120],
-  [1.25, 16, 110, -70],
-  [0.5, 34, 175, -20],
-  [1.0, 6, 240, -180],
+/** scale, top (vh), drift duration (s), negative delay (s), base x-position (vw)
+ *  — from the approved prototype. The base x-position is the resting spot
+ *  under `prefers-reduced-motion: reduce` (animation disabled, so the
+ *  `drift` keyframes never run); it also gives clouds a natural spread
+ *  instead of stacking at left:0 before the drift animation kicks in. */
+const CLOUDS: Array<[number, number, number, number, number]> = [
+  [0.9, 10, 150, -40, 8],
+  [0.65, 24, 205, -120, 30],
+  [1.25, 16, 110, -70, 55],
+  [0.5, 34, 175, -20, 74],
+  [1.0, 6, 240, -180, 88],
 ];
 
 export function Clouds() {
   return (
     <div className={styles.clouds}>
-      {CLOUDS.map(([scale, topVh, durS, delayS], i) => (
+      {CLOUDS.map(([scale, topVh, durS, delayS, xVw], i) => (
         <div
           key={i}
           className={styles.cloud}
@@ -38,6 +42,7 @@ export function Clouds() {
               "--s": scale,
               "--d": `${durS}s`,
               "--dl": `${delayS}s`,
+              "--x": `${xVw}vw`,
             } as CSSProperties
           }
         >
