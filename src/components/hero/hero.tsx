@@ -6,6 +6,7 @@ import { loadAreaFont } from "@/lib/area-font";
 import { WORDMARK_TEXT, wordmarkConfig, wordmarkFvs } from "@/lib/wordmark-config";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
+import { useHeroLockup } from "@/components/hero/use-hero-lockup";
 import styles from "@/components/hero/hero.module.css";
 
 type FontState = "loading" | "ready" | "fallback";
@@ -18,10 +19,15 @@ type FontState = "loading" | "ready" | "fallback";
  */
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
   const wordmarkRef = useRef<HTMLDivElement>(null);
+  const kickerRef = useRef<HTMLSpanElement>(null);
+  const taglineRef = useRef<HTMLSpanElement>(null);
   const [fontState, setFontState] = useState<FontState>("loading");
   const [settled, setSettled] = useState(false);
   const reducedMotion = useReducedMotionPref();
+
+  useHeroLockup({ innerRef, wordmarkRef, kickerRef, taglineRef, active: settled });
 
   useEffect(() => {
     let cancelled = false;
@@ -83,9 +89,13 @@ export function Hero() {
       data-settled={settled || undefined}
       aria-label="Introduction"
     >
-      <div className={styles.inner}>
+      <div ref={innerRef} className={styles.inner}>
         <h1 className="sr-only">Jono Kane</h1>
-        <span className={`${styles.kicker} text-kicker text-sm`}>{siteContent.kicker}</span>
+        <div>
+          <span ref={kickerRef} className={`${styles.kicker} text-kicker text-sm`}>
+            {siteContent.kicker}
+          </span>
+        </div>
         <div
           ref={wordmarkRef}
           className={styles.wordmark}
@@ -110,7 +120,11 @@ export function Hero() {
             </span>
           ))}
         </div>
-        <span className={styles.tagline}>{siteContent.tagline}</span>
+        <div>
+          <span ref={taglineRef} className={styles.tagline}>
+            {siteContent.tagline}
+          </span>
+        </div>
       </div>
     </section>
   );
