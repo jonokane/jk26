@@ -18,7 +18,7 @@ export default function Home() {
             transition={{ duration: 0.6, ease }}
             className="font-mono text-sm uppercase tracking-[0.2em] text-zinc-500"
           >
-            Designer · Portfolio
+            Product Design Leader &amp; Strategist
           </motion.p>
 
           <HeroWordmark className="mt-6 text-5xl leading-[1.05] sm:text-7xl lg:text-8xl" />
