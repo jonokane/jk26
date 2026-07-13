@@ -35,6 +35,23 @@
   will-change: transform, opacity, filter;
 }
 
+/* flow copy: still measured by the lockup, but never painted — the live
+   copy (below) is what's actually visible and what the morph animates */
+.wordmarkFlow {
+  visibility: hidden;
+}
+
+/* fixed live wordmark layer (Task 6 morph): flies from its hero position
+   into the header slot, reversibly, as the page scrolls */
+.wordmarkLive {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 41; /* above the header pill (z-40) so it can land on the slot */
+  transform-origin: top left;
+  pointer-events: none;
+}
+
 .tagline {
   display: inline-block;
   white-space: nowrap;

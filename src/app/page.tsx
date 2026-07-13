@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { Hero } from "@/components/hero/hero";
+import { SiteHeader } from "@/components/site-header";
 import { SceneProvider } from "@/components/sky/scene-provider";
 import { Sky } from "@/components/sky/sky";
 import { SunMoon } from "@/components/sky/sun-moon";
@@ -24,6 +25,7 @@ export default function Home() {
         <Clouds />
         <Birds />
       </Sky>
+      <SiteHeader />
       <main className="flex flex-1 flex-col">
       <Hero />
 

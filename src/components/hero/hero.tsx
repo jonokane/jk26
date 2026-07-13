@@ -8,20 +8,42 @@ import { createCarveEngine, type CarveEngine } from "@/lib/carve-engine";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { useHeroLockup } from "@/components/hero/use-hero-lockup";
+import { useWordmarkMorph } from "@/components/hero/use-wordmark-morph";
 import styles from "@/components/hero/hero.module.css";
 
 type FontState = "loading" | "ready" | "fallback";
 
+/** Letter spans (hand-tuned pair kerns) — shared markup for the flow and live wordmark copies. */
+function WordmarkLetters() {
+  const kerns = wordmarkConfig.pairKernsMem;
+  return (
+    <>
+      {[...WORDMARK_TEXT].map((ch, i) => (
+        <span
+          key={i}
+          data-letter
+          style={i > 0 && kerns[i - 1] ? { marginLeft: `${kerns[i - 1] / 1000}em` } : undefined}
+        >
+          {ch}
+        </span>
+      ))}
+    </>
+  );
+}
+
 /**
  * The JONOKANE hero (spec §5): render-gated on the area-full FontFace,
  * per-letter build-in (once, then still), hand-tuned pair kerning.
- * Lockup (Task 4), carve (Task 5), and the header morph (Task 6) wire into
- * the refs this component owns.
+ * Lockup (Task 4) and carve (Task 5) target the fixed LIVE wordmark layer;
+ * the in-flow copy stays as the layout + measurement source (Task 6). Under
+ * reduced motion the morph never runs, so the flow copy is what's shown and
+ * targeted instead — no live layer is rendered at all.
  */
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const wordmarkRef = useRef<HTMLDivElement>(null);
+  const liveWordmarkRef = useRef<HTMLDivElement>(null);
   const kickerRef = useRef<HTMLSpanElement>(null);
   const taglineRef = useRef<HTMLSpanElement>(null);
   const carveRef = useRef<CarveEngine | null>(null);
@@ -29,7 +51,25 @@ export function Hero() {
   const [settled, setSettled] = useState(false);
   const reducedMotion = useReducedMotionPref();
 
-  useHeroLockup({ innerRef, wordmarkRef, kickerRef, taglineRef, active: settled });
+  /* Under reduced motion the live layer isn't rendered — the flow copy is
+     the visible, build-in/carve target instead. */
+  const lettersHost = reducedMotion ? wordmarkRef : liveWordmarkRef;
+
+  useHeroLockup({
+    innerRef,
+    wordmarkRef,
+    kickerRef,
+    taglineRef,
+    mirrorRef: liveWordmarkRef,
+    active: settled,
+  });
+
+  useWordmarkMorph({
+    liveRef: liveWordmarkRef,
+    flowRef: wordmarkRef,
+    active: settled && fontState === "ready" && !reducedMotion,
+    onProgress: (p) => carveRef.current?.setEnabled(p === 0),
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -45,8 +85,21 @@ export function Hero() {
      font fallback) the letters simply appear — no flight. */
   useEffect(() => {
     if (fontState === "loading" || settled) return;
-    const letters = wordmarkRef.current?.querySelectorAll<HTMLElement>("[data-letter]");
+    const letters = lettersHost.current?.querySelectorAll<HTMLElement>("[data-letter]");
     if (!letters || letters.length === 0) return;
+
+    /* Pin the live copy over the flow copy before revealing it: the morph
+       hook doesn't take over positioning until `settled`, so without this
+       the live wordmark would build in at its default fixed(0,0) — the
+       viewport's top-left corner — then jump into place once settled. */
+    if (!reducedMotion) {
+      const live = liveWordmarkRef.current;
+      const flow = wordmarkRef.current;
+      if (live && flow) {
+        const f = flow.getBoundingClientRect();
+        gsap.set(live, { x: f.left, y: f.top, scale: 1 });
+      }
+    }
 
     if (reducedMotion || fontState === "fallback") {
       gsap.set(letters, { opacity: 1 });
@@ -88,7 +141,7 @@ export function Hero() {
     if (!settled || fontState !== "ready" || reducedMotion) return;
     if (!window.matchMedia("(hover: hover)").matches) return; // touch: inert
     const letterEls = Array.from(
-      wordmarkRef.current?.querySelectorAll<HTMLElement>("[data-letter]") ?? [],
+      lettersHost.current?.querySelectorAll<HTMLElement>("[data-letter]") ?? [],
     );
     if (letterEls.length === 0) return;
     const engine = createCarveEngine(letterEls);
@@ -113,10 +166,30 @@ export function Hero() {
       engine.stop();
       carveRef.current = null;
     };
-  }, [settled, fontState, reducedMotion]);
+  }, [settled, fontState, reducedMotion, lettersHost]);
 
-  const letters = [...WORDMARK_TEXT];
-  const kerns = wordmarkConfig.pairKernsMem;
+  /* Reduced-motion header fallback: no scrubbed morph, so the header fades
+     in past a plain scroll threshold instead. */
+  useEffect(() => {
+    if (!reducedMotion) return;
+    const onScroll = () => {
+      document.documentElement.classList.toggle("header-on", window.scrollY > window.innerHeight * 0.5);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      document.documentElement.classList.remove("header-on");
+    };
+  }, [reducedMotion]);
+
+  const wordmarkStyle = {
+    "--wordmark-family": wordmarkConfig.family,
+    fontSize: `${wordmarkConfig.sizeVw}vw`,
+    letterSpacing: `${wordmarkConfig.trackEm}em`,
+    fontVariationSettings:
+      fontState === "fallback" ? undefined : wordmarkFvs(wordmarkConfig.axes.wght),
+  } as React.CSSProperties;
 
   return (
     <section
@@ -134,28 +207,23 @@ export function Hero() {
         </div>
         <div
           ref={wordmarkRef}
-          className={styles.wordmark}
+          data-wordmark-flow
+          className={reducedMotion ? styles.wordmark : `${styles.wordmark} ${styles.wordmarkFlow}`}
           aria-hidden="true"
-          style={
-            {
-              "--wordmark-family": wordmarkConfig.family,
-              fontSize: `${wordmarkConfig.sizeVw}vw`,
-              letterSpacing: `${wordmarkConfig.trackEm}em`,
-              fontVariationSettings:
-                fontState === "fallback" ? undefined : wordmarkFvs(wordmarkConfig.axes.wght),
-            } as React.CSSProperties
-          }
+          style={wordmarkStyle}
         >
-          {letters.map((ch, i) => (
-            <span
-              key={i}
-              data-letter
-              style={i > 0 && kerns[i - 1] ? { marginLeft: `${kerns[i - 1] / 1000}em` } : undefined}
-            >
-              {ch}
-            </span>
-          ))}
+          <WordmarkLetters />
         </div>
+        {!reducedMotion && (
+          <div
+            ref={liveWordmarkRef}
+            className={styles.wordmark + " " + styles.wordmarkLive}
+            aria-hidden="true"
+            style={wordmarkStyle}
+          >
+            <WordmarkLetters />
+          </div>
+        )}
         <div>
           <span ref={taglineRef} className={styles.tagline}>
             {siteContent.tagline}

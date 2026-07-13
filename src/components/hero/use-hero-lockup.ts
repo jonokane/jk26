@@ -9,12 +9,21 @@ interface LockupRefs {
   wordmarkRef: RefObject<HTMLDivElement | null>;
   kickerRef: RefObject<HTMLElement | null>;
   taglineRef: RefObject<HTMLElement | null>;
+  /** Fixed live wordmark layer (Task 6) — mirrors the flow copy's font-size. */
+  mirrorRef?: RefObject<HTMLDivElement | null>;
   /** Measure only once the font is ready/settled — fallback metrics lie. */
   active: boolean;
 }
 
 /** Measures the rendered hero and applies the lockup; re-runs on resize. */
-export function useHeroLockup({ innerRef, wordmarkRef, kickerRef, taglineRef, active }: LockupRefs): void {
+export function useHeroLockup({
+  innerRef,
+  wordmarkRef,
+  kickerRef,
+  taglineRef,
+  mirrorRef,
+  active,
+}: LockupRefs): void {
   useEffect(() => {
     if (!active) return;
     const inner = innerRef.current;
@@ -53,6 +62,7 @@ export function useHeroLockup({ innerRef, wordmarkRef, kickerRef, taglineRef, ac
       });
 
       wordmark.style.fontSize = `${result.wordmarkFontPx.toFixed(2)}px`;
+      if (mirrorRef?.current) mirrorRef.current.style.fontSize = wordmark.style.fontSize;
       kicker.style.fontSize = `${result.kickerFontPx.toFixed(2)}px`;
       tagline.style.fontSize = `${result.taglineFontPx.toFixed(2)}px`;
     };
@@ -71,5 +81,5 @@ export function useHeroLockup({ innerRef, wordmarkRef, kickerRef, taglineRef, ac
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
     };
-  }, [active, innerRef, wordmarkRef, kickerRef, taglineRef]);
+  }, [active, innerRef, wordmarkRef, kickerRef, taglineRef, mirrorRef]);
 }

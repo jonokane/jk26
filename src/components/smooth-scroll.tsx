@@ -1,8 +1,16 @@
 "use client";
 
 import { ReactLenis, type LenisRef } from "lenis/react";
+import type Lenis from "lenis";
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+
+let lenisInstance: Lenis | null = null;
+
+/** The app's Lenis instance (null before mount / after unmount). */
+export function getLenis(): Lenis | null {
+  return lenisInstance;
+}
 
 /**
  * Wraps the app in Lenis smooth scroll and drives it from GSAP's ticker so
@@ -16,6 +24,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const lenis = lenisRef.current?.lenis;
     if (!lenis) return;
+    lenisInstance = lenis;
 
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -26,6 +35,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     return () => {
       lenis.off("scroll", ScrollTrigger.update);
       gsap.ticker.remove(update);
+      lenisInstance = null;
     };
   }, []);
 
