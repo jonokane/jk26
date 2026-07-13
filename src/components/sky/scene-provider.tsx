@@ -40,8 +40,13 @@ export function SceneProvider({ children }: { children: ReactNode }) {
   const [hour, setHour] = useState<number | null>(null);
   const [live, setLive] = useState(true);
   const [keyframes, setKeyframes] = useState<readonly SceneKeyframe[]>(SCENE_KEYFRAMES);
+  // The interval callback reads the latest `live` through a ref so the
+  // subscription effect never has to re-run; the ref is synced in an effect
+  // (never during render) per react-hooks/refs.
   const liveRef = useRef(live);
-  liveRef.current = live;
+  useEffect(() => {
+    liveRef.current = live;
+  }, [live]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration guard: the clock is client-only
