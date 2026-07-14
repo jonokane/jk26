@@ -67,6 +67,15 @@ body {
   font-family: var(--font-body), system-ui, sans-serif;
 }
 
+/* The hero build-in starts each letter at scale 2, dropped -18vh, so for the
+   ~2.1s of the intro the fixed live wordmark spills past the right edge — at a
+   390px viewport scrollWidth peaked at 621px and the page could be flicked
+   sideways. `clip`, never `hidden`: hidden would make <html> a scroll container,
+   which breaks position: fixed children (the sky, the nav pill) and Lenis. */
+html {
+  overflow-x: clip;
+}
+
 /* Lenis wants the html element to own scrolling; disable native smoothing so
    Lenis is the single source of truth for scroll behavior. */
 html.lenis,
@@ -126,9 +135,20 @@ html.lenis body {
     color: var(--sub);
   }
 
-  /* The nav pill rides in when the wordmark morph (or its reduced-motion
-     fallback) sets `header-on` on <html>. */
+  /* The nav pill. Carries the slab material, but sets its own (tighter)
+     geometry — these belong here, not as !important utilities in the markup
+     (spec §15). On the home page it rides in when the wordmark morph (or its
+     reduced-motion fallback) sets `header-on` on <html>. */
   .site-header {
+    position: fixed;
+    inset-inline: 2vw;
+    top: 14px;
+    z-index: 40; /* the live wordmark (z-41) lands on top of the pill */
+    display: flex;
+    align-items: center;
+    gap: 3vw;
+    border-radius: 15px;
+    padding: 12px 24px;
     opacity: 0;
     transform: translateY(-16px);
     visibility: hidden;
@@ -143,6 +163,49 @@ html.lenis body {
     transform: none;
     visibility: visible;
     transition-delay: 0s;
+  }
+
+  /* Off the home page there's no hero and no morph to reveal the pill, and the
+     page is a reading surface — the header is simply present from first paint. */
+  .site-header[data-static] {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+    transition: none;
+  }
+
+  /* Back-to-top control: a bare button (home) or link (elsewhere) wrapping the
+     nav wordmark slot — the morph's landing target. */
+  .site-header-home {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: var(--ink);
+    text-align: left;
+  }
+
+  .site-header nav {
+    margin-left: auto;
+    display: flex;
+    gap: 1.75rem;
+  }
+
+  .site-header nav a {
+    font-size: 0.875rem;
+    letter-spacing: 0.025em;
+    color: var(--sub);
+    text-underline-offset: 8px;
+    transition: color 0.2s ease;
+  }
+
+  .site-header nav a:hover {
+    color: var(--ink);
+  }
+
+  /* the scroll-spy's current section — styled off the ARIA state, not a class */
+  .site-header nav a[aria-current] {
+    color: var(--ink);
+    text-decoration: underline;
   }
 
   /* Mae axis weights apply only once Mae is confirmed rendering —

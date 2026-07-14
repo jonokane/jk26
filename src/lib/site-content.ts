@@ -12,6 +12,12 @@ export const siteContent = {
     { label: "Work", target: "work" },
     { label: "Contact", target: "contact" },
   ],
+  /** Control + landmark labels (accessible names are copy too — spec §15). */
+  labels: {
+    backToTop: "Back to top",
+    home: "Jono Kane — home",
+    allWork: "← All work",
+  },
   /** Section heading titles (nav labels differ deliberately: "Work" vs "Selected Work"). */
   titles: {
     about: "About",
