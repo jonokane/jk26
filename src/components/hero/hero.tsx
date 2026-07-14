@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { loadAreaFont } from "@/lib/area-font";
 import { WORDMARK_TEXT, wordmarkConfig, wordmarkFvs } from "@/lib/wordmark-config";
+import { wordmarkLetterMargins } from "@/lib/optical-kerning";
 import { createCarveEngine, type CarveEngine } from "@/lib/carve-engine";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
@@ -13,16 +14,23 @@ import styles from "@/components/hero/hero.module.css";
 
 type FontState = "loading" | "ready" | "fallback";
 
-/** Letter spans (hand-tuned pair kerns) — shared markup for the flow and live wordmark copies. */
-function WordmarkLetters() {
-  const kerns = wordmarkConfig.pairKernsMem;
+/**
+ * Letter spans — shared markup for the flow and live wordmark copies, so the
+ * two are always kerned identically (the morph FLIPs between their rects; if
+ * they disagreed it would visibly jump).
+ *
+ * `marginsEm` carries the full kern per letter: the measured optical base plus
+ * Jono's hand nudge. See `src/lib/optical-kerning.ts` — the spans are what
+ * killed the font's own kern pairs, so we have to put them back.
+ */
+function WordmarkLetters({ marginsEm }: { marginsEm: number[] }) {
   return (
     <>
       {[...WORDMARK_TEXT].map((ch, i) => (
         <span
           key={i}
           data-letter
-          style={i > 0 && kerns[i - 1] ? { marginLeft: `${kerns[i - 1] / 1000}em` } : undefined}
+          style={marginsEm[i] ? { marginLeft: `${marginsEm[i].toFixed(4)}em` } : undefined}
         >
           {ch}
         </span>
@@ -68,6 +76,15 @@ export function Hero() {
      the visible, build-in/carve target instead. */
   const lettersHost = reducedMotion ? wordmarkRef : liveWordmarkRef;
   const morphActive = settled && fontState === "ready" && !reducedMotion;
+
+  /* The per-letter kerns (optical base + hand nudge). Derived in render, not
+     in an effect, so the FIRST commit that has the font also has the final
+     letter positions — everything downstream (build-in, lockup, morph, carve)
+     is gated on `settled`, which can only flip in a later commit, so all of
+     them measure the kerned layout and none of them can be left holding rects
+     from an unkerned one. The scan itself is memoized per face, and until the
+     font resolves this is the nudge-only markup the server rendered. */
+  const marginsEm = useMemo(() => wordmarkLetterMargins(fontState === "ready"), [fontState]);
 
   /* ORDER IS LOAD-BEARING: useHeroLockup must stay declared *before*
      useWordmarkMorph. Effects fire in declaration order, so the lockup writes
@@ -272,7 +289,7 @@ export function Hero() {
           aria-hidden="true"
           style={wordmarkStyle}
         >
-          <WordmarkLetters />
+          <WordmarkLetters marginsEm={marginsEm} />
         </div>
         {!reducedMotion && (
           <div
@@ -281,7 +298,7 @@ export function Hero() {
             aria-hidden="true"
             style={wordmarkStyle}
           >
-            <WordmarkLetters />
+            <WordmarkLetters marginsEm={marginsEm} />
           </div>
         )}
         <div>
