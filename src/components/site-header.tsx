@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, type MouseEvent } from "react";
-import { getLenis } from "@/components/smooth-scroll";
+import { navigateTo } from "@/lib/scroll-nav";
 import { HeaderWorkRow } from "@/components/work/header-work-row";
 import { useShelfState } from "@/components/work/shelf-store";
 import { siteContent } from "@/lib/site-content";
@@ -59,20 +59,18 @@ export function SiteHeader() {
     if (!el) return;
     e.preventDefault();
     history.pushState(null, "", `#${target}`);
-    const lenis = getLenis();
-    /* no `offset` here: Lenis honors the section's scroll-margin-top
-       (scroll-mt-28) and an explicit offset would COMPOUND with it */
-    if (lenis) lenis.scrollTo(el);
-    else el.scrollIntoView();
+    /* navigateTo, not lenis.scrollTo: it marks the scroll as a NAVIGATION so
+       the collector's snap stands aside instead of hijacking it mid-flight.
+       No `offset` either — Lenis honors the section's scroll-margin-top
+       (scroll-mt-28) and an explicit offset would COMPOUND with it. */
+    if (!navigateTo(el)) el.scrollIntoView();
   };
 
   const onHomeClick = (e: MouseEvent<HTMLElement>) => {
     if (!isHome || !isPlainClick(e)) return;
     e.preventDefault();
     history.pushState(null, "", location.pathname);
-    const lenis = getLenis();
-    if (lenis) lenis.scrollTo(0);
-    else window.scrollTo(0, 0);
+    if (!navigateTo(0)) window.scrollTo(0, 0);
   };
 
   const slot = (

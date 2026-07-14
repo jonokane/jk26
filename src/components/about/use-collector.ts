@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, type RefObject } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { getLenis } from "@/components/smooth-scroll";
+import { isNavigating } from "@/lib/scroll-nav";
 import {
   PHONE_QUERY,
   collectorSnap,
@@ -224,6 +225,19 @@ export function useCollector({
       settle = window.setTimeout(() => {
         const lenis = getLenis();
         if (!lenis) return; // no smooth scroll → no snap; the scrub still works
+
+        /* Never snap a scroll that is not ours to snap. A snap must only ever
+           act on a reader who has come to REST INSIDE the collector.
+
+           Clicking "Contact" in the nav flies Lenis straight through here: the
+           timer armed on the way past, then fired mid-navigation and yanked the
+           reader back to a beat. Measured before this guard: the nav ended at
+           the collector's end with Contact still 25,701px below. A snap cannot
+           tell a fly-past from a reader by watching scroll alone, so navigation
+           declares itself (scroll-nav.ts) and we stand aside. */
+        if (isNavigating()) return; // someone is on their way elsewhere
+        if (!trigger.isActive) return; // the reader has left; not our scroll any more
+
         const target = snapProgress(trigger.progress, direction, targets, release, tolerance);
         const y = trigger.start + target * (trigger.end - trigger.start);
         if (Math.abs(y - window.scrollY) < 2) return; // already there
