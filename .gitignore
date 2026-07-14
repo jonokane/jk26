@@ -51,3 +51,6 @@ next-env.d.ts
 .superpowers/
 # playwright-mcp session output (console logs, traces)
 .playwright-mcp/
+
+# pnpm local store (created by a stray `pnpm install --store-dir .`)
+.pnpm-store/

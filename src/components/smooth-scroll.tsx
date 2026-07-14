@@ -1,8 +1,8 @@
 "use client";
 
-import { ReactLenis, type LenisRef } from "lenis/react";
+import { ReactLenis, useLenis } from "lenis/react";
 import type Lenis from "lenis";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 let lenisInstance: Lenis | null = null;
@@ -17,12 +17,17 @@ export function getLenis(): Lenis | null {
  * that Lenis and ScrollTrigger share a single, synchronized RAF loop. This is
  * the canonical Lenis + GSAP integration — build all scroll choreography with
  * ScrollTrigger on top of this and it will feel buttery.
+ *
+ * Reads the instance via useLenis() (backed by ReactLenis's root store)
+ * rather than the ref: ReactLenis constructs Lenis inside its own effect and
+ * publishes it through a state update, so a ref read in a mount-only effect
+ * can race ahead of it and find nothing — this hook re-fires once the
+ * instance is actually ready.
  */
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
-  const lenisRef = useRef<LenisRef>(null);
+  const lenis = useLenis();
 
   useEffect(() => {
-    const lenis = lenisRef.current?.lenis;
     if (!lenis) return;
     lenisInstance = lenis;
 
@@ -37,14 +42,10 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       gsap.ticker.remove(update);
       lenisInstance = null;
     };
-  }, []);
+  }, [lenis]);
 
   return (
-    <ReactLenis
-      root
-      ref={lenisRef}
-      options={{ autoRaf: false, lerp: 0.1, smoothWheel: true }}
-    >
+    <ReactLenis root options={{ autoRaf: false, lerp: 0.1, smoothWheel: true }}>
       {children}
     </ReactLenis>
   );
