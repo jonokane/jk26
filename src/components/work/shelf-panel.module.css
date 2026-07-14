@@ -1,0 +1,86 @@
+/* src/components/work/shelf-panel.module.css — one panel of the shelf
+   (spec §8). A panel is exactly one viewport wide and fills the pinned stage;
+   its content is centered so the eye lands in the same place on every panel as
+   the shelf slides past. Colors only from scene tokens (spec §15). */
+.panel {
+  flex: 0 0 100vw;
+  width: 100vw;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* bottom padding clears the HUD (dots + caption) that floats over the stage */
+  padding: 13vh 7vw 15vh;
+  scroll-snap-align: start;
+}
+
+/* Two sections side by side (Overview & The challenge), one section wide. */
+.sections {
+  display: grid;
+  gap: 2rem;
+  align-content: center;
+  min-width: 0;
+}
+
+@media (min-width: 48rem) {
+  .sections[data-count="2"] {
+    grid-template-columns: 1fr 1fr;
+    gap: 3vw;
+  }
+
+  .sections[data-count="1"] {
+    max-width: 68ch;
+  }
+}
+
+.slab {
+  min-width: 0;
+  /* a long section must scroll inside its slab rather than push the panel's
+     content off a fixed-height stage */
+  max-height: 62vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sectionHeading {
+  margin: 0 0 0.85rem;
+}
+
+.prose :where(p) {
+  margin: 0 0 1rem;
+  color: var(--ink);
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+  line-height: 1.65;
+}
+
+.prose :where(p:last-child) {
+  margin-bottom: 0;
+}
+
+.prose :where(ul, ol) {
+  margin: 0 0 1rem 1.25rem;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.prose :where(a) {
+  color: var(--ink);
+  text-underline-offset: 3px;
+}
+
+/* Single column under ~760px (spec §12). A phone panel is taller than the
+   screen, so it scrolls inside itself — and the wayfinding is a bar below the
+   track there, not an overlay, so there is nothing to pad clear of. */
+@media (max-width: 47.99rem) {
+  .panel {
+    padding: 12vh 6vw 4vh;
+    justify-content: flex-start;
+    overflow-y: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  .slab {
+    max-height: none;
+    overflow-y: visible;
+  }
+}

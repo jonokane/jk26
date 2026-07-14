@@ -4,10 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { MouseEvent } from "react";
 import { getLenis } from "@/components/smooth-scroll";
+import { HeaderWorkRow } from "@/components/work/header-work-row";
+import { useShelfState } from "@/components/work/shelf-store";
 import { siteContent } from "@/lib/site-content";
 import { WORDMARK_TEXT, wordmarkConfig, wordmarkFvs } from "@/lib/wordmark-config";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { useScrollSpy } from "@/lib/use-scroll-spy";
+import styles from "@/components/site-header.module.css";
 
 export const NAV_WORDMARK_SLOT_ID = "nav-wordmark-slot";
 
@@ -33,13 +36,16 @@ function isPlainClick(e: MouseEvent): boolean {
  * pages had no header and no nav landmark at all.
  *
  * The slot span is the morph's landing target — invisible on `/` while the live
- * wordmark is flying, visible everywhere the morph doesn't run.
+ * wordmark is flying, visible everywhere the morph doesn't run. It lives inside
+ * row 1, which keeps the geometry the pill has always had; the Work row (spec
+ * §6) grows open *below* it, so the slot never moves and the morph still lands.
  */
 export function SiteHeader() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const reducedMotion = useReducedMotionPref();
   const active = useScrollSpy(siteContent.nav.map((n) => n.target));
+  const shelf = useShelfState();
 
   /* On `/` with motion, the flying live wordmark is what you see land here. */
   const slotVisible = !isHome || reducedMotion;
@@ -84,33 +90,41 @@ export function SiteHeader() {
   );
 
   return (
-    <header className="site-header slab" data-static={isHome ? undefined : ""}>
-      {isHome ? (
-        <button
-          type="button"
-          onClick={onHomeClick}
-          className="site-header-home"
-          aria-label={siteContent.labels.backToTop}
-        >
-          {slot}
-        </button>
-      ) : (
-        <Link href="/" className="site-header-home" aria-label={siteContent.labels.home}>
-          {slot}
-        </Link>
-      )}
-      <nav aria-label="Site">
-        {siteContent.nav.map(({ label, target }) => (
-          <Link
-            key={target}
-            href={isHome ? `#${target}` : `/#${target}`}
-            onClick={(e) => onNavClick(e, target)}
-            aria-current={isHome && active === target ? "location" : undefined}
+    <header
+      className={`site-header slab ${styles.header}`}
+      data-static={isHome ? undefined : ""}
+      data-work={shelf.active ? "" : undefined}
+    >
+      <div className={styles.top}>
+        {isHome ? (
+          <button
+            type="button"
+            onClick={onHomeClick}
+            className="site-header-home"
+            aria-label={siteContent.labels.backToTop}
           >
-            {label}
+            {slot}
+          </button>
+        ) : (
+          <Link href="/" className="site-header-home" aria-label={siteContent.labels.home}>
+            {slot}
           </Link>
-        ))}
-      </nav>
+        )}
+        <nav aria-label="Site">
+          {siteContent.nav.map(({ label, target }) => (
+            <Link
+              key={target}
+              href={isHome ? `#${target}` : `/#${target}`}
+              onClick={(e) => onNavClick(e, target)}
+              aria-current={isHome && active === target ? "location" : undefined}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+
+      <HeaderWorkRow />
     </header>
   );
 }

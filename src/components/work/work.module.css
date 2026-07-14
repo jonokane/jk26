@@ -1,14 +1,24 @@
 /* src/components/work/work.module.css — the home Work section (spec §8).
-   A flat scrim keeps the long-form reading surface legible over the living
-   sky in every scene; the ramping runway gradient described in spec §8 is
-   part of the pinned-shelf pass that lands on top of this markup later. */
+
+   Background: treatment B. The section opens on a runway of open sky and the
+   scene scrim ramps in across it (`.scrim-ramp` in globals.css reads
+   --scrim-runway), so the shelf arrives on a full, legible scrim while the sky
+   stays alive above it. The runway IS the section's top padding: move one, move
+   the other, or the viewport-fixed sun and moon will drift through the heading. */
 .section {
-  background: var(--scrim);
+  --scrim-runway: 68vh;
+  padding-top: 35vh;
 }
 
+/* The heading takes its own breathing room and scrolls away before the shelf
+   catches (spec §8) — hence a screen of its own, not a margin. */
 .header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 55vh;
   max-width: 62ch;
-  padding: 6rem 7vw 3rem;
+  padding: 0 7vw 6vh;
 }
 
 .heading {
@@ -22,6 +32,7 @@
   line-height: 1.6;
 }
 
+/* The reduced-motion / no-JS read: the case studies, straight down the page. */
 .studies {
   display: flex;
   flex-direction: column;

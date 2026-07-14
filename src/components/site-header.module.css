@@ -1,0 +1,141 @@
+/* src/components/site-header.module.css — the nav pill's second row (spec §6).
+
+   These rules sit OUTSIDE `@layer components`, where `.site-header` lives in
+   globals.css, so they win on cascade layer alone and no !important or
+   specificity games are needed to restack the pill into rows. */
+
+/* The pill becomes two rows. Row 1 keeps the exact geometry `.site-header` had
+   (that is the point: the wordmark morph lands in a slot inside it, and the
+   slot must not move a pixel). The global `gap: 3vw` was between the wordmark
+   and the nav — it moves onto row 1, or it would reappear as dead vertical
+   space above a collapsed second row. */
+.header {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 3vw;
+}
+
+/* The expanding row: a 0fr → 1fr grid, so it animates from nothing to exactly
+   its content's height without anyone hardcoding what that height is. Collapsed
+   it contributes zero — the pill is the size it always was, and the morph's
+   landing slot has not moved. */
+.work {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  /* Closed, the row is clipped to nothing but its buttons still have layout
+     boxes. Without this a pointer aimed at where a study pill *would* be hits
+     the row above it instead of nothing at all. */
+  pointer-events: none;
+  transition:
+    grid-template-rows 0.45s cubic-bezier(0.3, 0.8, 0.3, 1),
+    opacity 0.3s ease;
+}
+
+.header[data-work] .work {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.workInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Name, panel label and study pills on one shared baseline (spec §6). */
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--card-border);
+}
+
+.project {
+  color: var(--ink);
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.panel {
+  color: var(--sub);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+/* The panel label fades in past each study's intro panel (spec §6): on an intro
+   panel the study's name is the whole story, and a label would just repeat it. */
+.panel[data-visible] {
+  opacity: 1;
+}
+
+/* Study pills, right-aligned; scrollable on a narrow pill (spec §12). */
+.pills {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pills::-webkit-scrollbar {
+  display: none;
+}
+
+.pill {
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--sub);
+  font: inherit;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.pill:hover {
+  color: var(--ink);
+}
+
+.pill[aria-current] {
+  color: var(--ink);
+  background: var(--scrim);
+  border-color: var(--card-border);
+}
+
+@media (max-width: 47.99rem) {
+  .row {
+    gap: 0.75rem;
+  }
+
+  .panel {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work,
+  .panel,
+  .pill {
+    transition: none;
+  }
+}
