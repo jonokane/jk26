@@ -19,8 +19,8 @@ export const siteContent = {
     contact: "Contact",
   },
   placeholders: {
-    about: "The story assembles here next — four beats collecting into an About wall.",
-    work: "The work shelf arrives here — five case studies, read in full, on one horizontal shelf.",
+    about: "The story assembles here next: four beats collecting into an About wall.",
+    work: "The work shelf arrives here: five case studies, read in full, on one horizontal shelf.",
     contact: "The contact form lands here. Until then: jono@collaya.com.",
   },
   /** The four intro beats that collect into the About wall (spec §7). Locked copy. */

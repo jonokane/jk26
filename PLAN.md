@@ -1,6 +1,6 @@
 # jonokane.com — Rebuild Plan
 
-_Last updated: 2026-07-10_
+_Last updated: 2026-07-13_
 
 ## Goals
 
@@ -14,34 +14,45 @@ Constraint: no CMS or database. Content is version-controlled MDX.
 
 ## Stack (decided & scaffolded)
 
-Next.js 16 on Vercel · TypeScript · Tailwind v4 · MDX via Velite · Motion + GSAP/ScrollTrigger + Lenis · pnpm. See `CLAUDE.md` for how it all fits together.
+Next.js 16 on Vercel · TypeScript · Tailwind v4 · MDX via Velite · GSAP/ScrollTrigger + Lenis · pnpm. See `CLAUDE.md` for how it all fits together.
 
-## Current state (as of 2026-07-10)
+## The design
 
-The scaffold is complete and `pnpm build` passes clean. In place:
+The governing spec is **`docs/superpowers/specs/2026-07-11-site-experience-design.md`** — scene system, type system, hero, header, collector, work shelf, contact, farewell, and the code-organization rules (§15). It supersedes the earlier hero-only spec.
 
-- Working routes: `/` (living variable-font hero wordmark), `/work` (index), `/work/[slug]` (case study template with typed frontmatter → SEO metadata).
-- Canonical Lenis + GSAP smooth-scroll integration wired and sharing one RAF loop.
-- Velite content pipeline proven end-to-end with two placeholder case studies.
-- Tailwind v4 theme tokens, Geist font, light/dark via `prefers-color-scheme`.
+The site is a one-pager — **Welcome → About → Work → Contact → Farewell** — with `/work/[slug]` case study pages as the canonical share/SEO surface and the reduced-motion reading path.
 
-**Not yet built:** shared nav/header/footer, About/contact, real content, and a real design system beyond defaults. The hero is built: a living variable-font wordmark (see `docs/superpowers/specs/2026-07-10-variable-font-hero-design.md`).
+## Current state (as of 2026-07-13)
 
-## Open decisions
+**Phase 1 — the living sky (shipped).** A time-of-day scene system: 8 keyframes interpolated from the visitor's clock into ~24 CSS custom properties, driving the sky gradient, sun/moon arc, stars, clouds, god rays, birds, and every text and material color on the site. Pure, unit-tested engine, no RAF. Visitor-facing time scrubber; `?tune` palette editor in dev.
 
-- **3D hero layer.** Parked. The hero concept is decided and shipped as the animated variable-font wordmark; a 3D layer (likely React Three Fiber) remains a possible future evolution *behind* the wordmark. Nothing 3D is installed.
+**Phase 2 — hero + header (shipped).** The JONOKANE wordmark in Area variable font: per-letter build-in, cursor weight-carve, shrink-to-fit type lockup. A site header whose nav pill is fed by a scroll-scrubbed FLIP morph of the wordmark itself, plus scroll-spy, deep links, and a first-paint script so the sky never flashes the wrong scene.
+
+**Content (landed).** Real case studies live in `content/work/`: Amazon Key In-Car, 8tracks FTUX, Fluence. Amazon Key In-Home is written but held as `draft: true` pending Jono's account of his role on that flow. Seven older projects are in `content/earlier/`. The four locked intro beats are in `src/lib/site-content.ts`.
+
+**Not yet built:** the About collector, the horizontal work shelf, the contact form, and the farewell. The three sections on the home page are placeholders holding their anchors.
 
 ## Roadmap
 
-Ordered by leverage. Content is the biggest lever (goal #1); motion decorates content, so content leads.
+1. ~~**Repo hygiene**~~ _(done 2026-07-09)_
+2. ~~**Design system** — scene, type, tokens~~ _(Phase 1, done 2026-07-13)_
+3. ~~**The hero + header**~~ _(Phase 2, done 2026-07-13)_
+4. **Deploy to Vercel** — a live URL makes every later step previewable. **Blocked on a Jono-side action: the Adobe Fonts kit (`aqv1jgr`) needs `*.vercel.app` and `jonokane.com` added to its allowed domains, or Area and Mae will not load in production.**
+5. **Phase 3 — the collector.** Intro beats → tray → About wall, with CTAs. Copy is locked (spec §7).
+6. **Phase 4 — the work shelf.** Pinned horizontal shelf, four panels per study, wayfinding. Gated on content intake below.
+7. **Phase 5 — contact + farewell.** Frosted form → Resend route handler; time-aware sign-off.
+8. **Polish.** Meta/OG images, performance pass, full accessibility and reduced-motion audit, real cover art and artifacts (scene-gradient placeholders until then).
 
-1. **Repo hygiene** — commit scaffold cleanup so `main` is clean. _(done 2026-07-09)_
-2. **Deploy to Vercel** — get a live URL early so every later step is previewable. Quick, high-leverage.
-3. **Content & information architecture** — decide the case study list, each study's narrative arc, and the homepage structure. Migrate/rewrite from old-site source material (Jono to provide). Write real case studies as MDX.
-4. **Design system** — typography, color, spacing, nav/footer. Establish the visual identity content fills into.
-5. **The hero** — done 2026-07-10: animated variable-font wordmark in TotalBlack Variable (ambient weight loop + cursor carve), tunable via dev panel. Spec: `docs/superpowers/specs/2026-07-10-variable-font-hero-design.md`.
-6. **Connective tissue & polish** — About, contact, meta/OG images, performance pass, reduced-motion audit, accessibility.
+## Content intake (the critical path)
 
-## Source material
+Content is the biggest lever and the main thing gating Phases 3 and 4. Outstanding items, tracked in `docs/notes/jonokane-case-studies.md`:
 
-Jono has old-site content and existing case study assets (writing, images, possibly Figma) to share. Pull from these when writing real content in step 3 rather than inventing from scratch.
+- **Collaya, Tappa, Meta Project 01, Meta Project 02** — entirely TBD. These are the four headline slots (`order` 1–4).
+- **Amazon Key In-Home** — needs Jono's specific role on the in-home flow, plus any citable outcome. Held as `draft: true` until then.
+- **8tracks / Fluence** — outcomes are written qualitatively because no metric was shareable. Swap in a metric if one becomes citable.
+- **Résumé link** — `siteContent.links.resume` is empty, so the About résumé pill stays hidden until a public URL exists.
+- **Cover art and artifacts** — none yet.
+
+## Open decisions
+
+- **3D hero layer.** Parked. The hero shipped as the Area wordmark; a 3D layer (likely React Three Fiber) remains a possible future evolution *behind* it. Nothing 3D is installed.
