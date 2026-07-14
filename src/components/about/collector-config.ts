@@ -6,8 +6,8 @@
  *
  * Geometry lives here rather than in CSS because it is *interpolated*: a
  * transform can only be scrubbed in JS. Everything that CSS can own (the
- * section's travel height, the beat's width and type scale, the tray hint's
- * styling) stays in `about.module.css`.
+ * section's travel, the beat's width and type scale, the tray hint's styling)
+ * stays in `about.module.css`.
  *
  * Positions are viewport units — vw for x, vh for y — exactly as the approved
  * prototype expressed them; the math resolves them to px, which is what a
@@ -15,11 +15,35 @@
  * beat's top-left corner and `scale` shrinks it toward that corner.
  */
 
-/** Where a single beat sits in each of its four poses. */
+/**
+ * Where a beat comes to rest once every beat has been read.
+ *
+ * Two finishes, because the same ending does not work on both screens.
+ */
+export type CollectorFinish =
+  /**
+   * Desktop: the tray unpacks into the 2×2 About wall, inside the sticky
+   * stage, at 0.55 — where the display-sized statement lands back at reading
+   * size. The prototype's geometry, which Jono approved.
+   */
+  | { kind: "wall"; topVh: number; rowVh: number; colVw: number; cols: number; scale: number }
+  /**
+   * Phone: the section un-pins and the beats fly home into the document, which
+   * is then read by scrolling — heading, lede, four full-size slabs, CTAs.
+   *
+   * A wall cannot work here. Four legible statements plus the heading, the lede
+   * and the CTA footer do not fit a 100vh phone stage at any scale; the closest
+   * fit put the statements at ~0.42, which is glanced at, not read. Jono's call:
+   * the wall is read. So on a phone the collector is a *presentation* of the
+   * beats, and the document underneath is where they live.
+   */
+  | { kind: "flow" };
+
+/** Where a single beat sits in each of its poses. */
 export interface CollectorLayout {
-  /** Left gutter of the stage; matches the section's 7vw gutter. */
+  /** Left gutter; matches the section's 7vw gutter. */
   insetVw: number;
-  /** Parked below the fold — where a beat rises from and is clipped. */
+  /** Parked below the fold — where a beat rises from. */
   upVh: number;
   /** Center stage: the reading position, full size, clear canvas. */
   activeVh: number;
@@ -28,18 +52,21 @@ export interface CollectorLayout {
   trayStepVw: number;
   trayScale: number;
   trayOpacity: number;
-  /** The assembled About wall the tray unpacks into. */
-  wallTopVh: number;
-  wallRowVh: number;
-  wallColVw: number;
-  wallCols: number;
-  wallScale: number;
+  finish: CollectorFinish;
 }
 
-/** Phone layout below this width — matches the `.wall` breakpoint in about.module.css. */
-export const MOBILE_MAX_PX = 760;
+/**
+ * The phone breakpoint — as a media query, not a number.
+ *
+ * JS and CSS have to agree on which side of it we are, and they measure
+ * differently: `innerWidth` counts a classic scrollbar, a media query does not.
+ * Comparing a number against `innerWidth` puts the two out of step in a ~15px
+ * band, where the CSS lays out one collector and the math poses the other.
+ * Asking the same media query CSS is asking cannot disagree with it.
+ */
+export const PHONE_QUERY = "(max-width: 760px)";
 
-/** The prototype's numbers, unchanged (Jono approved this geometry). */
+/** The prototype's numbers, unchanged. */
 export const desktopLayout: CollectorLayout = {
   insetVw: 7,
   upVh: 108,
@@ -48,24 +75,15 @@ export const desktopLayout: CollectorLayout = {
   trayStepVw: 13.5,
   trayScale: 0.22,
   trayOpacity: 0.9,
-  wallTopVh: 28,
-  wallRowVh: 24,
-  wallColVw: 36,
-  wallCols: 2,
-  wallScale: 0.55,
+  finish: { kind: "wall", topVh: 28, rowVh: 24, colVw: 36, cols: 2, scale: 0.55 },
 };
 
 /**
- * Phone geometry (spec §12: single column, shortened travel). The beat is
- * wider (86vw) and its type smaller, so center stage still reads at arm's
- * length. The wall keeps the 2×2 composition — a single column of four cards
- * cannot fit a 100vh stage under the heading, the lede and the CTA footer at
- * any scale, and a column of receipt-thin cards reads worse than the grid the
- * desktop wall establishes. At 0.42 the assembled wall is a *record* of the
- * four statements the reader has just read full-size, not a second chance to
- * read them; the statements themselves are delivered center stage.
+ * Phone (spec §12: shortened travel, single column). The beat is the document's
+ * own slab — full width, document type — so center stage is exactly what the
+ * reader will read again below, and the flight home is seamless.
  */
-export const mobileLayout: CollectorLayout = {
+export const phoneLayout: CollectorLayout = {
   insetVw: 7,
   upVh: 108,
   activeVh: 24,
@@ -73,19 +91,15 @@ export const mobileLayout: CollectorLayout = {
   trayStepVw: 21,
   trayScale: 0.22,
   trayOpacity: 0.9,
-  wallTopVh: 40,
-  wallRowVh: 17,
-  wallColVw: 45,
-  wallCols: 2,
-  wallScale: 0.42,
+  finish: { kind: "flow" },
 };
 
-export function layoutFor(viewportWidth: number): CollectorLayout {
-  return viewportWidth <= MOBILE_MAX_PX ? mobileLayout : desktopLayout;
+export function layoutFor(isPhone: boolean): CollectorLayout {
+  return isPhone ? phoneLayout : desktopLayout;
 }
 
 /**
- * When things happen, in units of scroll progress `p` through the section.
+ * When things happen, in units of scroll progress `p` through the collector.
  *
  * The prototype snapped between four discrete states with CSS transitions;
  * spec §14 requires the motion be scrubbed instead, so each state boundary
@@ -97,7 +111,7 @@ export interface CollectorTiming {
   rise: number;
   /** Fraction of its segment spent flying from center stage into the tray. */
   pocket: number;
-  /** Progress one beat's tray → wall flight takes. */
+  /** Progress one beat's flight home (to the wall, or to the document) takes. */
   assembleSpan: number;
   /** Progress between consecutive flights — the prototype's ~70ms stagger. */
   assembleStagger: number;

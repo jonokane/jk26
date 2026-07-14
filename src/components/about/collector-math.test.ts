@@ -16,13 +16,14 @@ import {
   snapTargets,
   trayHintOpacity,
   wallPose,
+  type Point,
 } from "@/components/about/collector-math";
 import {
   collectorSnap,
   collectorTiming as timing,
   desktopLayout as layout,
   layoutFor,
-  mobileLayout,
+  phoneLayout,
 } from "@/components/about/collector-config";
 
 const COUNT = 4;
@@ -221,28 +222,78 @@ describe("collector math: snapping (spec §7 — click into place, do not drift 
   });
 });
 
-describe("collector math: the phone layout (spec §12)", () => {
+/* The phone does not finish in a wall. Four legible statements plus the
+   heading, the lede and the CTA footer do not fit a 100vh stage at any scale,
+   so the section releases instead: the beats fly home into the document and are
+   read by scrolling (Jono's call). */
+describe("collector math: the phone finish — released into the document (spec §12)", () => {
   const phone = { width: 390, height: 844 };
+  /** Where each beat's slab actually sits in the document, on screen right now. */
+  const homes: Point[] = [
+    { x: 27, y: 900 },
+    { x: 27, y: 1150 },
+    { x: 27, y: 1400 },
+    { x: 27, y: 1650 },
+  ];
   const phonePose = (i: number, p: number) =>
-    beatPose(i, COUNT, p, mobileLayout, timing, phone);
+    beatPose(i, COUNT, p, phoneLayout, timing, phone, homes[i]);
 
-  it("picks the phone geometry under the wall's breakpoint", () => {
-    expect(layoutFor(390)).toBe(mobileLayout);
-    expect(layoutFor(760)).toBe(mobileLayout);
-    expect(layoutFor(1440)).toBe(layout);
+  it("picks the geometry off the same media query the stylesheet switches on", () => {
+    expect(layoutFor(true)).toBe(phoneLayout);
+    expect(layoutFor(false)).toBe(layout);
+    expect(phoneLayout.finish.kind).toBe("flow");
+    expect(layout.finish.kind).toBe("wall");
   });
 
-  it("keeps the tray and the assembled wall inside the stage", () => {
-    const end = assembleEnd(COUNT, timing);
+  it("plays the same choreography through the stage", () => {
+    expect(phonePose(0, 0).y).toBeCloseTo(0.24 * phone.height); // center stage
+    expect(phonePose(0, 0).scale).toBe(1);
+    expect(phonePose(2, 0.51).y).toBeCloseTo(0.24 * phone.height); // beat 3's turn
+    const tray = phonePose(0, assembleStart(COUNT));
+    expect(tray.y).toBeCloseTo(0.87 * phone.height);
+    expect(tray.scale).toBeCloseTo(0.22);
+  });
+
+  it("keeps the tray inside the phone", () => {
     for (let i = 0; i < COUNT; i++) {
-      const tray = phonePose(i, 0.79);
+      const tray = phonePose(i, assembleStart(COUNT));
       expect(tray.x).toBeGreaterThanOrEqual(0);
       expect(tray.x + 0.86 * phone.width * tray.scale).toBeLessThan(phone.width);
       expect(tray.y).toBeLessThan(phone.height);
-
-      const wall = phonePose(i, end);
-      expect(wall.x + 0.86 * phone.width * wall.scale).toBeLessThan(phone.width);
-      expect(wall.y).toBeLessThan(phone.height);
     }
+  });
+
+  /* The pose the beat comes to rest in is the place it already occupies — so
+     the transform the writer derives from it is exactly zero, and the document
+     it lands in is the document that was there all along. */
+  it("comes to rest exactly where the document already holds its place", () => {
+    const end = assembleEnd(COUNT, timing);
+    for (let i = 0; i < COUNT; i++) {
+      const rest = phonePose(i, end);
+      expect(rest.x).toBeCloseTo(homes[i].x);
+      expect(rest.y).toBeCloseTo(homes[i].y);
+      expect(rest.scale).toBeCloseTo(1);
+      expect(rest.opacity).toBeCloseTo(1);
+    }
+  });
+
+  it("flies home staggered, and continuously", () => {
+    const early = assembleStart(COUNT) + timing.assembleSpan / 2;
+    expect(phonePose(0, early).scale).toBeGreaterThan(0.22); // already growing
+    expect(phonePose(3, early).scale).toBeCloseTo(0.22); // still a token
+
+    for (let i = 0; i < COUNT; i++) {
+      let prev = phonePose(i, 0);
+      for (let p = 0.002; p <= 1.0001; p += 0.002) {
+        const next = phonePose(i, p);
+        expect(Math.abs(next.y - prev.y)).toBeLessThan(0.1 * phone.height);
+        expect(Math.abs(next.scale - prev.scale)).toBeLessThan(0.05);
+        prev = next;
+      }
+    }
+  });
+
+  it("has no wall to ask for", () => {
+    expect(() => wallPose(0, phoneLayout)).toThrow();
   });
 });
