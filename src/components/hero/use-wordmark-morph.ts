@@ -6,6 +6,19 @@ import { NAV_WORDMARK_SLOT_ID } from "@/components/site-header";
 
 const HEADER_ON_AT = 0.85;
 
+/**
+ * The translation the nav slot currently inherits from the header's entrance
+ * transform, in px. Zero once the pill has landed (`transform: none`).
+ */
+function headerTranslation(slot: HTMLElement): { x: number; y: number } {
+  const header = slot.closest("header");
+  if (!header || typeof DOMMatrixReadOnly === "undefined") return { x: 0, y: 0 };
+  const t = getComputedStyle(header).transform;
+  if (!t || t === "none") return { x: 0, y: 0 };
+  const m = new DOMMatrixReadOnly(t);
+  return { x: m.e, y: m.f };
+}
+
 interface MorphOpts {
   /** The fixed live wordmark layer (what actually flies). */
   liveRef: RefObject<HTMLDivElement | null>;
@@ -36,8 +49,19 @@ export function useWordmarkMorph({ liveRef, flowRef, active, onProgress }: Morph
     const measure = () => {
       const f = flow.getBoundingClientRect();
       start = { left: f.left, top: f.top + window.scrollY, height: f.height };
+
+      /* The target must be the slot's RESTING rect. The pill hides itself with
+         `transform: translateY(-16px)` until `header-on` lands (.site-header in
+         globals.css) and getBoundingClientRect() reports the *transformed* box
+         — including ancestor transforms. Measuring naively (which is what this
+         did) sends the wordmark to slotTop − 16, straddling the pill's top
+         edge, because at measure time the header is still up in its hidden
+         state. So: read the header's current transform and undo its
+         translation. Correct at any point in the pill's 0.45s transition, and
+         it stays correct if the offset is ever retuned. */
       const s = slot.getBoundingClientRect();
-      target = { left: s.left, top: s.top, height: s.height };
+      const shift = headerTranslation(slot);
+      target = { left: s.left - shift.x, top: s.top - shift.y, height: s.height };
     };
 
     const smooth = (t: number) => t * t * (3 - 2 * t);
