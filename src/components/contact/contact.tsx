@@ -133,7 +133,7 @@ export function Contact() {
     <section
       id="contact"
       aria-labelledby="contact-title"
-      className={`${styles.section} scroll-mt-28`}
+      className={`${styles.section} on-scrim scroll-mt-28`}
     >
       <div className={styles.inner}>
         <h2 id="contact-title" className={`heading-display ${styles.title}`}>

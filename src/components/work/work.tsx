@@ -15,7 +15,7 @@ import styles from "@/components/work/work.module.css";
  */
 export function Work() {
   return (
-    <section id="work" aria-labelledby="work-title" className={`scroll-mt-28 ${styles.section}`}>
+    <section id="work" aria-labelledby="work-title" className={`on-scrim scroll-mt-28 ${styles.section}`}>
       <header className={styles.header}>
         <h2
           id="work-title"

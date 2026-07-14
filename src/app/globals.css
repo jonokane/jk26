@@ -89,6 +89,23 @@ html.lenis body {
 
 /* ---------- scene-aware materials & type roles (spec §3.2, §4, §15) ---------- */
 @layer components {
+  /* Content sits on a scene-derived scrim (spec §8, "treatment B"). The hero is
+     the only place the living sky is fully exposed; past it the sky must sit
+     BEHIND the reading, not in it — without this the moon drifts through the
+     body copy. */
+  .on-scrim {
+    background: var(--scrim);
+  }
+
+  /* The hero-to-content seam: the scrim ramps in over a runway of open sky
+     instead of cutting a hard horizon. The ramp must COMPLETE above the first
+     line of copy — the sun and moon are fixed to the viewport, so any content
+     sitting in the ramp gets a celestial body drifting through it. The runway
+     length is the section's own top padding; keep the two in step. */
+  .scrim-ramp {
+    background: linear-gradient(to bottom, transparent 0, var(--scrim) var(--scrim-runway, 26vh));
+  }
+
   /* Frosted slab: the system's contrast material (nav pill, forms, text slabs). */
   .slab {
     background: var(--card-bg);

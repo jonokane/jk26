@@ -14,7 +14,7 @@ import styles from "@/components/about/about.module.css";
  */
 export function About() {
   return (
-    <section id="about" aria-labelledby="about-title" className={`${styles.section} scroll-mt-28`}>
+    <section id="about" aria-labelledby="about-title" className={`${styles.section} scrim-ramp scroll-mt-28`}>
       <h2 id="about-title" className={`heading-display text-ink text-4xl sm:text-5xl ${styles.heading}`}>
         {siteContent.titles.about}
       </h2>
