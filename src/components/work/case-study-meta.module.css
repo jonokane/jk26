@@ -1,0 +1,15 @@
+/* src/components/work/case-study-meta.module.css — the meta pill slab. */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.value {
+  color: var(--ink);
+}
+
+.link {
+  text-underline-offset: 3px;
+}

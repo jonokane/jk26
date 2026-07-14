@@ -1,0 +1,10 @@
+/* src/components/work/case-study-cover.module.css — scene-gradient cover
+   placeholder (spec §8): no real art exists yet, so the "art" is built from
+   the live sky tokens rather than a hardcoded image or color. */
+.cover {
+  aspect-ratio: 4 / 3;
+  border-radius: 18px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 12px 40px var(--elev);
+  background: linear-gradient(135deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-hor) 100%);
+}

@@ -1,0 +1,28 @@
+/* src/components/work/work.module.css — the home Work section (spec §8).
+   A flat scrim keeps the long-form reading surface legible over the living
+   sky in every scene; the ramping runway gradient described in spec §8 is
+   part of the pinned-shelf pass that lands on top of this markup later. */
+.section {
+  background: var(--scrim);
+}
+
+.header {
+  max-width: 62ch;
+  padding: 6rem 7vw 3rem;
+}
+
+.heading {
+  margin: 0 0 1.25rem;
+}
+
+.intro {
+  margin: 0;
+  color: var(--sub);
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+.studies {
+  display: flex;
+  flex-direction: column;
+}
