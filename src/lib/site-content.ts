@@ -115,6 +115,25 @@ export const siteContent = {
       message: "Tell me a little about what you are building.",
     },
   },
+  /**
+   * Farewell (spec §11). The word comes from the visitor's own clock, so the
+   * sign-off is true for them: morning 5-12, afternoon 12-17, evening 17-21,
+   * night otherwise. It tracks the time scrubber live, like everything else
+   * the scene drives.
+   */
+  farewell: {
+    lead: "Thanks for stopping by.",
+    /** "Have a lovely {word}." — the sentence is split so the word can change. */
+    wishPrefix: "Have a lovely ",
+    wishSuffix: ".",
+    words: {
+      morning: "morning",
+      afternoon: "afternoon",
+      evening: "evening",
+      night: "night",
+    },
+    signature: "— Jono",
+  },
   /** Outbound links used by the About CTAs (spec §7) and contact fallback. */
   links: {
     email: "jono@collaya.com",
