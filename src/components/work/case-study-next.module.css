@@ -1,0 +1,20 @@
+/* src/components/work/case-study-next.module.css — the "Next: {study} →"
+   teaser. The arrow is a design decision, so it lives here, not in the JSX
+   (spec §15). */
+.next {
+  margin-top: 2rem;
+  font-size: 0.95rem;
+  color: var(--sub);
+  letter-spacing: 0.06em;
+}
+
+.next a {
+  color: var(--ink);
+  text-underline-offset: 4px;
+}
+
+.next a::after {
+  content: "→";
+  display: inline-block;
+  margin-left: 0.4em;
+}

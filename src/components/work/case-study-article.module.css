@@ -1,5 +1,8 @@
 /* src/components/work/case-study-article.module.css — one case study, full
-   vertical read (spec §8). Colors come only from scene tokens (spec §15). */
+   vertical read (spec §8). The head lives in case-study-intro.module.css and
+   the teaser in case-study-next.module.css: both are shared with the shelf, so
+   this file holds only what is particular to the *document* form of a study.
+   Colors come only from scene tokens (spec §15). */
 .article {
   padding: 4rem 7vw;
   border-top: 1px solid var(--card-border);
@@ -8,40 +11,6 @@
 .article:first-of-type {
   border-top: none;
   padding-top: 0;
-}
-
-.intro {
-  display: grid;
-  gap: 2rem;
-  align-items: start;
-}
-
-@media (min-width: 48rem) {
-  .intro {
-    grid-template-columns: 1.4fr 1fr;
-    gap: 3rem;
-  }
-}
-
-.introText {
-  min-width: 0;
-}
-
-.number {
-  display: block;
-  margin-bottom: 0.75rem;
-}
-
-.title {
-  margin: 0 0 1rem;
-}
-
-.impact {
-  max-width: 52ch;
-  margin: 0 0 1.75rem;
-  color: var(--sub);
-  font-size: 1.15rem;
-  line-height: 1.6;
 }
 
 .body {
@@ -76,20 +45,4 @@
   margin: 0 0 1.25rem 1.25rem;
   color: var(--ink);
   line-height: 1.7;
-}
-
-.next {
-  margin-top: 2.5rem;
-  font-size: 0.95rem;
-}
-
-.next a {
-  color: var(--ink);
-  text-underline-offset: 4px;
-}
-
-.next a::after {
-  content: "→";
-  display: inline-block;
-  margin-left: 0.4em;
 }

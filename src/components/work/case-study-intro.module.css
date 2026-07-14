@@ -1,0 +1,63 @@
+/* src/components/work/case-study-intro.module.css — the head of a case study,
+   in the two proportions it appears at (spec §8). Colors only from scene
+   tokens (spec §15). */
+.intro {
+  display: grid;
+  gap: 2rem;
+  align-items: start;
+  min-width: 0;
+}
+
+.text {
+  min-width: 0;
+}
+
+.number {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  margin: 0 0 1rem;
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
+  line-height: 1.04;
+}
+
+.impact {
+  max-width: 38ch;
+  margin: 0 0 1.75rem;
+  color: var(--sub);
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  line-height: 1.55;
+}
+
+.cover {
+  min-width: 0;
+}
+
+/* The document read: the head flows, and the cover keeps its own aspect. */
+@media (min-width: 48rem) {
+  .intro[data-variant="document"] {
+    grid-template-columns: 1.4fr 1fr;
+    gap: 3rem;
+  }
+}
+
+/* The shelf panel: the head fills a viewport, so the two halves sit centered
+   against each other and the cover takes a slice of the panel's height rather
+   than an aspect ratio (spec §8, "cover art right"). */
+.intro[data-variant="panel"] {
+  align-items: center;
+}
+
+@media (min-width: 48rem) {
+  .intro[data-variant="panel"] {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 4vw;
+  }
+
+  .intro[data-variant="panel"] .cover {
+    aspect-ratio: auto;
+    height: 52vh;
+  }
+}

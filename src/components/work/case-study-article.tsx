@@ -1,43 +1,25 @@
-import type { ComponentType, HTMLAttributes } from "react";
-import Link from "next/link";
 import type { CaseStudy } from "#site/content";
 import { MDXContent } from "@/components/mdx-content";
-import { CaseStudyCover } from "@/components/work/case-study-cover";
-import { CaseStudyMeta } from "@/components/work/case-study-meta";
-import { formatStudyNumber } from "@/components/work/work-lists";
-import { siteContent } from "@/lib/site-content";
+import { CaseStudyIntro } from "@/components/work/case-study-intro";
+import { CaseStudyNext } from "@/components/work/case-study-next";
+import { BODY_HEADING_LEVEL, HEADING_TAGS, type HeadingLevel } from "@/components/work/heading-tags";
 import styles from "@/components/work/case-study-article.module.css";
 
-type HeadingLevel = 1 | 2 | 3 | 4 | 5;
-
-/** Module-scope, defined once: stable component identities for `HEADING_TAGS`
-    lookups below, so picking a heading level at render time never creates a
-    new component (which would remount the subtree — react-hooks/static-components). */
-const HEADING_TAGS: Record<HeadingLevel, ComponentType<HTMLAttributes<HTMLHeadingElement>>> = {
-  1: (props) => <h1 {...props} />,
-  2: (props) => <h2 {...props} />,
-  3: (props) => <h3 {...props} />,
-  4: (props) => <h4 {...props} />,
-  5: (props) => <h5 {...props} />,
-};
-
-const BODY_HEADING_LEVEL: Record<HeadingLevel, HeadingLevel> = {
-  1: 2,
-  2: 3,
-  3: 4,
-  4: 5,
-  5: 5,
-};
-
 /**
- * One case study, rendered identically wherever it appears (spec §8): the
- * home Work section and the dedicated `/work/[slug]` page both render this
- * component, so there is exactly one definition of what a case study looks
- * like. `headingLevel` adapts only the heading *tag* — h3 when nested under
- * the Work section's own h2 (home), h1 when this is a standalone page's
- * subject (`/work/[slug]`) — never the markup, classes, or content. The MDX
- * body's own `##` headings are remapped one level below the study title so
- * the document outline stays sane either way.
+ * One case study as a vertical document — the whole body, in order.
+ *
+ * Two surfaces render this: `/work/[slug]` (the canonical share/SEO and
+ * long-form reading path) and the home Work section under reduced motion or
+ * with JS off (spec §12), where it is the shelf's fallback. The shelf renders
+ * the *same* content re-cut into panels: the head from the same
+ * `CaseStudyIntro`, the teaser from the same `CaseStudyNext`, and the prose
+ * from the same MDX file, sectioned at build time (`case-study-sections.ts`).
+ * There is no second definition of what a case study is.
+ *
+ * `headingLevel` adapts only the heading *tag* — h1 when the study is a page's
+ * subject, h3 when it is nested under the Work section's h2 — never the markup,
+ * classes or content. The body's own `##` headings are remapped one level below
+ * the title so the document outline stays sane either way.
  */
 export function CaseStudyArticle({
   study,
@@ -50,24 +32,11 @@ export function CaseStudyArticle({
   headingLevel?: HeadingLevel;
   next?: { title: string; url: string };
 }) {
-  const TitleTag = HEADING_TAGS[headingLevel];
   const BodyHeadingTag = HEADING_TAGS[BODY_HEADING_LEVEL[headingLevel]];
 
   return (
     <article className={styles.article} id={study.slug} data-case-study={study.slug}>
-      <div className={styles.intro} data-case-study-panel="intro">
-        <div className={styles.introText}>
-          <span className={`${styles.number} text-kicker text-sm`}>
-            {formatStudyNumber(number)}
-          </span>
-          <TitleTag className={`heading-display ${styles.title} text-3xl text-ink sm:text-4xl`}>
-            {study.title}
-          </TitleTag>
-          <p className={styles.impact}>{study.impact}</p>
-          <CaseStudyMeta study={study} />
-        </div>
-        <CaseStudyCover />
-      </div>
+      <CaseStudyIntro study={study} number={number} headingLevel={headingLevel} />
 
       <div className={styles.body} data-case-study-panel="body">
         {/* The MDX body's `## Overview` / `## The challenge` / `## What I did` /
@@ -76,13 +45,7 @@ export function CaseStudyArticle({
         <MDXContent code={study.body} components={{ h2: BodyHeadingTag }} />
       </div>
 
-      {next && (
-        <p className={styles.next} data-case-study-panel="next">
-          <Link href={next.url}>
-            {siteContent.work.nextLabel}: {next.title}
-          </Link>
-        </p>
-      )}
+      {next && <CaseStudyNext title={next.title} url={next.url} />}
     </article>
   );
 }
