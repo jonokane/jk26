@@ -1,5 +1,6 @@
 import type { CaseStudy } from "#site/content";
 import { MDXContent } from "@/components/mdx-content";
+import { CaseStudyCover } from "@/components/work/case-study-cover";
 import { CaseStudyIntro } from "@/components/work/case-study-intro";
 import { CaseStudyNext } from "@/components/work/case-study-next";
 import type { ShelfPanel } from "@/components/work/shelf-panels";
@@ -51,6 +52,11 @@ export function ShelfPanelView({
               </div>
             </div>
           ))}
+          {/* Artifact block (spec §8): the single-section panels — "What I did"
+              and "Outcome" — carry an artifact beside the prose, or they read as
+              a lone slab in an empty viewport. A scene-gradient placeholder
+              until real art lands, same as the covers. */}
+          {panel.sections.length === 1 && <CaseStudyCover className={styles.artifact} />}
           {/* the study's last panel closes it out — outside the map, so a panel
               that ever carries two sections still shows exactly one teaser */}
           {last && next && <CaseStudyNext title={next.title} url={next.url} />}

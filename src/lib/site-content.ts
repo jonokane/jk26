@@ -52,6 +52,8 @@ export const siteContent = {
   /** About section: the lede above the wall, and the CTAs below it (spec §7). */
   about: {
     lede: "Twenty years shipping products at Yahoo!, Amazon, and Meta, and now as founder of Collaya. Equal parts designer, design manager, and product strategist, with enough front-end fluency to build what I draw.",
+    /** Caption under the tray of pocketed beats, while the reader is still reading. */
+    trayHint: "Collected ↓",
     ctas: {
       work: "See the work",
       contact: "Start a conversation",
@@ -69,6 +71,19 @@ export const siteContent = {
       "Each study is the whole story: what it was, what made it hard, what I did, and what happened.",
     earlierTitle: "Selected earlier work",
     nextLabel: "Next",
+    /** The shelf (spec §8): every word and separator it prints. */
+    shelf: {
+      /** The first panel of every study. The MDX headings name the others. */
+      introPanel: "Intro",
+      /** Joins the headings of a panel that carries more than one section. */
+      headingJoin: " & ",
+      /** Between the study title and the panel label in the shelf caption. */
+      captionSeparator: " — ",
+      /** The shelf's own landmark name. */
+      region: "Case studies",
+      /** The header's expanding work row (spec §6): the study-pill list's name. */
+      studyPills: "Jump to a case study",
+    },
     metaLabels: {
       client: "Client",
       sector: "Sector",

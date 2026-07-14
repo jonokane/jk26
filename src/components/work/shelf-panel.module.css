@@ -28,8 +28,29 @@
     gap: 3vw;
   }
 
+  /* A single section shares the panel with its artifact (spec §8): prose left,
+     artifact right, so the panel is composed rather than a slab adrift in an
+     empty viewport. The teaser, when present, spans both. */
   .sections[data-count="1"] {
-    max-width: 68ch;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    grid-auto-flow: dense;
+    gap: 3vw;
+    align-items: center;
+  }
+
+  .sections[data-count="1"] > :last-child:not(.artifact) {
+    grid-column: 1 / -1;
+  }
+
+  .artifact {
+    height: 54vh;
+  }
+}
+
+/* On a phone the artifact is a band under the prose, not a column beside it. */
+@media (max-width: 47.99rem) {
+  .artifact {
+    height: 26vh;
   }
 }
 

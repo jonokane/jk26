@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
-import { collectorCopy } from "@/components/about/collector-copy";
 import { useCollector } from "@/components/about/use-collector";
 import styles from "@/components/about/about.module.css";
 
@@ -91,7 +90,7 @@ export function About() {
             static document hides this (display: none) rather than dropping it
             from the tree on a reduced-motion toggle. */}
         <p ref={hintRef} aria-hidden="true" className={`text-kicker ${styles.trayHint}`}>
-          {collectorCopy.trayHint}
+          {siteContent.about.trayHint}
         </p>
       </div>
     </section>
