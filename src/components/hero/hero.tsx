@@ -32,6 +32,18 @@ function WordmarkLetters() {
 }
 
 /**
+ * Pin the fixed live layer over the in-flow copy — its progress-0 position.
+ * Used by the build-in (before the morph exists) and by the reveal effect
+ * (when the morph isn't running, e.g. font fallback), so the live wordmark is
+ * never left at its default fixed(0,0) in the viewport's top-left corner.
+ */
+function pinLiveToFlow(live: HTMLElement | null, flow: HTMLElement | null): void {
+  if (!live || !flow) return;
+  const f = flow.getBoundingClientRect();
+  gsap.set(live, { x: f.left, y: f.top, scale: 1 });
+}
+
+/**
  * The JONOKANE hero (spec §5): render-gated on the area-full FontFace,
  * per-letter build-in (once, then still), hand-tuned pair kerning.
  * Lockup (Task 4) and carve (Task 5) target the fixed LIVE wordmark layer;
@@ -47,6 +59,7 @@ export function Hero() {
   const kickerRef = useRef<HTMLSpanElement>(null);
   const taglineRef = useRef<HTMLSpanElement>(null);
   const carveRef = useRef<CarveEngine | null>(null);
+  const morphProgressRef = useRef(0);
   const [fontState, setFontState] = useState<FontState>("loading");
   const [settled, setSettled] = useState(false);
   const reducedMotion = useReducedMotionPref();
@@ -54,26 +67,34 @@ export function Hero() {
   /* Under reduced motion the live layer isn't rendered — the flow copy is
      the visible, build-in/carve target instead. */
   const lettersHost = reducedMotion ? wordmarkRef : liveWordmarkRef;
+  const morphActive = settled && fontState === "ready" && !reducedMotion;
 
+  /* ORDER IS LOAD-BEARING: useHeroLockup must stay declared *before*
+     useWordmarkMorph. Effects fire in declaration order, so the lockup writes
+     the final wordmark font-size before the morph measures the flow rect it
+     FLIPs from. Swap these two and the morph silently starts from the
+     pre-lockup (7vw) rect — a wrong start position with no error anywhere. */
   useHeroLockup({
     innerRef,
     wordmarkRef,
     kickerRef,
     taglineRef,
     mirrorRef: liveWordmarkRef,
+    mirrorMounted: !reducedMotion,
     active: settled,
   });
 
   /* stable identity: an inline closure here would re-key the morph effect on
      every render and rebuild the ScrollTrigger mid-scroll */
   const onMorphProgress = useCallback((p: number) => {
+    morphProgressRef.current = p;
     carveRef.current?.setEnabled(p === 0);
   }, []);
 
   useWordmarkMorph({
     liveRef: liveWordmarkRef,
     flowRef: wordmarkRef,
-    active: settled && fontState === "ready" && !reducedMotion,
+    active: morphActive,
     onProgress: onMorphProgress,
   });
 
@@ -88,31 +109,24 @@ export function Hero() {
   }, []);
 
   /* Build-in: runs once when the font resolves. Under reduced motion (or
-     font fallback) the letters simply appear — no flight. */
+     font fallback) there's no flight — the letters are left to the reveal
+     effect below, which fades them in (spec §12). */
   useEffect(() => {
     if (fontState === "loading" || settled) return;
     const letters = lettersHost.current?.querySelectorAll<HTMLElement>("[data-letter]");
     if (!letters || letters.length === 0) return;
 
+    if (reducedMotion || fontState === "fallback") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reduced-motion/fallback have no build-in animation to wait on; settling now hands the reveal + lockup their cue in the same commit
+      setSettled(true);
+      return;
+    }
+
     /* Pin the live copy over the flow copy before revealing it: the morph
        hook doesn't take over positioning until `settled`, so without this
        the live wordmark would build in at its default fixed(0,0) — the
        viewport's top-left corner — then jump into place once settled. */
-    if (!reducedMotion) {
-      const live = liveWordmarkRef.current;
-      const flow = wordmarkRef.current;
-      if (live && flow) {
-        const f = flow.getBoundingClientRect();
-        gsap.set(live, { x: f.left, y: f.top, scale: 1 });
-      }
-    }
-
-    if (reducedMotion || fontState === "fallback") {
-      gsap.set(letters, { opacity: 1 });
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- reduced-motion/fallback settle synchronously; letters must be visible immediately, no animated intermediate render
-      setSettled(true);
-      return;
-    }
+    pinLiveToFlow(liveWordmarkRef.current, wordmarkRef.current);
 
     const { durMs, staggerMs, fromScale, fromBlurPx, fromDropVh, ease } = wordmarkConfig.build;
     const tl = gsap.timeline({ onComplete: () => setSettled(true) });
@@ -140,6 +154,41 @@ export function Hero() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- build-in runs once per font resolution; reducedMotion is read at that moment
   }, [fontState]);
 
+  /* Reveal (the lifecycle guard the build-in can't be): the build-in is a
+     one-shot keyed to the font resolving, but `lettersHost` SWAPS whenever
+     reduced motion is toggled live — the live layer unmounts, the flow copy
+     takes over, and vice versa. The incoming host's letters ship at
+     `opacity: 0` (hero.module.css) and nothing else ever raises them, so
+     before this effect existed either toggle direction erased the wordmark
+     permanently. This asserts the visible resting state of whichever host is
+     current — and doubles as the reduced-motion "simple fade" (spec §12). */
+  useEffect(() => {
+    if (!settled || fontState === "loading") return;
+    const host = lettersHost.current;
+    const letters = host?.querySelectorAll<HTMLElement>("[data-letter]");
+    if (!letters || letters.length === 0) return;
+
+    /* Only pin when the morph isn't running: when it is, it owns the live
+       layer's transform and has already applied the current scroll progress —
+       re-pinning here would yank a docked wordmark back to the hero. */
+    if (!morphActive && host === liveWordmarkRef.current) {
+      pinLiveToFlow(host, wordmarkRef.current);
+    }
+
+    const { fadeMs, fadeEase } = wordmarkConfig.build;
+    const tw = gsap.to(letters, {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      filter: "blur(0px)",
+      duration: fadeMs / 1000,
+      ease: fadeEase,
+    });
+    return () => {
+      tw.kill();
+    };
+  }, [settled, fontState, lettersHost, reducedMotion, morphActive]);
+
   /* Cursor weight-carve (spec §5): pointer-only, starts once the wordmark
      has settled and the font is ready. IntersectionObserver starts/stops
      the engine with hero visibility so it never ticks off-screen. */
@@ -151,6 +200,11 @@ export function Hero() {
     );
     if (letterEls.length === 0) return;
     const engine = createCarveEngine(letterEls);
+    /* Seed it: the morph already ran apply(0) → onProgress() before this ref
+       existed, so that first sync was swallowed by the `?.`. Without the seed,
+       an engine created while the page is already scrolled (settled flipping
+       late) starts `enabled` with the wordmark docked in the header. */
+    engine.setEnabled(morphProgressRef.current === 0);
     carveRef.current = engine;
 
     const io = new IntersectionObserver(([entry]) =>

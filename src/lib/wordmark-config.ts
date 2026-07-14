@@ -21,6 +21,25 @@ export const wordmarkConfig = {
     fromDropVh: -18,
     /** gsap ease equivalent of cubic-bezier(0.16, 1, 0.3, 1) */
     ease: "expo.out",
+    /** Reduced motion / font fallback: the wordmark "appears by simple fade" (spec §12). */
+    fadeMs: 600,
+    fadeEase: "power2.out",
+  },
+  /**
+   * Type-lockup tunables (spec §5). The lockup ratios (kicker ≡ JONO width,
+   * tagline ≡ full wordmark width) scale with the viewport, so on small screens
+   * they drive both to unreadable sizes — these floors and the narrow breakpoint
+   * are what stop that.
+   */
+  lockup: {
+    /** Slight underfill so the one-line tagline never wraps by accident. */
+    taglineFill: 0.995,
+    /** Legibility floor for the uppercase kicker. */
+    minKickerPx: 12,
+    /** Legibility floor for the tagline (standard minimum body size). */
+    minTaglinePx: 16,
+    /** At or below this viewport width the one-line lockup is dropped outright. */
+    narrowMaxPx: 760,
   },
   hover: {
     radiusPx: 240,

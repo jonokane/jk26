@@ -11,9 +11,14 @@
   max-width: 100%;
 }
 
+/* Kicker and tagline WRAP by default and are locked to one line only once the
+   lockup has measured and decided it can be (see [data-lockup="one-line"]).
+   That default is load-bearing twice over: it's the legible phone layout, and
+   before it, `nowrap` at the pre-lockup base size made the tagline 566px wide
+   in a 390px viewport — the transient horizontal overflow of the whole intro.
+   Both are opacity: 0 until the hero settles, so nothing is visible mid-flip. */
 .kicker {
   display: inline-block;
-  white-space: nowrap;
   margin-bottom: 1.1rem;
   opacity: 0;
   transition: opacity 0.8s ease 0.1s;
@@ -54,12 +59,12 @@
 
 .tagline {
   display: inline-block;
-  white-space: nowrap;
   margin-top: 1.3rem;
   line-height: 1.45;
   color: var(--ink);
   opacity: 0;
   transition: opacity 0.8s ease 0.25s;
+  max-width: 40ch; /* a sane measure while wrapping; the one-line lock overrides */
 }
 
 .section[data-settled="true"] .kicker {
@@ -68,4 +73,30 @@
 
 .section[data-settled="true"] .tagline {
   opacity: 0.85;
+}
+
+/* The measuring state (one synchronous turn inside the lockup — never painted).
+   The ratios need each line's true UNWRAPPED width, so nothing may wrap, clamp
+   or shrink-to-fit against the parent while they're read. This is load-bearing:
+   measured against the 40ch clamp below, the tagline under-reports its one-line
+   width by ~30% and the lockup then sizes it to overshoot the wordmark. */
+.inner[data-lockup="measuring"] .kicker,
+.inner[data-lockup="measuring"] .tagline {
+  white-space: nowrap;
+  width: max-content;
+  max-width: none;
+}
+
+/* The one-line lockup (spec §5): kicker ≡ the JONO segment's width, tagline ≡
+   the full wordmark's. The lockup hook only grants this once computeLockup
+   reports the sizes it needs clear the legibility floors — below ~760px (or
+   wherever a one-line fit would go under them) the two stay wrapping text at a
+   readable size instead of being squeezed to 4px to span the wordmark. */
+.inner[data-lockup="one-line"] .kicker,
+.inner[data-lockup="one-line"] .tagline {
+  white-space: nowrap;
+}
+
+.inner[data-lockup="one-line"] .tagline {
+  max-width: none;
 }

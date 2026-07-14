@@ -11,6 +11,13 @@ interface LockupRefs {
   taglineRef: RefObject<HTMLElement | null>;
   /** Fixed live wordmark layer (Task 6) — mirrors the flow copy's font-size. */
   mirrorRef?: RefObject<HTMLDivElement | null>;
+  /**
+   * Whether the mirror layer is currently mounted. Refs don't re-run effects,
+   * so without this a live reduced-motion toggle (which mounts a *fresh* live
+   * layer) would leave that layer at its 7vw base size while the flow copy
+   * stays locked — two wordmarks of different sizes.
+   */
+  mirrorMounted?: boolean;
   /** Measure only once the font is ready/settled — fallback metrics lie. */
   active: boolean;
 }
@@ -22,6 +29,7 @@ export function useHeroLockup({
   kickerRef,
   taglineRef,
   mirrorRef,
+  mirrorMounted,
   active,
 }: LockupRefs): void {
   useEffect(() => {
@@ -33,14 +41,21 @@ export function useHeroLockup({
     if (!inner || !wordmark || !kicker || !tagline) return;
 
     const apply = () => {
-      /* reset to base sizes so measurements are idempotent */
+      /* Reset to base sizes so measurements are idempotent, and put the hero in
+         its measuring state (hero.module.css) — the ratios below need the kicker
+         and tagline's true UNWRAPPED widths, and by default both wrap. It's all
+         one synchronous turn: the browser never paints the measuring state. */
+      inner.dataset.lockup = "measuring";
       wordmark.style.fontSize = `${wordmarkConfig.sizeVw}vw`;
       kicker.style.fontSize = "";
       tagline.style.fontSize = "100px";
-      tagline.style.width = "auto";
 
       const letters = wordmark.querySelectorAll<HTMLElement>("[data-letter]");
-      if (letters.length < 4) return;
+      if (letters.length < 4) {
+        /* never leave the measuring state painted — fall back to wrapping text */
+        inner.removeAttribute("data-lockup");
+        return;
+      }
       const first = letters[0].getBoundingClientRect();
       const fourth = letters[3].getBoundingClientRect();
       const last = letters[letters.length - 1].getBoundingClientRect();
@@ -58,13 +73,17 @@ export function useHeroLockup({
         jonoPx: fourth.right - first.left,
         kickerPx: kicker.getBoundingClientRect().width,
         kickerFontPx: parseFloat(getComputedStyle(kicker).fontSize),
-        taglinePxAt100: tagline.scrollWidth,
+        taglinePxAt100: tagline.getBoundingClientRect().width,
+        viewportPx: window.innerWidth,
       });
 
       wordmark.style.fontSize = `${result.wordmarkFontPx.toFixed(2)}px`;
       if (mirrorRef?.current) mirrorRef.current.style.fontSize = wordmark.style.fontSize;
       kicker.style.fontSize = `${result.kickerFontPx.toFixed(2)}px`;
       tagline.style.fontSize = `${result.taglineFontPx.toFixed(2)}px`;
+      /* whether the lines may be locked to one line is a design decision — it
+         is expressed in CSS off this attribute, never as inline style (spec §15) */
+      inner.dataset.lockup = result.narrow ? "narrow" : "one-line";
     };
 
     apply();
@@ -81,5 +100,5 @@ export function useHeroLockup({
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
     };
-  }, [active, innerRef, wordmarkRef, kickerRef, taglineRef, mirrorRef]);
+  }, [active, mirrorMounted, innerRef, wordmarkRef, kickerRef, taglineRef, mirrorRef]);
 }
