@@ -4,6 +4,15 @@ import "./globals.css";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { preHydrationSceneScript } from "@/lib/pre-hydration-scene";
 import { FontsReady } from "@/components/fonts-ready";
+import { SceneProvider } from "@/components/sky/scene-provider";
+import { Sky } from "@/components/sky/sky";
+import { SunMoon } from "@/components/sky/sun-moon";
+import { Rays } from "@/components/sky/rays";
+import { Stars } from "@/components/sky/stars";
+import { Clouds } from "@/components/sky/clouds";
+import { Birds } from "@/components/sky/birds";
+import { TimeScrubber } from "@/components/sky/time-scrubber";
+import { SceneTunePanel } from "@/components/sky/scene-tune-panel";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,7 +58,20 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: preHydrationSceneScript }}
         />
         <FontsReady />
-        <SmoothScroll>{children}</SmoothScroll>
+        <SmoothScroll>
+          <SceneProvider>
+            <Sky>
+              <SunMoon />
+              <Rays />
+              <Stars />
+              <Clouds />
+              <Birds />
+            </Sky>
+            {children}
+            <TimeScrubber />
+            <SceneTunePanel />
+          </SceneProvider>
+        </SmoothScroll>
       </body>
     </html>
   );
