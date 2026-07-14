@@ -20,13 +20,27 @@ const MAX_LENGTHS: Record<FieldName, number> = {
 /**
  * The contact form (spec §10): a frosted slab with three labeled fields, a
  * honeypot + time-to-submit spam gate, and idle/sending/success/error states
- * announced to assistive tech. Field-level validation messages come from the
- * browser's native constraint-validation API (`validationMessage`) rather
- * than hardcoded copy — there is no siteContent string for "this field is
- * required" / "enter a valid email" yet (flagged in the build report); using
- * the native message keeps every visible string sourced from data instead of
- * authored inline, per spec §15.
+ * announced to assistive tech. Every visible string, validation copy included,
+ * comes from `siteContent` (spec §15).
  */
+
+/**
+ * Our validation copy, not the browser's ("Please fill out this field").
+ * setCustomValidity puts it in the native bubble too, so the inline message
+ * and the bubble say the same thing. It must be cleared on input — see
+ * clearFieldError — or the field stays invalid forever.
+ */
+function ourMessageFor(
+  field: FieldName,
+  el: HTMLInputElement | HTMLTextAreaElement,
+): string {
+  const copy = siteContent.contact.validation;
+  const message =
+    field === "email" && !el.validity.valueMissing ? copy.emailInvalid : copy[field];
+  el.setCustomValidity(message);
+  return message;
+}
+
 export function Contact() {
   // Mount time for the time-to-submit spam gate (spec §10). Read via a ref
   // set from an effect, not the useRef initializer — Date.now() is impure
@@ -49,7 +63,13 @@ export function Contact() {
 
   const sending = status === "sending";
 
-  function clearFieldError(field: FieldName) {
+  function clearFieldError(
+    field: FieldName,
+    el: HTMLInputElement | HTMLTextAreaElement,
+  ) {
+    /* A custom validity message sticks until it is cleared: leave it set and
+       the field stays invalid forever, so the form could never be submitted. */
+    el.setCustomValidity("");
     setFieldErrors((prev) => {
       if (!prev[field]) return prev;
       const next = { ...prev };
@@ -70,10 +90,10 @@ export function Contact() {
           | HTMLInputElement
           | HTMLTextAreaElement
           | null;
-        if (el && !el.checkValidity()) nextErrors[field] = el.validationMessage;
+        if (el && !el.checkValidity()) nextErrors[field] = ourMessageFor(field, el);
       });
       setFieldErrors(nextErrors);
-      form.reportValidity();
+      form.reportValidity(); // the native bubble now speaks in our copy too
       return;
     }
     setFieldErrors({});
@@ -136,7 +156,7 @@ export function Contact() {
               disabled={sending}
               aria-invalid={fieldErrors.name ? true : undefined}
               aria-describedby={fieldErrors.name ? nameErrorId : undefined}
-              onChange={() => clearFieldError("name")}
+              onChange={(e) => clearFieldError("name", e.currentTarget)}
               className={styles.input}
             />
             {fieldErrors.name && (
@@ -160,7 +180,7 @@ export function Contact() {
               disabled={sending}
               aria-invalid={fieldErrors.email ? true : undefined}
               aria-describedby={fieldErrors.email ? emailErrorId : undefined}
-              onChange={() => clearFieldError("email")}
+              onChange={(e) => clearFieldError("email", e.currentTarget)}
               className={styles.input}
             />
             {fieldErrors.email && (
@@ -183,7 +203,7 @@ export function Contact() {
               disabled={sending}
               aria-invalid={fieldErrors.message ? true : undefined}
               aria-describedby={fieldErrors.message ? messageErrorId : undefined}
-              onChange={() => clearFieldError("message")}
+              onChange={(e) => clearFieldError("message", e.currentTarget)}
               className={styles.textarea}
             />
             {fieldErrors.message && (

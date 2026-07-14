@@ -97,6 +97,14 @@ export const siteContent = {
     sending: "Sending",
     success: "Thanks, I will get back to you soon.",
     error: "Something went wrong on my end. Email me directly and I will pick it up:",
+    /** Field validation copy. The browser's native messages are off-brand, so
+        we supply our own and hand them to setCustomValidity (spec §15). */
+    validation: {
+      name: "Your name, so I know who I am talking to.",
+      email: "An email address, so I can write back.",
+      emailInvalid: "That email address does not look quite right.",
+      message: "Tell me a little about what you are building.",
+    },
   },
   /** Outbound links used by the About CTAs (spec §7) and contact fallback. */
   links: {
