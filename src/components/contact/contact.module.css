@@ -1,0 +1,144 @@
+/* src/components/contact/contact.module.css — contact-only styles (spec §15) */
+
+.section {
+  padding-left: 7vw;
+  padding-right: 7vw;
+  padding-top: 14vh;
+  padding-bottom: 14vh;
+  background: var(--scrim);
+}
+
+.inner {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.title {
+  font-size: clamp(2.25rem, 5vw, 3rem);
+  color: var(--ink);
+}
+
+.lede {
+  margin-top: 1rem;
+  max-width: 52ch;
+  color: var(--sub);
+  line-height: 1.6;
+}
+
+.form {
+  margin-top: 2.5rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  color: var(--sub);
+}
+
+/* Inputs cut back to the page's --scrim tone against the slab's --card-bg,
+   so the field boundary reads clearly in both a light-ink midday scene and a
+   dark-ink midnight one without ever naming a literal color. */
+.input,
+.textarea {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--scrim);
+  color: var(--ink);
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--sub);
+  opacity: 0.8;
+}
+
+.input:focus-visible,
+.textarea:focus-visible {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px var(--card-border);
+}
+
+/* No semantic "error" color exists in the token set — invalid fields are
+   marked by border weight/style, not hue. */
+.input[aria-invalid="true"],
+.textarea[aria-invalid="true"] {
+  border-width: 2px;
+  border-style: dashed;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 9rem;
+}
+
+.fieldError {
+  font-size: 0.8125rem;
+  color: var(--ink);
+  border-left: 2px solid var(--card-border);
+  padding-left: 0.6rem;
+}
+
+/* Honeypot: genuinely off-screen (not display:none, which many spam bots
+   check for and skip), plus aria-hidden + tabIndex={-1} on the input so
+   sighted visitors, keyboard users, and screen readers never encounter it. */
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  left: -9999px;
+}
+
+.submit {
+  justify-self: start;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.submit:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.statusRegion {
+  min-height: 1.5rem;
+}
+
+.sending,
+.success,
+.errorMessage {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+.errorMessage a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-top: 10vh;
+    padding-bottom: 10vh;
+  }
+}
