@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { MouseEvent } from "react";
+import { useRef, type MouseEvent } from "react";
 import { getLenis } from "@/components/smooth-scroll";
 import { HeaderWorkRow } from "@/components/work/header-work-row";
 import { useShelfState } from "@/components/work/shelf-store";
 import { siteContent } from "@/lib/site-content";
 import { WORDMARK_TEXT, wordmarkConfig, wordmarkFvs } from "@/lib/wordmark-config";
+import { useHeaderHeight } from "@/lib/use-header-height";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { useScrollSpy } from "@/lib/use-scroll-spy";
 import styles from "@/components/site-header.module.css";
@@ -41,6 +42,8 @@ function isPlainClick(e: MouseEvent): boolean {
  * §6) grows open *below* it, so the slot never moves and the morph still lands.
  */
 export function SiteHeader() {
+  const headerRef = useRef<HTMLElement>(null);
+  useHeaderHeight(headerRef);
   const pathname = usePathname();
   const isHome = pathname === "/";
   const reducedMotion = useReducedMotionPref();
@@ -91,6 +94,7 @@ export function SiteHeader() {
 
   return (
     <header
+      ref={headerRef}
       className={`site-header slab ${styles.header}`}
       data-static={isHome ? undefined : ""}
       data-work={shelf.active ? "" : undefined}

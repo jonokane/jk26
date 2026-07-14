@@ -8,9 +8,19 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  /* bottom padding clears the HUD (dots + caption) that floats over the stage */
-  padding: 13vh 7vw 15vh;
+  /* `safe` matters: plain `center` centers the OVERFLOW too when the content is
+     taller than the panel, pushing it out through the padding below and — the
+     bug — up behind the header. `safe center` falls back to flex-start exactly
+     in that case, so the clearance below always holds. */
+  justify-content: safe center;
+  /* Top padding clears the floating header, which is TWO heights: it grows a
+     second row of study pills in Work (~51px collapsed, ~107px expanded). A
+     viewport unit cannot clear a pixel height — 13vh is only 101px on a 780px
+     window, which put the case study's number and title *behind* the pill. So
+     pad by what the header actually measures (--header-h, published by
+     use-header-height.ts) and keep the vh as the floor for tall windows.
+     Bottom padding clears the HUD (dots + caption) floating over the stage. */
+  padding: max(13vh, calc(var(--header-h, 64px) + 4vh)) 7vw 15vh;
   scroll-snap-align: start;
 }
 
