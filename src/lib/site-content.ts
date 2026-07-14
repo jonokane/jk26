@@ -26,6 +26,12 @@ export const siteContent = {
     work: "Selected Work",
     contact: "Contact",
   },
+  /** Holding copy for the three anchor sections, until the real sections are wired in. */
+  placeholders: {
+    about: "The story assembles here next: four beats collecting into an About wall.",
+    work: "The work shelf arrives here: the case studies, read in full.",
+    contact: "The contact form lands here. Until then: jono@collaya.com.",
+  },
   /** The four intro beats that collect into the About wall (spec §7). Locked copy. */
   beats: [
     {

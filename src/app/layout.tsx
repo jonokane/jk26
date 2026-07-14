@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/smooth-scroll";
@@ -53,8 +54,14 @@ export default function RootLayout({
         precedence="default"
       />
       <body className="min-h-full flex flex-col">
-        <script
+        {/* Paints the correct scene before hydration so the page never flashes
+            the default midnight palette. `beforeInteractive` is the only
+            strategy that lands in the server HTML ahead of framework JS; a raw
+            <script> element would warn (React never executes scripts rendered
+            on the client) and would not run on a client navigation. */}
+        <Script
           id="scene-first-paint"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: preHydrationSceneScript }}
         />
         <FontsReady />
