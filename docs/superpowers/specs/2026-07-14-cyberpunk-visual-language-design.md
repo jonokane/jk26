@@ -2,10 +2,16 @@
 
 **Date:** 2026-07-14
 **Status:** Approved (Jono, this session)
-**Supersedes:** `2026-07-11-site-experience-design.md` §3 (the living sky) and §3.2 (derived tokens). Everything
-else in that spec — the collector (§7), the shelf (§8), the content model (§9), the farewell (§11), the hero
-wordmark and morph (§5, §6), accessibility (§12), continuous scrubbed motion (§14), code organization (§15) —
-**stands unchanged.**
+**Supersedes:** `2026-07-11-site-experience-design.md` §3 (the living sky), §3.2 (derived tokens), and the
+**hero wordmark** (§5 — face, build-in, and lockup are redesigned here; see §11). The header morph (§6) still
+applies but now flies the new face. Untouched from that spec: the collector (§7), the shelf (§8), the content
+model (§9), the farewell (§11 there), accessibility (§12), continuous scrubbed motion (§14), code organization
+(§15).
+
+**Scope note:** this revision grew past a pure repaint. It now covers the palette, the sky roster, materials,
+the contrast invariant, the lens, **and a full motion system** (the arrival, the terminal/decode language, the
+wordmark face, the slab build-in, the flying elements). Layout and the broader type system are deliberately
+left open — see §2 and §18.
 
 ---
 
@@ -29,8 +35,9 @@ human figures.
 | **DAY — the lab** (Cunningham) | High-key, blown-out, clinical. A sun that is a white hole punched through smog. Monumental, silent, **not built for people.** |
 
 The clock survives, and it now *means* something. Midnight seduces you; noon exposes you. Neither is safe,
-and neither is dull. It is not a dark site made by a dark person — it is a beautiful world with nobody good
-in it.
+and neither is dull. The register is not nihilism — there are still people in this world, or maybe we are all
+cybernetic now and can't quite remember which. It is **sleek, futuristic foreboding**: a beautiful world you
+can't be sure is still human. Ambiguity, not villainy. And certainly not cute.
 
 **The insight that made this tractable:** brightness was never the enemy. *Cuteness* was. `All Is Full of
 Love` has no dark frames and is deeply unsettling; the Vegas sequence in BR2049 is blindingly orange and one
@@ -38,18 +45,31 @@ of the most desolate images in film. So this is not a repaint. **It is a vocabul
 
 ---
 
-## 2. What is NOT changing
+## 2. Locked vs. open
 
-Stated explicitly so no one relitigates it:
+### Locked — do not relitigate
 
-- All copy and content. The MDX case studies, `site-content.ts`, the intro beats, the farewell.
-- All layout and IA. The one-pager, the collector, the horizontal shelf, `/work/[slug]`.
-- The hero wordmark: Area, the per-letter build-in, the cursor weight-carve, the shrink-to-fit lockup, the
-  optical kerning. **All of it survives untouched.**
-- The header morph and scroll-spy.
-- The scene *architecture*: 8 keyframes → `applySceneToRoot` → CSS custom properties on `<html>`. No RAF in
+- **All copy and content.** The MDX case studies, `site-content.ts`, the intro beats, the farewell. Every
+  string stays; some strings *move* (see the tagline, §11) but none are rewritten.
+- **The information architecture.** The one-pager, the collector, the horizontal shelf, `/work/[slug]`.
+- **The header morph and scroll-spy** (they now carry the new face).
+- **The scene architecture.** 8 keyframes → `applySceneToRoot` → CSS custom properties on `<html>`. No RAF in
   the scene system. Sampled once a minute. The pre-hydration first-paint script.
-- Typography (Mae for display and body).
+
+### Open for exploration — decided later, not here
+
+Jono explicitly reopened these; the spec must not claim they are settled.
+
+- **Layout.** The visual language shift may warrant layout tweaks — most concretely, the new hero lockup is
+  **centered** (§11), which likely reshuffles a hero that is left-aligned today. A dedicated layout pass.
+- **The broader type system.** The wordmark face *is* decided (§11: Config). But Mae's role as the supporting
+  face, and any other type roles, get a dedicated typography pass with the real licensed files loaded.
+
+### Changed here (was "unchanged" in the prior spec)
+
+- **The hero wordmark.** New face (Config, §11), new build-in (the arrival decode, §10), new lockup (§11). The
+  parked Area/TotalBlack heroes stay parked; the *live* wordmark is redesigned. The cursor weight-carve is an
+  open detail (§11) — it depends on whether Config ships a weight axis.
 
 ---
 
@@ -322,6 +342,10 @@ the single biggest lever for "grimy" and there is currently nothing to dial.
 **Placement:** a fixed full-viewport layer **above the content**, not in the sky. It is a *lens*, not a sky
 element, and it is **not on a time-of-day curve.**
 
+**The resting grain is where the arrival lands.** The animated boot static of §10 is the same grain, loud and
+moving; when the arrival finishes, its RAF loop stops and it settles to exactly this still grain floor. The
+lens is the steady state; the arrival is its one-time, animated entrance.
+
 **Rejected: scanlines and chromatic aberration.** These are the cyberpunk equivalent of the flapping bird —
 off-the-shelf signifiers anyone can buy, and the moment a viewer recognizes the costume, the dread leaks out.
 The sea-wall reference has grain and a lens. It has no scanlines.
@@ -331,11 +355,150 @@ the vignette must not encroach on reading columns.
 
 ---
 
-## 9. Testing
+## 9. The terminal language (the shared motion primitive)
+
+Everything text-heavy assembles the same way: it **decodes**, like a system booting. One primitive, reused,
+so the hero and the content feel like one machine coming online rather than a pile of separate effects.
+
+- **Scramble-decode.** Each letter-slot flickers through glyphs — katakana + Latin caps + digits + symbols —
+  then locks to its final character. Transient; the glyph set never ships as content.
+- **The block cursor.** A thin block in **signage cyan** (`#7fd8e8`), it rides the assembly and then **rests
+  permanently after the final glyph, blinking** (~1.05s, hard `steps(1)`): `JONOKANE_`. The cyan is not a new
+  color — it is the same accent that lights objects at night (§4.2) and flashes the slab seam (§12). One
+  accent, one logic, everywhere.
+- **Chaotic, not marching.** Letters ignite at random moments and resolve at random speeds ("both" mechanic:
+  cursor **and** scramble together). The result reads as a system *fighting to lock*, not a tidy typewriter.
+
+**The kerning trap (learned this session).** To keep the scramble from jittering, it is tempting to force every
+letter into an identical-width box. That is correct *during* the scramble and **wrong at rest** — a narrow
+letter (J) floats in a wide box with a huge gap. The rule: **fixed per-letter boxes only while scrambling;
+natural per-letter widths at rest.** Measure each final letter's width, lock the box to *that* (not a uniform
+width), so kerning is correct at rest and the scramble still never reflows. Same family of bug as everything
+else here: a device that is right in one state and wrong in the next, with no handoff between them.
+
+---
+
+## 10. The arrival (first-paint choreography)
+
+A one-time cinematic when the hero loads. This is the site's signature — the dead channel tuning in.
+
+1. **Boot static** (~900ms). Full-viewport animated TV noise (canvas, fresh random per frame) with a bright
+   hold-roll bar sweeping down. This is the *only* animated noise in the system.
+2. **The flash** (~60ms). A fast white bloom as the signal "locks."
+3. **The signal collapse** (~1900ms). The picture tears itself apart: a strong **vertical feedback smear**
+   (long downward streaks — grainy at the top, pulling into streaks toward the bottom, matching Jono's
+   reference frame), **horizontal raster tears**, a dizzying **hold-slip**, and it fades out — revealing the
+   dark sky behind (reads as "to black"). This collapse is the visual-identity moment.
+4. **The name survives.** JONOKANE assembles **in front of** the collapse and builds *concurrently* with it
+   (§9), clamped to finish within the collapse. Everything falls apart except the name. (Layering bug found &
+   fixed this session: the wordmark must sit **above** the signal layer, and the signal must die by fading its
+   opacity, not by painting black onto a feedback canvas — that stacks to opaque and buries the wordmark.)
+5. **The subtitle** fades in last, once the name is whole and the signal is gone (§11).
+6. **Settle.** The RAF loop **stops**; the still §8 grain floor remains.
+
+**Performance & restraint.** The animated noise runs once, for ~2.8s total, then the loop is torn down — there
+is no ongoing per-frame animation, so it is impactful without being a battery or jank cost. This is the
+answer to "make it unique but not annoying": loud for a moment, then it is simply the resting grain, forever.
+
+**Timing values are starting points** (boot 900ms; collapse ~1900ms; wordmark ignites just after the flash).
+Tunable, like the palette.
+
+---
+
+## 11. The wordmark & lockup
+
+### 11.1 The face — Config
+
+The wordmark moves to **Config** (or its family): a **thin, geometric, monoline** sans — circular O, pointed
+A apex, even strokes. **Weight 300, tracking .14em.** This is a deliberate turn *away* from a bold techy
+grotesque (which read as aggressive) toward **clinical precision** — which is the Cunningham half of the
+thesis. Config is licensed; in mockups **Jost** stands in for it (same Futura-geometric skeleton). The real
+file ships through the font pipeline that already serves Area and Mae. If Config is unavailable, the brief for
+a substitute is: thin, geometric, monoline, circular O, pointed A.
+
+**Legibility caveat:** thin light strokes on the near-black night sky are the risk case. **Weight 300 is the
+floor** — 200 may look beautiful on desktop and vanish on a phone at noon under grain + vignette. Verify
+across all eight scenes before locking a lighter weight.
+
+### 11.2 The lockup
+
+- **Stacked, centered, tight.** `JONOKANE` over the kicker, ~12px gap. (Centered is a *new* alignment and is
+  the concrete reason layout is reopened — see §2.)
+- **The kicker** is `siteContent.kicker` = "Product Design Leader & Strategist", **all-caps, .34em tracking**,
+  in the supporting face (Mae), centered.
+- **Width-justified.** The wordmark is scaled so its rendered width **exactly matches the kicker's**, measured
+  live, so their left/right edges align. A locked relationship: change the kicker and the wordmark
+  re-justifies. This is lockup math in the spirit of the existing shrink-to-fit hero (`lockup-math.ts`).
+- **True centering.** Letter-spacing adds a trailing track after the last glyph; a centered line must cancel
+  it (negative right margin = the track) or it sits visibly left of center. Applies to both lines.
+
+### 11.3 The tagline relocates (not lost)
+
+`siteContent.tagline` — "I shape strategy, build teams, lead design, and code the front end that brings it to
+life." — is **locked copy that no longer lives in the hero lockup** (the lockup now carries the shorter
+kicker). It moves — most likely the opening line of About, or a hero supporting line — in the **layout pass**.
+It must not be dropped. Recorded here so the relocation is a deliberate decision, not an accident.
+
+### 11.4 Open detail — the carve
+
+The old hero had a cursor weight-carve (`carve-engine.ts`) that needs a variable weight axis. Whether it
+survives depends on Config shipping a `wght` axis. If it does, keep the carve; if not, either drop it or
+replace the hover with a different treatment. Decide when the real font is in hand.
+
+---
+
+## 12. The slab build-in (two tiers)
+
+Every slab, card, and form reveals on scroll. **Two tiers, so the page has one loud moment per section and
+several quiet ones** — a full decode on every card would exhaust the eye.
+
+**Hero-level slabs** (the first case study, the contact form):
+- **Split.** A vertical **cyan seam** flashes/blinks, then the box **expands from that seam** to full width
+  via `scaleX`, **Expo-out** easing (`cubic-bezier(.16,1,.3,1)`), ~760ms.
+- Then the content **decodes in** (§9): label, heading (scramble + cursor), meta, footer — staggered.
+- The seam is the same signage cyan as the cursor and the night-glow.
+
+**Secondary slabs** (repeated cards):
+- **Sweep.** The box grows from the **left edge** via `scaleX`, ~480ms, quieter easing
+  (`cubic-bezier(.22,1,.36,1)`). **No seam. No decode** — content simply fades in after the box opens.
+  Staggered as each enters the viewport.
+
+**Implementation note (learned this session): use `transform: scaleX` via the Web Animations API, not
+`clip-path`.** A `clip-path: inset(... round 4px)` will not interpolate the `round` and **jumps** — no easing
+is visible and the reveal just pops. Transforms animate reliably and the easing is applied explicitly by
+WAAPI. (Two failed clip-path attempts confirmed this before the switch.)
+
+---
+
+## 13. Flying elements — "The Pass" (parked, toggleable)
+
+**The governing principle: pure light, no geometry.** Every attempt to *model* a craft read as cheesy
+low-poly — the same trap as the cute clouds and the flapping bird, one more time. A modeled object at low
+fidelity is always worse than no object. So: **no craft models. Only light and motion in perspective; the
+viewer's brain supplies the ship.**
+
+**The Pass.** Rarely — once every minute or two — a **single** bright light streaks from beside the viewer to
+the vanishing point (receding: shrinking, slowing, fading into the haze), throwing a brief **anamorphic
+flare** as it passes close. An *event*, not ambient traffic. It ties to the megastructure's vanishing point
+(§5) and rides the parallax layers.
+
+**Behind a weight/flag, defaulting conservative.** Jono's live concern: a lone light drifting past a quiet sky
+can read as *odd* rather than intentional. So The Pass is gated like any sky element — a weight that can go to
+**zero**, leaving the sky empty at no cost. Ship it low; if it looks weird in context, disable it. Nothing
+depends on it: the palette, megastructure, grain, and arrival carry the world alone.
+
+**Parked alternative — Skylanes.** Continuous sparse streams of light receding to the vanishing point
+(Blade Runner traffic). Documented as the option if the site ever wants *more* life instead of less.
+
+---
+
+## 14. Testing
 
 The unit tests in this project have passed through every single defect it has ever had, because **the math
-was always right and the wiring was always wrong.** These three are designed to catch the specific wiring
-failures this change introduces:
+was always right and the wiring was always wrong.** The scene-math tests below catch the specific wiring
+failures this change introduces. (The arrival, decode, and slab reveals are presentational choreography, not
+math — they are verified by eye in the real site, not unit-tested; but the **lockup width-justify** is math
+and gets a test.)
 
 1. **Contrast invariant, swept across hours.** Assert §7 holds — not only at the 8 keyframes, but at a sweep
    of *interpolated* hours (every 0.25h). **Testing only the keyframes would miss a violation that lives
@@ -345,51 +508,73 @@ failures this change introduces:
 3. **Pre-hydration sync.** The existing test that pins the inline first-paint script's math to
    `scene-engine.ts` must be updated and must keep passing. The script writes 5 vars (`top/mid/hor/ink/sub`)
    and is structurally unaffected, but the keyframe table it serializes changes.
+4. **Lockup width-justify.** The wordmark-scaling math (§11.2) — given a kicker width and the wordmark's
+   natural metrics, it must return a wordmark size whose rendered width equals the kicker's. Pin it like
+   `lockup-math.ts` is pinned today.
 
 ---
 
-## 10. Accessibility, motion, and mobile
+## 15. Accessibility, motion, and mobile
 
-- **`prefers-reduced-motion`:** no parallax; haze drift stops; stars stop twinkling; **transports freeze in
-  place rather than vanish.** (The birds *vanished* because they were decoration. Transports are scenery —
-  a stationary machine in the sky is still a machine in the sky.) The scene remains correct for the hour.
-- **Grain and vignette are static**, so they are unaffected by reduced motion.
+- **`prefers-reduced-motion` — the sky:** no parallax; haze drift stops; stars stop twinkling; **transports
+  freeze in place rather than vanish.** (The birds *vanished* because they were decoration. Transports are
+  scenery — a stationary machine in the sky is still a machine in the sky.) The scene remains correct for the
+  hour. **The Pass (§13) is off** entirely under reduced motion.
+- **`prefers-reduced-motion` — the arrival & reveals:** the **arrival collapse and decode are skipped** — the
+  hero renders the settled wordmark and subtitle immediately (no boot static, no signal drop, no scramble).
+  The **slab build-in is skipped** — slabs are simply present, content shown, no seam, no sweep, no decode.
+  Motion is a garnish here; the content underneath must be whole without it.
+- **Grain and vignette are static**, so they are unaffected by reduced motion. The animated boot static,
+  however, is motion — hence it is gated above.
 - **Mobile.** The megastructure needs a **phone composition, not a scaled-down desktop one** — a distinct
   `viewBox` crop, since a wide cinematic frame squeezed into a portrait viewport loses its vanishing point.
   Grain must use a fixed-size tile so it does not shimmer at 2× DPR. Parallax is scroll-driven only (no
-  pointer axis).
+  pointer axis). The arrival's boot-static canvas must be sized to the device pixel ratio without allocating a
+  full-res noise buffer (a small offscreen noise canvas scaled up — the technique the prototype used).
 - **The hero clear zone.** Composition rule: no structure of competing value may sit behind the wordmark's
   lockup. §7 makes this survivable; composition makes it good.
 
 ---
 
-## 11. Files
+## 16. Files
 
-**Create**
+**Create — sky & materials**
 - `src/components/sky/megastructure.tsx`
-- `src/components/sky/lens.tsx` — grain + vignette
+- `src/components/sky/lens.tsx` — grain + vignette (the resting texture)
 - `src/components/sky/use-sky-parallax.ts` — rides the existing GSAP ticker
+- `src/components/sky/the-pass.tsx` — the flying-light event (§13), gated by a weight/flag
+
+**Create — motion system**
+- `src/components/hero/arrival.tsx` — the boot-static → collapse → decode choreography (§10); tears down its
+  own RAF loop on settle
+- `src/lib/decode-engine.ts` — the shared terminal/decode + cursor primitive (§9); pure timing/glyph logic,
+  unit-testable, framework-agnostic (house style of `carve-engine.ts`)
+- `src/lib/lockup-justify.ts` — width-justify math (§11.2), pinned like `lockup-math.ts`
+- `src/components/work/slab-reveal.ts` (or a hook) — the two-tier `scaleX` reveal via WAAPI (§12)
 
 **Rename (and rewrite the contents)**
 - `clouds.tsx` → `haze.tsx`
 - `birds.tsx` → `transports.tsx`
 
 **Modify**
-- `src/lib/scene-config.ts` — the 8 keyframes; 2 weight renames + re-curves
+- `src/lib/scene-config.ts` — the 8 keyframes; 2 weight renames + re-curves; add a `pass` weight (§13)
 - `src/lib/scene-engine.ts` — `--daylight`, `--struct-*`, `--slab-bg`, the elevation formula, the contrast clamp; **delete** the `inkLight` card-bg branch
 - `src/components/sky/sky.module.css` — all sky visuals; **delete `@keyframes flap`**
-- `src/app/globals.css` — radius tokens; rebuild `.slab` / `.pill` on elevation; drop `backdrop-filter`
-- `src/components/sky/scene-tune-panel.tsx` — renamed weights
-- `src/app/layout.tsx` — mount `<Lens />` above the content
+- `src/app/globals.css` — radius tokens; rebuild `.slab` / `.pill` on elevation; drop `backdrop-filter`; wire the Config `@font-face`/kit and the wordmark/kicker type roles
+- `src/lib/site-content.ts` — no copy changes; the tagline **relocates** in markup (§11.3), it does not move file
+- `src/components/hero/` — the wordmark component adopts Config + the arrival build-in + the centered, width-justified lockup (§11); reconcile with the header morph and the carve (§11.4)
+- `src/components/sky/scene-tune-panel.tsx` — renamed weights + `pass`
+- `src/app/layout.tsx` — mount `<Lens />` above the content; host the arrival on first paint
 - `src/lib/pre-hydration-scene.ts` — verify it still tracks the engine
 
 **Tests**
 - `src/lib/scene-engine.test.ts` — renames, new tokens, **contrast invariant swept across hours**, **slab continuity**
 - `src/lib/pre-hydration-scene.test.ts` — keep in sync
+- `src/lib/lockup-justify.test.ts` — width-justify math (§11.2, test #4 in §14)
 
 ---
 
-## 12. Explicitly rejected
+## 17. Explicitly rejected
 
 Recorded so we do not relitigate them.
 
@@ -405,14 +590,22 @@ Recorded so we do not relitigate them.
 | "Kill the clock" / perpetual dark | **Secretly kills the feature while keeping the code.** If every hour is a shade of dark, no visitor ever notices the cycle. |
 | Hot sodium noon (no grey at all) | Seamless, but *pretty* — and pretty is the trap we are running from. |
 | Constant near-black slab | Dies at midnight. Nowhere to go. |
+| Bold grotesque wordmark (Space Grotesk et al.) | Reads as *aggressive tech*. Config's thin geometric reads as *clinical precision* — the Cunningham half of the thesis. |
+| Uniform-width letter boxes at rest | Correct during the scramble, wrong at rest — narrow letters float (the "J⎵ONOKANE" bug). Natural widths at rest. |
+| `clip-path` slab reveal | `round`-cornered `inset()` doesn't interpolate; it jumps. Transforms via WAAPI instead. |
+| Modeled craft / low-poly ships, busy drones, Tron expanding rings | Cheesy at low fidelity, or busy (dilutes menace), or overtly game-UI. Replaced by "pure light in perspective" (§13). |
 
 ---
 
-## 13. Deferred
+## 18. Deferred
 
-- **The 3D upgrade.** Decide after the flat layer is live and has been seen at several hours (§5.3).
-- **A clock control in the nav.** Surfacing the existing time-scrubber to visitors, so the living sky becomes
-  something they can *play with* rather than merely receive. Jono's idea; a strong one; a later phase.
-  It also directly mitigates the one real cost of this palette — that most visitors only ever see one hour.
-- **OG images.** They are static and cannot recolor. One hour must be chosen; Dusk or Midnight are the most
-  striking candidates.
+- **The layout pass.** The centered hero lockup (§11) and the shift in visual language reopen layout; the
+  tagline relocation (§11.3) lands here. Its own exploration.
+- **The typography pass.** Confirm Mae as the supporting face and settle any other type roles, with the real
+  licensed files loaded (mockups used free stand-ins — Jost for Config, Helvetica for Mae).
+- **Acquire Config** (or select the substitute per §11.1's brief) and wire it into the font pipeline.
+- **The carve × new face.** Resolve §11.4 once Config's axes are known.
+- **The 3D upgrade.** Decide after the flat megastructure is live and seen at several hours (§5.3).
+- **A clock control in the nav.** Surface the time-scrubber to visitors so the living sky is something they
+  *play with*. Directly mitigates this palette's one real cost — that most visitors only ever see one hour.
+- **OG images.** Static, cannot recolor. Pick one hour; Dusk or Midnight are the most striking.
