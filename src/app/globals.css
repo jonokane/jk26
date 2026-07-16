@@ -167,22 +167,28 @@ html.lenis body {
      geometry — these belong here, not as !important utilities in the markup
      (spec §15). On the home page it rides in when the wordmark morph (or its
      reduced-motion fallback) sets `header-on` on <html>. */
+  /* A full-bleed bar flush to the top edge, per spec §7 and the Portfolio v2
+     prototype's #nav (Jono's call, 2026-07-16). It was a floating rounded pill
+     inherited from the parked Cold Noon design — which is why the glass carries
+     a `border-bottom` hairline: on a radiused pill that drew a chord across the
+     bottom instead of an edge under the nav. Sharp by default is the house rule
+     (spec §Layout: "radii: sharp by default"). */
   .site-header {
     position: fixed;
-    inset-inline: 2vw;
-    top: 14px;
-    z-index: 40; /* the live wordmark (z-41) lands on top of the pill */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40; /* the live wordmark (z-45) lands on top of the bar */
     display: flex;
     align-items: center;
     gap: 3vw;
-    border-radius: 15px;
-    padding: 12px 24px;
+    padding: 26px 6vw;
     opacity: 0;
     transform: translateY(-16px);
     visibility: hidden;
     transition:
-      opacity 0.35s ease,
-      transform 0.45s cubic-bezier(0.3, 0.8, 0.3, 1),
+      opacity 0.4s ease,
+      transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
       visibility 0s 0.45s;
   }
 

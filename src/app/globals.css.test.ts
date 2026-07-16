@@ -76,6 +76,36 @@ const headerCss = readFileSync(
   "utf8",
 );
 
+/* The nav is a full-bleed bar, not the floating pill it inherited from the
+   parked Cold Noon design (spec §7 + the Portfolio v2 prototype's #nav; Jono's
+   call 2026-07-16). This matters beyond taste: the glass carries a
+   `border-bottom` hairline, which on a radiused pill draws a chord across the
+   bottom rather than an edge under the nav. Nothing else pins the geometry —
+   the same way --nav-glass sat declared-but-unconsumed for a whole phase. */
+describe("nav geometry", () => {
+  const navRule = (() => {
+    const i = css.indexOf(".site-header {");
+    return css.slice(css.indexOf("{", i) + 1, css.indexOf("}", i));
+  })();
+
+  it("is flush to the top edge and full width", () => {
+    expect(navRule).toMatch(/top:\s*0/);
+    expect(navRule).toMatch(/left:\s*0/);
+    expect(navRule).toMatch(/right:\s*0/);
+    expect(navRule).not.toMatch(/inset-inline/);
+  });
+
+  it("uses the prototype's bar padding", () => {
+    expect(navRule).toMatch(/padding:\s*26px\s+6vw/);
+  });
+
+  /* "Radii: sharp by default" (spec §Layout). A radius here is the pill
+     coming back. */
+  it("has no radius", () => {
+    expect(navRule).not.toMatch(/border-radius/);
+  });
+});
+
 describe("nav glass", () => {
   /* The tokens existed in both palettes for a whole phase while the header
      rendered transparent, because nothing consumed them. Assert the wiring,
