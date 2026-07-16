@@ -1,244 +1,29 @@
-/* src/components/about/about.module.css — About section only (spec §15) */
-
-/* ============================================================================
-   The static document — the reduced-motion path (spec §12), the no-JS path,
-   and what the server always sends. The collector below is layered on top of
-   exactly these elements; nothing here depends on the collector existing.
-   ========================================================================== */
-
-/* The top padding IS the scrim runway (see .scrim-ramp in globals.css): the
-   scrim finishes fading in exactly where the copy begins, so the fixed moon
-   never drifts through the lede. Move one, move the other. */
-.section {
-  --scrim-runway: 26vh;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: var(--scrim-runway) 7vw 16vh;
+.about {
+  min-height: 100vh;
+  padding: 16vh 6vw 10vh;
 }
 
-/* The collector's containers (a stage, and the two groups that fade in with
-   the assembled wall) are invisible to the static layout — the heading, the
-   lede, the wall and the CTA rows stay direct children of the section's flex
-   column, exactly as if they were never wrapped. */
-.stage,
-.intro,
-.footer {
-  display: contents;
-}
-
-.heading {
-  margin: 0;
+.title {
+  font-size: clamp(2.6rem, 7vw, 6.5rem);
+  font-variation-settings: "wght" 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--about);
 }
 
 .lede {
-  margin-top: 1.25rem;
-  max-width: 62ch;
-  line-height: 1.6;
-}
-
-/* The About wall (spec §7): 2x2 grid, single column under ~760px. */
-.wall {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
-  margin-top: 4rem;
-  width: 100%;
-}
-
-@media (max-width: 760px) {
-  .wall {
-    grid-template-columns: 1fr;
-  }
-}
-
-.beat {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.beatTitle {
-  margin: 0;
-}
-
-/* Slab body text renders in --ink at ~88% opacity, carrying the scene text
-   glow (spec §3.2, §7). */
-.statement {
-  margin: 0;
+  margin-top: 26px;
+  max-width: 52ch;
+  font-size: clamp(1.15rem, 1.9vw, 1.72rem);
+  line-height: 1.34;
   color: var(--ink);
-  opacity: 0.88;
-  line-height: 1.55;
-  text-shadow: 0 2px 26px var(--text-glow);
 }
 
-.ctas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 3.5rem;
-}
-
-.secondary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-/* Motion chrome, and only that: the tray it captions exists only inside the
-   collector. */
-.trayHint {
-  display: none;
-}
-
-/* ============================================================================
-   The collector (spec §7). Each beat rises, holds center stage, and pockets
-   into a tray — and then comes to rest, differently on each screen:
-
-     desktop → the tray unpacks into the 2×2 wall, inside a sticky stage
-     phone   → the section releases and the beats fly home into the document
-
-   `data-collector` is set by use-collector.ts, never by React: the layout here
-   and the transforms that place things inside it are two halves of one thing,
-   and they arrive and leave together. Positions live in collector-config.ts (a
-   transform can only be scrubbed in JS); everything CSS can own — the travel,
-   the beat's width and type scale, the stacking — lives here.
-
-   The breakpoint below is the one collector-config.ts asks matchMedia about.
-   Move one, move the other, or the stylesheet lays out one collector while the
-   math poses the other.
-   ========================================================================== */
-
-.section[data-collector] .beat {
-  transform-origin: top left;
-  /* The effect owns opacity from its first frame; until then, nothing. */
-  opacity: 0;
-  will-change: transform, opacity;
-}
-
-.section[data-collector] .trayHint {
-  display: block;
-  left: 7vw;
-  /* Above the tray, not on it: the tokens are as tall as the beat they came
-     from (scaled), so a hint pinned to the bottom edge lands on the first one. */
-  bottom: 15vh;
-  z-index: 2;
-  margin: 0;
-  font-size: 0.72rem;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ---------------------------------------------------------------------------
-   Desktop: a tall section with a sticky 100vh stage. The content is lifted out
-   of the flow into the stage, and the tray unpacks into the wall inside it.
-   --------------------------------------------------------------------------- */
-@media (min-width: 761px) {
-  .section[data-collector] {
-    /* (beats + 1.6) * 110vh — the prototype's section height. The spare 1.6 is
-       the assembly plus the runway the sticky stage needs to hold the finished
-       wall before it releases. */
-    --collector-travel: 110vh;
-    display: block;
-    padding: 0;
-    height: calc((var(--collector-beats) + 1.6) * var(--collector-travel));
-  }
-
-  .section[data-collector] .stage {
-    display: block;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  /* The wall stops laying anything out — its beats are placed by transform,
-     against the stage. */
-  .section[data-collector] .wall {
-    display: block;
-    margin: 0;
-  }
-
-  .section[data-collector] .beat {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: min(62vw, 640px);
-  }
-
-  /* Center stage the statement is display-sized; at the wall's 0.55 it lands
-     back at reading size. One beat, two roles, one type ramp. */
-  .section[data-collector] .statement {
-    font-size: clamp(1.4rem, 2.6vw, 2.2rem);
-    line-height: 1.4;
-  }
-
-  .section[data-collector] .beatTitle {
-    font-size: 0.95rem;
-  }
-
-  .section[data-collector] .intro {
-    display: block;
-    position: absolute;
-    left: 7vw;
-    top: 9vh;
-    z-index: 4;
-    opacity: 0;
-  }
-
-  .section[data-collector] .footer {
-    display: flex;
-    align-items: center;
-    gap: 2.125rem;
-    position: absolute;
-    left: 7vw;
-    bottom: 7vh;
-    z-index: 4;
-    opacity: 0;
-    /* An invisible CTA must not be tabbable. Visibility (not opacity) is what
-       takes it out of the tab order and the a11y tree; the heading and lede
-       stay in both, so the section is still readable to a screen reader that
-       has not scrolled the collector through. */
-    visibility: hidden;
-  }
-
-  .section[data-collector][data-assembled] .footer {
-    visibility: visible;
-  }
-
-  .section[data-collector] .ctas,
-  .section[data-collector] .secondary {
-    margin-top: 0;
-  }
-
-  .section[data-collector] .trayHint {
-    position: absolute;
-  }
-}
-
-/* ---------------------------------------------------------------------------
-   Phone (spec §12, and Jono's call on the finish): no stage, no pin. The whole
-   document stays exactly where the static layout put it — heading, lede, four
-   full-size slabs, CTAs — and the section simply grows a runway of scroll above
-   it. The choreography plays out over that runway by *transforming* the beats
-   into the viewport, which does not reflow them: their places in the page are
-   held the whole time. At the end the transform goes to zero, they are home,
-   and the reader scrolls the About document like any other page.
-
-   So there is nothing to un-pin, and nothing to put back.
-   --------------------------------------------------------------------------- */
-@media (max-width: 760px) {
-  .section[data-collector] {
-    --collector-travel: 88vh;
-    /* The runway: one screen of scroll per beat, plus one for the flight home.
-       use-collector.ts reads this back off the section — CSS owns the number. */
-    padding-top: calc((var(--collector-beats) + 1) * var(--collector-travel));
-  }
-
-  /* Lifted into the viewport by transform, so it must not be clipped or
-     scrolled by anything: it is drawn where the document isn't. */
-  .section[data-collector] .trayHint {
-    position: fixed;
-  }
+.statement {
+  margin-top: 0.9em;
+  max-width: 30ch;
+  font-size: clamp(1.4rem, 2.5vw, 2.5rem);
+  font-variation-settings: "wght" 440;
+  line-height: 1.18;
+  color: var(--about);
 }

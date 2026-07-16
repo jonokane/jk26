@@ -4,8 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, type MouseEvent } from "react";
 import { navigateTo } from "@/lib/scroll-nav";
-import { HeaderWorkRow } from "@/components/work/header-work-row";
-import { useShelfState } from "@/components/work/shelf-store";
 import { siteContent } from "@/lib/site-content";
 import { useHeaderHeight } from "@/lib/use-header-height";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
@@ -47,7 +45,6 @@ export function SiteHeader() {
   const isHome = pathname === "/";
   const reducedMotion = useReducedMotionPref();
   const active = useScrollSpy(siteContent.nav.map((n) => n.target));
-  const shelf = useShelfState();
 
   /* On `/` with motion, the flying live wordmark is what you see land here. */
   const slotVisible = !isHome || reducedMotion;
@@ -89,7 +86,6 @@ export function SiteHeader() {
       ref={headerRef}
       className={`site-header slab ${styles.header}`}
       data-static={isHome ? undefined : ""}
-      data-work={shelf.active ? "" : undefined}
     >
       <div className={styles.top}>
         {isHome ? (
@@ -119,8 +115,6 @@ export function SiteHeader() {
           ))}
         </nav>
       </div>
-
-      <HeaderWorkRow />
     </header>
   );
 }
