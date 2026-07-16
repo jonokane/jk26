@@ -86,15 +86,29 @@ describe("nav glass", () => {
   });
 
   it("applies the prototype's blur and saturate", () => {
-    expect(headerCss).toMatch(/backdrop-filter:\s*blur\(20px\)\s+saturate\(1\.4\)/);
+    expect(headerCss).toMatch(/(?<!-webkit-)backdrop-filter:\s*blur\(20px\)\s+saturate\(1\.4\)/);
     expect(headerCss).toMatch(/-webkit-backdrop-filter:\s*blur\(20px\)\s+saturate\(1\.4\)/);
   });
 
+  /* The order is load-bearing, not style. Authored standard-first, Turbopack
+     dropped the unprefixed declaration from the compiled chunk and the nav
+     rendered with no blur — while the unit tests, build and lint all stayed
+     green. The prefixed property MUST come first. */
+  it("keeps -webkit-backdrop-filter before the standard property", () => {
+    const webkit = headerCss.indexOf("-webkit-backdrop-filter");
+    const standard = headerCss.search(/(?<!-webkit-)backdrop-filter:/);
+    expect(webkit).toBeGreaterThan(-1);
+    expect(standard).toBeGreaterThan(-1);
+    expect(webkit).toBeLessThan(standard);
+  });
+
   /* --scrim was a scene token deleted in Phase 1. Referencing it silently
-     paints nothing. */
+     paints nothing. --card-border was never declared in either v3 palette
+     either — the divider/hairline token is --hairline. */
   it("references no deleted scene tokens", () => {
     expect(headerCss).not.toContain("--scrim");
     expect(headerCss).not.toContain("--card-bg");
     expect(headerCss).not.toContain("--sub");
+    expect(headerCss).not.toContain("--card-border");
   });
 });

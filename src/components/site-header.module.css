@@ -14,6 +14,15 @@
   align-items: stretch;
   gap: 0;
   background: var(--nav-glass);
+  /* Order is load-bearing: the vendor-prefixed declaration below MUST be
+     written before the standard one. Authored the other way round
+     (standard-first, prefix-last — the usual CSS convention), Turbopack
+     silently drops the unprefixed declaration from the compiled chunk:
+     getComputedStyle(header).backdropFilter reads "none" and the nav
+     renders with no blur at all. Tests, `pnpm build` and `pnpm lint` all
+     stay green because they read/produce the source, which looks fine —
+     this only shows up in a browser's computed style. Do not reorder
+     the two declarations below. */
   -webkit-backdrop-filter: blur(20px) saturate(1.4);
   backdrop-filter: blur(20px) saturate(1.4);
   border-bottom: 1px solid var(--nav-edge);
@@ -69,7 +78,7 @@
   gap: 1rem;
   padding-top: 12px;
   margin-top: 12px;
-  border-top: 1px solid var(--card-border);
+  border-top: 1px solid var(--hairline);
 }
 
 .project {
@@ -132,7 +141,7 @@
 .pill[aria-current] {
   color: var(--ink);
   background: var(--row-hover);
-  border-color: var(--card-border);
+  border-color: var(--hairline);
 }
 
 @media (max-width: 47.99rem) {
