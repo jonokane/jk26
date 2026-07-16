@@ -159,4 +159,23 @@
   .scrollCue {
     transition: none;
   }
+
+  /* The from-state must never reach a reduced-motion visitor, not even for
+     the frame before hydration. useReducedMotionPref is hydration-safe, so
+     SSR ships data-built="false" and the from-state would paint first — a
+     giant blurred wordmark for exactly the people who asked for less
+     motion. A feature query resolves at first paint, with no JS, so it
+     cannot flash. Same tie-break rules as the .letter gradient block above:
+     this comes after the from-state rules earlier in the file so it wins
+     the specificity tie. */
+  .hero[data-built="false"] .letter,
+  .hero[data-built="false"] .kicker,
+  .hero[data-built="false"] .tagline,
+  .hero[data-built="false"] .scrollCue,
+  .hero[data-run-done="false"] .tagline,
+  .hero[data-run-done="false"] .scrollCue {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }

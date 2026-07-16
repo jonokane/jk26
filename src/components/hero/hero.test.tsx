@@ -159,3 +159,61 @@ describe("build-in", () => {
     expect(container.querySelector("section")!.getAttribute("data-built")).toBe("true");
   });
 });
+
+describe("reduced-motion first-paint guard", () => {
+  /* useReducedMotionPref is hydration-safe: it returns false on the server
+     and on the first client render, correcting only in a later effect. SSR
+     therefore ships data-built="false", and the JS path alone cannot stop
+     the from-state painting before hydration commits — a giant, blurred,
+     transparent wordmark for exactly the visitors who asked for less
+     motion. A @media (prefers-reduced-motion: reduce) query is resolved by
+     the browser at first paint, before any script runs, so the guard has
+     to live there and must not depend on data-built at all.
+
+     There are two reduced-motion blocks in the file (one guts the drift
+     keyframe, one guts the transitions); the guard under test is the rule
+     added to the second, so this locates that block specifically rather
+     than the first match. */
+  it("neutralises the from-state inside the reduced-motion media block, independent of data-built", () => {
+    const mediaStart = css.lastIndexOf("@media (prefers-reduced-motion: reduce)");
+    expect(mediaStart).toBeGreaterThan(-1);
+    const mediaOpen = css.indexOf("{", mediaStart);
+    let depth = 0, mediaEnd = mediaOpen;
+    for (let i = mediaOpen; i < css.length; i++) {
+      if (css[i] === "{") depth++;
+      else if (css[i] === "}") { depth--; if (depth === 0) { mediaEnd = i; break; } }
+    }
+    const mediaBlock = css.slice(mediaOpen, mediaEnd);
+
+    /* Locate the guard rule by its selector, then slice its own declaration
+       body by brace-matching (not the whole media block) so a comment or a
+       neighbouring rule can't make this pass for the wrong reason. */
+    const selector = '.hero[data-built="false"] .letter';
+    const selectorStart = mediaBlock.indexOf(selector);
+    expect(selectorStart).toBeGreaterThan(-1);
+    const ruleOpen = mediaBlock.indexOf("{", selectorStart);
+    const ruleClose = mediaBlock.indexOf("}", ruleOpen);
+    const ruleSelectorList = mediaBlock.slice(selectorStart, ruleOpen);
+    const ruleBody = mediaBlock.slice(ruleOpen, ruleClose);
+
+    /* The from-states this guard must cover: the letters, the eyebrow/tagline
+       /scroll cue gated by data-built, and the tagline/scroll cue's second
+       gate on data-run-done. */
+    expect(ruleSelectorList).toContain('.hero[data-built="false"] .kicker');
+    expect(ruleSelectorList).toContain('.hero[data-built="false"] .tagline');
+    expect(ruleSelectorList).toContain('.hero[data-built="false"] .scrollCue');
+    expect(ruleSelectorList).toContain('.hero[data-run-done="false"] .tagline');
+    expect(ruleSelectorList).toContain('.hero[data-run-done="false"] .scrollCue');
+
+    expect(ruleBody).toMatch(/(?<![\w-])opacity:\s*1\s*;/);
+    expect(ruleBody).toMatch(/(?<![\w-])transform:\s*none\s*;/);
+    expect(ruleBody).toMatch(/(?<![\w-])filter:\s*none\s*;/);
+
+    /* Selector specificity is identical to the from-state rules it must
+       beat, so only source order decides the winner: the guard has to
+       appear after every from-state rule it neutralises. */
+    expect(mediaStart).toBeGreaterThan(css.indexOf('.hero[data-built="false"] .letter {'));
+    expect(mediaStart).toBeGreaterThan(css.indexOf('.hero[data-built="false"] .kicker,'));
+    expect(mediaStart).toBeGreaterThan(css.indexOf('.hero[data-run-done="false"] .tagline,'));
+  });
+});
