@@ -221,7 +221,7 @@ html.lenis body {
   .site-header nav a {
     font-size: 0.875rem;
     letter-spacing: 0.025em;
-    color: var(--sub);
+    color: var(--mute);
     text-underline-offset: 8px;
     transition: color 0.2s ease;
   }

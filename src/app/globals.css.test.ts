@@ -112,3 +112,36 @@ describe("nav glass", () => {
     expect(headerCss).not.toContain("--card-border");
   });
 });
+
+/** The first `{...}` block whose selector is exactly `selector` in `source`,
+ *  found by brace-matching from the selector's own opening brace — not by
+ *  `indexOf`/`toContain` over the whole file, which would just as happily
+ *  match a comment or an @media/@supports condition mentioning the same
+ *  literal. */
+function ruleBody(source: string, selector: string): string {
+  const i = source.indexOf(selector);
+  if (i === -1) throw new Error(`no ${selector} rule`);
+  const open = source.indexOf("{", i);
+  return source.slice(open + 1, source.indexOf("}", open));
+}
+
+describe(".site-header nav links (globals.css)", () => {
+  /* The nav glass tests above read site-header.module.css — the file that
+     never had this bug. The real instance was here: `.site-header nav a`
+     set `color: var(--sub)`, and --sub has not been declared in either
+     palette for two phases. Invalid-at-computed-value-time, so `color`
+     silently fell back to the inherited --ink — hover and the scroll-spy's
+     aria-current state changed nothing visible. Scoped to the rule's own
+     body so this can't pass by matching a comment or an unrelated rule
+     elsewhere in the file that legitimately still uses tokens like
+     --card-bg/--scrim (scene tokens written by JS, not dangling). */
+  it("references no deleted scene tokens in the .site-header nav link rule", () => {
+    const rule = ruleBody(css, ".site-header nav a {");
+    expect(rule).not.toContain("--sub");
+  });
+
+  it("colours the nav link with the muted-text token at rest", () => {
+    const rule = ruleBody(css, ".site-header nav a {");
+    expect(rule).toMatch(/color:\s*var\(--mute\)/);
+  });
+});
