@@ -667,9 +667,10 @@ describe("morph copies", () => {
      is hidden under reduced motion — so the wordmark has no name at all
      there (spec §6, bug 2). The anchor keeps it in both modes. */
   it("keeps exactly one accessible name, on the anchor", () => {
-    render(<Hero />);
-    expect(screen.getAllByLabelText(siteContent.wordmark)).toHaveLength(1);
+    /* ONE render — a second would mount a second Hero and make
+       getAllByLabelText find two names for reasons unrelated to the code. */
     const { container } = render(<Hero />);
+    expect(screen.getAllByLabelText(siteContent.wordmark)).toHaveLength(1);
     expect(container.querySelector("[data-wordmark='anchor']")!.getAttribute("aria-label"))
       .toBe(siteContent.wordmark);
     expect(container.querySelector("[data-wordmark='fly']")!.getAttribute("aria-hidden"))
