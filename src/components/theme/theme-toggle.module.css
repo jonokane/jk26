@@ -14,3 +14,18 @@
 .toggle:hover {
   color: var(--ink);
 }
+
+/* The label CSS shows is the one that names the mode the click switches TO —
+   picked off :root[data-theme], which the pre-hydration script stamps before
+   first paint, so the resolved-dark visitor never sees "Dark" on a dark page. */
+.whenDark {
+  display: none;
+}
+
+:root[data-theme="dark"] .whenLight {
+  display: none;
+}
+
+:root[data-theme="dark"] .whenDark {
+  display: inline;
+}
