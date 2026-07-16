@@ -56,7 +56,8 @@ The site is a one-pager — **Welcome → About → Work → Contact** — with 
 
 Content is the biggest lever and the main thing gating Phases 3 and 4. Outstanding items, tracked in `docs/notes/jonokane-case-studies.md`:
 
-- **Collaya, Tappa, Meta Project 01, Meta Project 02** — entirely TBD. These are the four headline slots (`order` 1-4), currently `draft`.
+- **Collaya, Tappa, Meta Project 01, Meta Project 02** — the four headline slots (`order` 1-4). **These are NOT `draft`, despite an earlier claim here — they are published and will render as real cards.** Tappa and both Meta studies carry `impact: "TBD."` and placeholder bodies; Collaya has a real Overview and impact but its study is unwritten. Only Amazon Key In-Home is genuinely `draft: true`.
+  - **This gates Phase 4 specifically.** The gallery renders 7 published cards today, 4 of them reading "TBD." in the first slots a visitor sees. The gallery's job is to make the work look inevitable at a glance; four holes make the mechanic impossible to evaluate, let alone ship. Either write the four, or mark them `draft: true` so the gallery shows 3 real cards — but decide before Phase 4, not during it.
 - **Amazon Key In-Home** — needs Jono's specific role on the in-home flow, plus any citable outcome. Held as `draft: true`.
 - **8tracks / Fluence** — outcomes are qualitative because no metric was shareable. Swap in a metric if one becomes citable.
 - **Résumé link** — `siteContent.links.resume` is empty.
