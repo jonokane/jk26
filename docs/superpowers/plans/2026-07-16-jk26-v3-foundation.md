@@ -69,25 +69,28 @@ git tag -l archive/cold-noon
 
 Expected: the tag lists and points at commit `fa0914b` ("feat(work): replace horizontal shelf with a vertical stacked read").
 
-- [ ] **Step 4: Put the spec and handoff on `main`**
+- [ ] **Step 4: Put the spec, handoff, and this plan on `main`**
+
+Both doc commits live on `cold-noon-visual-language` (that is where they were written). They belong on `main`, which is where v3 branches from.
 
 ```bash
 git switch main
-git cherry-pick 07f9b29
-git log --oneline -1
+git cherry-pick 07f9b29 abcdfae
+git log --oneline -2
 ```
 
-Expected: a commit titled `docs: spec the jk26-v3 stark visual language`. If the cherry-pick conflicts, stop — `main` should not contain these files at all.
+Expected: two commits — `docs: implementation plan for jk26-v3 Phase 1 (foundation)` and `docs: spec the jk26-v3 stark visual language`. If either cherry-pick conflicts, stop — `main` should not contain these files at all.
 
 - [ ] **Step 5: Verify the docs landed**
 
 ```bash
 ls docs/superpowers/specs/2026-07-16-stark-visual-language-design.md
+ls docs/superpowers/plans/2026-07-16-jk26-v3-foundation.md
 ls docs/notes/jk26-v3-handoff/README.md
 ls docs/notes/cold-noon-project-summary.md
 ```
 
-Expected: all three paths exist.
+Expected: all four paths exist. You are reading this plan from the file you just cherry-picked.
 
 - [ ] **Step 6: Open the v3 branch and confirm the base is right**
 
