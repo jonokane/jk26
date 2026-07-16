@@ -20,9 +20,11 @@ import { tokeniseStatements } from "./src/components/about/statement-tokens";
  */
 const sections = () =>
   s.preprocess(
-    /* `.min(1)` below turns an empty or section-less body into a loud build
-       failure rather than a study that silently arrives on the shelf with
-       nothing but an intro panel. */
+    /* `.min(1)` turns an empty or section-less body into a loud build failure
+       rather than a study that silently reaches the page with nothing in it.
+       That is only true because `strict: true` is set below — without it velite
+       logs the violation as `info` and writes the bad data anyway, which is
+       exactly what this comment wrongly promised from Phase 1 until 2026-07-16. */
     (_value, ctx) =>
       splitMarkdownSections(ctx.meta.content ?? "").map(({ heading, markdown }) => ({
         heading,
@@ -121,6 +123,15 @@ const site = defineCollection({
 });
 
 export default defineConfig({
+  /* Velite logs schema violations as non-fatal `info` and writes the bad data
+     anyway unless this is set — "throws error and terminates process if any
+     schema validation fails", per its own docs, default false.
+     Without it every `.min(1)` in this file is decoration: emptying a body
+     logged one info line, exited 0, and wrote `"statements":[]`. Two comments
+     here claimed a "loud build failure" that could not happen. The schemas ARE
+     this project's content gate — the site has no CMS, so a missing `impact`
+     or a section-less study would otherwise reach the page as `undefined`. */
+  strict: true,
   root: "content",
   output: {
     data: ".velite",
