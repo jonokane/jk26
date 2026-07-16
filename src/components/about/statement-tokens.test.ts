@@ -63,4 +63,35 @@ describe("tokeniseStatements", () => {
     expect(out).toHaveLength(1);
     expect(text(out[0])).toBe("Real statement.");
   });
+
+  it("merges opening punctuation forward into the emphasis word it precedes", () => {
+    const out = tokeniseStatements("a past role (**Meta**), briefly")[0];
+    expect(out.map((w) => w.text)).toEqual(["a", "past", "role", "(Meta),", "briefly"]);
+    expect(out.map((w) => w.role)).toEqual([
+      "ambient", "ambient", "ambient", "emphasis", "ambient",
+    ]);
+  });
+
+  it("merges a leading quote forward and a trailing quote backward around an italic word", () => {
+    const out = tokeniseStatements('she said "*maybe*" and left')[0];
+    expect(out.map((w) => w.text)).toEqual(["she", "said", '"maybe"', "and", "left"]);
+    expect(out.map((w) => w.role)).toEqual([
+      "ambient", "ambient", "italic", "ambient", "ambient",
+    ]);
+  });
+
+  it("treats ***triple*** asterisks as a whole emphasis run with no literal asterisks left over", () => {
+    const out = tokeniseStatements("This is ***very*** important.")[0];
+    expect(out.map((w) => w.text)).toEqual(["This", "is", "very", "important."]);
+    expect(out.map((w) => w.role)).toEqual(["ambient", "ambient", "emphasis", "ambient"]);
+  });
+
+  it("never leaves a literal asterisk in any word's text, across a multi-emphasis paragraph", () => {
+    const out = tokeniseStatements(
+      "A **bold** word, an *italic* word, and ***both*** together.",
+    )[0];
+    for (const word of out) {
+      expect(word.text).not.toContain("*");
+    }
+  });
 });
