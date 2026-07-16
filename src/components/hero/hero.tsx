@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { HERO_BUILD } from "@/components/hero/hero-config";
+import { useWordmarkMorph } from "@/components/hero/use-wordmark-morph";
 import styles from "@/components/hero/hero.module.css";
 
 const LETTERS = siteContent.wordmark.split("");
@@ -41,6 +42,26 @@ export function Hero() {
     };
   }, [reduced]);
 
+  const flowRef = useRef<HTMLHeadingElement>(null);
+  const liveRef = useRef<HTMLDivElement>(null);
+
+  const letters = LETTERS.map((letter, i) => (
+    <span
+      key={i}
+      className={styles.letter}
+      aria-hidden="true"
+      style={{
+        transitionDelay: reduced
+          ? "0s"
+          : `${(HERO_BUILD.letterLeadMs + i * HERO_BUILD.letterStaggerMs) / 1000}s`,
+      }}
+    >
+      {letter}
+    </span>
+  ));
+
+  useWordmarkMorph({ liveRef, flowRef, active: !reduced && runDone });
+
   return (
     <section
       className={styles.hero}
@@ -49,22 +70,40 @@ export function Hero() {
       data-run-done={runDone ? "true" : "false"}
     >
       <p className={styles.kicker}>{siteContent.kicker}</p>
-      <h1 className={styles.wordmark} aria-label={siteContent.wordmark}>
-        {LETTERS.map((letter, i) => (
-          <span
-            key={i}
-            className={styles.letter}
-            aria-hidden="true"
-            style={{
-              transitionDelay: reduced
-                ? "0s"
-                : `${(HERO_BUILD.letterLeadMs + i * HERO_BUILD.letterStaggerMs) / 1000}s`,
-            }}
-          >
-            {letter}
-          </span>
-        ))}
+      {/* The anchor owns layout and the accessible name. opacity:0 — NOT
+          visibility:hidden — so it stays in the accessibility tree; the
+          prototype's anchor is aria-hidden and its fly carries the name,
+          which loses the name entirely under reduced motion (§6, bug 2). */}
+      <h1
+        ref={flowRef}
+        data-wordmark="anchor"
+        className={styles.wordmark}
+        aria-label={siteContent.wordmark}
+      >
+        {letters}
       </h1>
+
+      {/* The fly is the copy you actually see once the morph arms, and it
+          BECOMES the nav brand — it never fades out, so the living gradient
+          rides along at nav scale (spec §7). Purely decorative: the anchor
+          owns the name.
+
+          It starts hidden and is revealed by the hook only AFTER its first
+          apply() positions it. Without that, the fly renders at its CSS
+          default (position:fixed; top:0; left:0, full size, untransformed)
+          from mount until `active` flips at ~1540ms — a second wordmark
+          pinned to the viewport's top-left corner throughout the build-in.
+          The prototype hits the same trap and solves it the same way. */}
+      {!reduced && (
+        <div
+          ref={liveRef}
+          data-wordmark="fly"
+          aria-hidden="true"
+          className={`${styles.wordmark} ${styles.fly}`}
+        >
+          {letters}
+        </div>
+      )}
       <p className={styles.tagline}>{siteContent.tagline}</p>
       <p className={styles.scrollCue}>{siteContent.labels.scrollCue}</p>
     </section>

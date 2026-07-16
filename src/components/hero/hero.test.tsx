@@ -160,6 +160,36 @@ describe("build-in", () => {
   });
 });
 
+describe("morph copies", () => {
+  /* Two copies: an in-flow anchor that owns layout and the accessible name,
+     and a fixed fly copy that actually moves. */
+  it("renders an in-flow anchor and a fly copy", () => {
+    const { container } = render(<Hero />);
+    expect(container.querySelector("[data-wordmark='anchor']")).toBeTruthy();
+    expect(container.querySelector("[data-wordmark='fly']")).toBeTruthy();
+  });
+
+  /* The name must survive BOTH paths. The prototype puts it on the fly, which
+     is hidden under reduced motion — so the wordmark has no name at all
+     there (spec §6, bug 2). The anchor keeps it in both modes. */
+  it("keeps exactly one accessible name, on the anchor", () => {
+    /* ONE render — a second would mount a second Hero and make
+       getAllByLabelText find two names for reasons unrelated to the code. */
+    const { container } = render(<Hero />);
+    expect(screen.getAllByLabelText(siteContent.wordmark)).toHaveLength(1);
+    expect(container.querySelector("[data-wordmark='anchor']")!.getAttribute("aria-label"))
+      .toBe(siteContent.wordmark);
+    expect(container.querySelector("[data-wordmark='fly']")!.getAttribute("aria-hidden"))
+      .toBe("true");
+  });
+
+  it("drops the fly copy entirely under reduced motion", () => {
+    matchMediaReduced(true);
+    const { container } = render(<Hero />);
+    expect(container.querySelector("[data-wordmark='fly']")).toBeNull();
+  });
+});
+
 describe("reduced-motion first-paint guard", () => {
   /* useReducedMotionPref is hydration-safe: it returns false on the server
      and on the first client render, correcting only in a later effect. SSR

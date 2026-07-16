@@ -179,3 +179,32 @@
     filter: none;
   }
 }
+
+.fly {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 45;
+  margin: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+  will-change: transform;
+  /* Hidden until the hook has positioned it — see the handover note below. */
+  opacity: 0;
+}
+
+/* The hook stamps this only AFTER its first apply() has placed the fly on
+   the anchor. Until then the fly would paint at top-left, full size. */
+.fly[data-morph="live"] {
+  opacity: 1;
+}
+
+/* The handover. The anchor is the visible copy during the build-in; it goes
+   invisible only once the fly is positioned AND shown, so there is never a
+   frame with both hidden (a blank wordmark) or both visible (a doubled one).
+   opacity, not visibility:hidden — the latter would strip the wordmark's only
+   accessible name out of the tree. */
+.hero:has(.fly[data-morph="live"]) .wordmark[data-wordmark="anchor"] {
+  opacity: 0;
+  pointer-events: none;
+}

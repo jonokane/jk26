@@ -4,7 +4,9 @@ import { useEffect, type RefObject } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { NAV_WORDMARK_SLOT_ID } from "@/components/site-header";
 
-const HEADER_ON_AT = 0.85;
+/** The pill arrives only as the wordmark lands — the last 2% of the
+ *  morph (spec §7). Not 0.85: at that point the mark is still in flight. */
+const HEADER_ON_AT = 0.98;
 
 /**
  * The translation the nav slot currently inherits from the header's entrance
@@ -21,9 +23,9 @@ function headerTranslation(slot: HTMLElement): { x: number; y: number } {
 
 interface MorphOpts {
   /** The fixed live wordmark layer (what actually flies). */
-  liveRef: RefObject<HTMLDivElement | null>;
+  liveRef: RefObject<HTMLElement | null>;
   /** The in-flow wordmark (layout + measurement source). */
-  flowRef: RefObject<HTMLDivElement | null>;
+  flowRef: RefObject<HTMLElement | null>;
   /** settled && font ready && !reducedMotion */
   active: boolean;
   onProgress?: (p: number) => void;
@@ -47,6 +49,10 @@ export function useWordmarkMorph({ liveRef, flowRef, active, onProgress }: Morph
     let start = { left: 0, top: 0, height: 1 };
     let target = { left: 0, top: 0, height: 1 };
     const measure = () => {
+      /* The fly is fixed and out of flow, so it does not inherit the hero's
+         fluid clamp() font-size. Copy it from the anchor before measuring. */
+      live.style.fontSize = getComputedStyle(flow).fontSize;
+
       const f = flow.getBoundingClientRect();
       start = { left: f.left, top: f.top + window.scrollY, height: f.height };
 
@@ -66,6 +72,11 @@ export function useWordmarkMorph({ liveRef, flowRef, active, onProgress }: Morph
 
     const smooth = (t: number) => t * t * (3 - 2 * t);
     const apply = (p: number) => {
+      /* Measured live, every frame — not cached at mount — so the morph
+         stays correct as the wordmark's real face (and layout) settles in,
+         not just at whatever geometry existed when the effect first ran
+         (spec §7). */
+      measure();
       const e = smooth(p);
       const startTopInViewport = start.top - window.scrollY;
       const x = gsap.utils.interpolate(start.left, target.left, e);
@@ -78,6 +89,19 @@ export function useWordmarkMorph({ liveRef, flowRef, active, onProgress }: Morph
 
     measure();
     apply(0);
+
+    /* Reveal only once the fly is actually placed. It renders at its CSS
+       default (fixed, top-left, full size) until apply() first runs, and this
+       hook does not arm until the build-in finishes — so without this the fly
+       would sit in the corner as a second wordmark for the whole run. The CSS
+       hides the anchor off the same attribute, so the handover is atomic. */
+    live.dataset.morph = "live";
+
+    /* Re-measure once the wordmark's real face lands: Config Variable is
+       materially wider than the fallback, so a pre-font measurement sends the
+       fly to the wrong place and only self-corrects on a refresh. */
+    document.fonts?.ready.then(() => ScrollTrigger.refresh());
+
     const st = ScrollTrigger.create({
       start: 0,
       end: () => window.innerHeight * 0.85,
@@ -91,6 +115,7 @@ export function useWordmarkMorph({ liveRef, flowRef, active, onProgress }: Morph
       st.kill();
       document.documentElement.classList.remove("header-on");
       gsap.set(live, { clearProps: "transform" });
+      delete live.dataset.morph;
     };
   }, [active, liveRef, flowRef, onProgress]);
 }

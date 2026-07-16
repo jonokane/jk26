@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, type MouseEvent } from "react";
-import { ScrollTrigger } from "@/lib/gsap";
 import { navigateTo } from "@/lib/scroll-nav";
 import { siteContent } from "@/lib/site-content";
 import { useHeaderHeight } from "@/lib/use-header-height";
@@ -17,51 +16,6 @@ export const NAV_WORDMARK_SLOT_ID = "nav-wordmark-slot";
 /** The only click we're allowed to hijack: plain left-click, no modifiers. */
 function isPlainClick(e: MouseEvent): boolean {
   return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
-}
-
-/**
- * TEMPORARY stand-in for the wordmark morph on `/`. `hero.tsx` is currently a
- * Phase 1 stub — it never calls `useWordmarkMorph`, so nothing writes
- * `header-on` on the home page, and the reduced-motion fallback that used to
- * set it directly was deleted with it. Without this, `html.header-on
- * .site-header` (globals.css) never matches on `/`, so the nav pill —
- * including the theme toggle it contains — is permanently hidden and
- * unreachable there. Delete this the moment Phase 2 mounts the wordmark morph
- * and it starts driving `header-on` itself (same class, same 0.85 threshold).
- *
- * Uses ScrollTrigger off the shared GSAP ticker (the house pattern — see
- * smooth-scroll.tsx) rather than a bespoke scroll listener or a second RAF
- * loop, mirroring the numeric start/end (no trigger element) already proven
- * by use-wordmark-morph.ts.
- */
-function useHomeHeaderOnFallback(isHome: boolean, reducedMotion: boolean): void {
-  useEffect(() => {
-    if (!isHome) return;
-    const root = document.documentElement;
-
-    if (reducedMotion) {
-      root.classList.add("header-on");
-      return () => root.classList.remove("header-on");
-    }
-
-    const threshold = () => window.innerHeight * 0.85;
-    /* Cover the case where the page mounts already scrolled past the
-       threshold (e.g. scroll restoration) — ScrollTrigger's onLeave/
-       onEnterBack only fire on a crossing, not on the initial state. */
-    if (window.scrollY > threshold()) root.classList.add("header-on");
-
-    const st = ScrollTrigger.create({
-      start: 0,
-      end: threshold,
-      onLeave: () => root.classList.add("header-on"),
-      onEnterBack: () => root.classList.remove("header-on"),
-    });
-
-    return () => {
-      st.kill();
-      root.classList.remove("header-on");
-    };
-  }, [isHome, reducedMotion]);
 }
 
 /**
@@ -92,7 +46,15 @@ export function SiteHeader() {
   const isHome = pathname === "/";
   const reducedMotion = useReducedMotionPref();
   const active = useScrollSpy(siteContent.nav.map((n) => n.target));
-  useHomeHeaderOnFallback(isHome, reducedMotion);
+
+  /* No morph under reduced motion (spec §7), so nothing would drive
+     `header-on` — show the pill from first paint instead of never. */
+  useEffect(() => {
+    if (!isHome || !reducedMotion) return;
+    const root = document.documentElement;
+    root.classList.add("header-on");
+    return () => root.classList.remove("header-on");
+  }, [isHome, reducedMotion]);
 
   /* On `/` with motion, the flying live wordmark is what you see land here. */
   const slotVisible = !isHome || reducedMotion;
