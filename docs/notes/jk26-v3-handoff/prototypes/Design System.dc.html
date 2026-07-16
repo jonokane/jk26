@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://use.typekit.net/aqv1jgr.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: #fafafa; }
+  body { font-family: "mae-variable", system-ui, sans-serif; font-variation-settings: 'wght' 400; background: #fafafa; color: #0d0d0d; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  a { color: #6d4bd8; text-decoration: none; }
+  a:hover { color: #4a3f8f; }
+  .mono { font-family: "config-mono-vf", monospace; font-variation-settings: 'wght' 400; }
+</style>
+</helmet>
+
+<div style="max-width: 1180px; margin: 0 auto; padding: 0 clamp(24px, 6vw, 88px); background: #ffffff; min-height: 100vh; box-shadow: 0 0 0 1px #eee;">
+
+  <!-- MASTHEAD -->
+  <header style="padding: 12vh 0 8vh; border-bottom: 1px solid #ececec;">
+    <div class="mono" style="font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: #9a9a9a;">jonokane.com &middot; design system</div>
+    <h1 style="margin-top: 22px; font-size: clamp(2.6rem, 7vw, 5.4rem); font-variation-settings: 'wght' 720, 'wdth' 100; letter-spacing: -0.03em; line-height: 0.98;">Code-oriented<br>design spec.</h1>
+    <p style="margin-top: 28px; max-width: 60ch; font-size: clamp(1.05rem, 1.6vw, 1.35rem); line-height: 1.5; color: #3a3a3a;">The single source of truth for the portfolio build. Tokens, type, motion, and component behavior with exact values &mdash; written to be read alongside the code, and to hand to Claude Code for implementation.</p>
+    <div class="mono" style="margin-top: 34px; display: flex; flex-wrap: wrap; gap: 10px 28px; font-size: 12px; color: #7a7a7a;">
+      <span>v1.0</span><span>&middot;</span><span>updated 2026-07-15</span><span>&middot;</span><span>units: px unless noted</span>
+    </div>
+  </header>
+
+  <!-- TOC -->
+  <nav style="padding: 5vh 0; border-bottom: 1px solid #ececec; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px 24px;">
+    <a class="mono" style="font-size: 13px; color: #0d0d0d;" href="#principles">01 &nbsp;Principles</a>
+    <a class="mono" style="font-size: 13px; color: #0d0d0d;" href="#color">02 &nbsp;Color tokens</a>
+    <a class="mono" style="font-size: 13px; color: #0d0d0d;" href="#type">03 &nbsp;Typography</a>
+    <a class="mono" style="font-size: 13px; color: #0d0d0d;" href="#layout">04 &nbsp;Layout &amp; space</a>
+    <a class="mono" style="font-size: 13px; color: #0d0d0d;" href="#motion">05 &nbsp;Motion</a>
+    <a class="mono" style="font-size: 13px; color: #0d0d0d;" href="#components">06 &nbsp;Components</a>
+    <a class="mono" style="font-size: 13px; color: #0d0d0d;" href="#patterns">07 &nbsp;Signature patterns</a>
+  </nav>
+
+  <!-- 01 PRINCIPLES -->
+  <section id="principles" style="padding: 9vh 0; border-bottom: 1px solid #ececec;">
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 40px;">
+      <div>
+        <div class="mono" style="font-size: 12px; letter-spacing: 0.1em; color: #9a9a9a;">01</div>
+        <h2 style="margin-top: 8px; font-size: 1.5rem; font-variation-settings: 'wght' 640, 'wdth' 100; letter-spacing: -0.01em;">Principles</h2>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 26px; max-width: 62ch;">
+        <div>
+          <h3 style="font-size: 1.15rem; font-variation-settings: 'wght' 560;">Type is the interface.</h3>
+          <p style="margin-top: 8px; font-size: 1.02rem; line-height: 1.55; color: #3a3a3a;">Roboto Flex carries the design. Variable weight and width do the work that color and ornament do elsewhere. Chrome stays minimal; the words are the design.</p>
+        </div>
+        <div>
+          <h3 style="font-size: 1.15rem; font-variation-settings: 'wght' 560;">One accent per section.</h3>
+          <p style="margin-top: 8px; font-size: 1.02rem; line-height: 1.55; color: #3a3a3a;">Each section owns a single color &mdash; green (About), violet (Work), teal (Contact). Never mix accents within a section. The nav mirrors the active accent as a wayfinding signal.</p>
+        </div>
+        <div>
+          <h3 style="font-size: 1.15rem; font-variation-settings: 'wght' 560;">Motion is legible, never decorative.</h3>
+          <p style="margin-top: 8px; font-size: 1.02rem; line-height: 1.55; color: #3a3a3a;">Every animation earns its place by guiding the read (teleprompter focus, wordmark assembly). All motion respects <span class="mono" style="font-size: 0.9em;">prefers-reduced-motion</span>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 COLOR -->
+  <section id="color" style="padding: 9vh 0; border-bottom: 1px solid #ececec;">
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 40px;">
+      <div>
+        <div class="mono" style="font-size: 12px; letter-spacing: 0.1em; color: #9a9a9a;">02</div>
+        <h2 style="margin-top: 8px; font-size: 1.5rem; font-variation-settings: 'wght' 640, 'wdth' 100; letter-spacing: -0.01em;">Color tokens</h2>
+        <p style="margin-top: 14px; font-size: 0.92rem; line-height: 1.5; color: #7a7a7a;">Declared as CSS custom properties on <span class="mono" style="font-size: 0.9em;">:root</span>. Section accents are also exposed as tweakable props.</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 34px;">
+
+        <div>
+          <div class="mono" style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #9a9a9a; margin-bottom: 14px;">Section accents</div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+            <div style="border: 1px solid #ececec; border-radius: 6px; overflow: hidden;">
+              <div style="height: 88px; background: #3f9b4e;"></div>
+              <div style="padding: 12px 14px;">
+                <div style="font-variation-settings: 'wght' 560; font-size: 0.95rem;">About / green</div>
+                <div class="mono" style="font-size: 12px; color: #7a7a7a; margin-top: 4px;">--about<br>#3f9b4e</div>
+              </div>
+            </div>
+            <div style="border: 1px solid #ececec; border-radius: 6px; overflow: hidden;">
+              <div style="height: 88px; background: #6d4bd8;"></div>
+              <div style="padding: 12px 14px;">
+                <div style="font-variation-settings: 'wght' 560; font-size: 0.95rem;">Work / violet</div>
+                <div class="mono" style="font-size: 12px; color: #7a7a7a; margin-top: 4px;">--work<br>#6d4bd8</div>
+              </div>
+            </div>
+            <div style="border: 1px solid #ececec; border-radius: 6px; overflow: hidden;">
+              <div style="height: 88px; background: #2f7d8f;"></div>
+              <div style="padding: 12px 14px;">
+                <div style="font-variation-settings: 'wght' 560; font-size: 0.95rem;">Contact / teal</div>
+                <div class="mono" style="font-size: 12px; color: #7a7a7a; margin-top: 4px;">--contact<br>#2f7d8f</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="mono" style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #9a9a9a; margin-bottom: 14px;">Neutrals</div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+            <div style="border: 1px solid #ececec; border-radius: 6px; overflow: hidden;">
+              <div style="height: 60px; background: #0d0d0d;"></div>
+              <div style="padding: 10px 12px;"><div class="mono" style="font-size: 12px;">--ink</div><div class="mono" style="font-size: 12px; color: #9a9a9a;">#0d0d0d</div><div style="font-size: 11px; color: #7a7a7a; margin-top: 4px;">Body text, wordmark</div></div>
+            </div>
+            <div style="border: 1px solid #ececec; border-radius: 6px; overflow: hidden;">
+              <div style="height: 60px; background: #9a9a9a;"></div>
+              <div style="padding: 10px 12px;"><div class="mono" style="font-size: 12px;">--mute</div><div class="mono" style="font-size: 12px; color: #9a9a9a;">#9a9a9a</div><div style="font-size: 11px; color: #7a7a7a; margin-top: 4px;">Eyebrows, meta, labels</div></div>
+            </div>
+            <div style="border: 1px solid #ececec; border-radius: 6px; overflow: hidden;">
+              <div style="height: 60px; background: #bcbcbc;"></div>
+              <div style="padding: 10px 12px;"><div class="mono" style="font-size: 12px;">grey (JS)</div><div class="mono" style="font-size: 12px; color: #9a9a9a;">#bcbcbc</div><div style="font-size: 11px; color: #7a7a7a; margin-top: 4px;">Teleprompter dimmed word</div></div>
+            </div>
+            <div style="border: 1px solid #ececec; border-radius: 6px; overflow: hidden;">
+              <div style="height: 60px; background: #e6e6e6;"></div>
+              <div style="padding: 10px 12px;"><div class="mono" style="font-size: 12px;">hairline</div><div class="mono" style="font-size: 12px; color: #9a9a9a;">#e6e6e6</div><div style="font-size: 11px; color: #7a7a7a; margin-top: 4px;">Row / section dividers</div></div>
+            </div>
+            <div style="border: 1px solid #ececec; border-radius: 6px; overflow: hidden;">
+              <div style="height: 60px; background: #fafafa;"></div>
+              <div style="padding: 10px 12px;"><div class="mono" style="font-size: 12px;">row-hover</div><div class="mono" style="font-size: 12px; color: #9a9a9a;">#fafafa</div><div style="font-size: 11px; color: #7a7a7a; margin-top: 4px;">Index row hover fill</div></div>
+            </div>
+            <div style="border: 1px solid #ececec; border-radius: 6px; overflow: hidden;">
+              <div style="height: 60px; background: #ffffff; box-shadow: inset 0 0 0 1px #ececec;"></div>
+              <div style="padding: 10px 12px;"><div class="mono" style="font-size: 12px;">canvas</div><div class="mono" style="font-size: 12px; color: #9a9a9a;">#ffffff</div><div style="font-size: 11px; color: #7a7a7a; margin-top: 4px;">Page background</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #0d0d0d; border-radius: 8px; padding: 22px 24px;">
+          <div class="mono" style="font-size: 12px; line-height: 1.9; color: #e6e6e6; white-space: pre;">:root {
+  --about:   #3f9b4e;
+  --work:    #6d4bd8;
+  --contact: #2f7d8f;
+  --ink:     #0d0d0d;
+  --mute:    #9a9a9a;
+}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 TYPOGRAPHY -->
+  <section id="type" style="padding: 9vh 0; border-bottom: 1px solid #ececec;">
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 40px;">
+      <div>
+        <div class="mono" style="font-size: 12px; letter-spacing: 0.1em; color: #9a9a9a;">03</div>
+        <h2 style="margin-top: 8px; font-size: 1.5rem; font-variation-settings: 'wght' 640, 'wdth' 100; letter-spacing: -0.01em;">Typography</h2>
+        <p style="margin-top: 14px; font-size: 0.92rem; line-height: 1.5; color: #7a7a7a;">Mae Variable (display + body) and Config Mono (labels) via Adobe Fonts kit <span class="mono" style="font-size: 0.9em;">aqv1jgr</span>.</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 34px;">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div style="border: 1px solid #ececec; border-radius: 6px; padding: 20px;">
+            <div style="font-size: 2.4rem; font-variation-settings: 'wght' 640, 'wdth' 100;">Mae Variable</div>
+            <div class="mono" style="font-size: 12px; color: #7a7a7a; margin-top: 10px; line-height: 1.6;">Display + body<br>Adobe Fonts &middot; "mae-variable"<br>variable wght axis &middot; used 400&ndash;720</div>
+          </div>
+          <div style="border: 1px solid #ececec; border-radius: 6px; padding: 20px;">
+            <div class="mono" style="font-size: 2.4rem;">Config Mono</div>
+            <div class="mono" style="font-size: 12px; color: #7a7a7a; margin-top: 10px; line-height: 1.6;">Labels, numbers, meta<br>Adobe Fonts &middot; "config-mono-vf"<br>variable wght &middot; tracking 0.05&ndash;0.28em</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="mono" style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #9a9a9a; margin-bottom: 18px;">Type scale &middot; fluid clamp()</div>
+          <div style="display: flex; flex-direction: column; gap: 22px;">
+
+            <div style="display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: baseline; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px;">
+              <div style="font-size: clamp(2.6rem, 7vw, 6.5rem); font-variation-settings: 'wght' 700, 'wdth' 100; letter-spacing: -0.02em; line-height: 1;">Section title</div>
+              <div class="mono" style="font-size: 11px; color: #7a7a7a; line-height: 1.7;">.sectitle<br>clamp(2.6rem, 7vw, 6.5rem)<br>wght 700 &middot; tracking -0.02em<br>line-height 1</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: baseline; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px;">
+              <div style="font-size: clamp(4rem, 9vw, 7rem); font-variation-settings: 'wght' 680, 'wdth' 100; line-height: 0.9;">jonokane</div>
+              <div class="mono" style="font-size: 11px; color: #7a7a7a; line-height: 1.7;">.wm (wordmark)<br>clamp(4rem, 13vw, 12rem)<br>wght 680 &middot; line-height 0.9</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: baseline; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px;">
+              <div style="font-size: clamp(1.5rem, 3vw, 2.6rem); font-variation-settings: 'wght' 480, 'wdth' 100; letter-spacing: -0.01em;">Work / project title</div>
+              <div class="mono" style="font-size: 11px; color: #7a7a7a; line-height: 1.7;">.work-title<br>clamp(1.5rem, 3vw, 2.6rem)<br>wght 480 &rarr; 620 on hover</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: baseline; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px;">
+              <div style="font-size: clamp(1.4rem, 2.5vw, 2.5rem); font-variation-settings: 'wght' 440, 'wdth' 100; line-height: 1.18;">About statement line</div>
+              <div class="mono" style="font-size: 11px; color: #7a7a7a; line-height: 1.7;">.ablock<br>clamp(1.4rem, 2.5vw, 2.5rem)<br>wght 440&ndash;780 (animated)<br>line-height 1.18</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: baseline; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px;">
+              <div style="font-size: clamp(1.15rem, 1.9vw, 1.72rem); font-variation-settings: 'wght' 400, 'wdth' 100; line-height: 1.34; color: #2e2e2e;">Tagline &amp; lead copy</div>
+              <div class="mono" style="font-size: 11px; color: #7a7a7a; line-height: 1.7;">.tagline / .lead<br>clamp(1.15rem, 1.9vw, 1.72rem)<br>wght 400 &middot; line-height 1.34</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: baseline; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px;">
+              <div style="font-size: 1.05rem; line-height: 1.6; color: #262626;">Body / case study prose sits at a comfortable reading measure of roughly 62 characters.</div>
+              <div class="mono" style="font-size: 11px; color: #7a7a7a; line-height: 1.7;">.dbody p<br>clamp(1.05rem, 1.5vw, 1.28rem)<br>line-height 1.6 &middot; max 62ch</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: baseline;">
+              <div class="mono" style="font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: #9a9a9a;">Eyebrow / label</div>
+              <div class="mono" style="font-size: 11px; color: #7a7a7a; line-height: 1.7;">.eyebrow / label<br>12&ndash;14px &middot; tracking 0.2&ndash;0.32em<br>uppercase &middot; --mute</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 LAYOUT -->
+  <section id="layout" style="padding: 9vh 0; border-bottom: 1px solid #ececec;">
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 40px;">
+      <div>
+        <div class="mono" style="font-size: 12px; letter-spacing: 0.1em; color: #9a9a9a;">04</div>
+        <h2 style="margin-top: 8px; font-size: 1.5rem; font-variation-settings: 'wght' 640, 'wdth' 100; letter-spacing: -0.01em;">Layout &amp; space</h2>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 20px; max-width: 64ch;">
+        <div style="display: grid; grid-template-columns: 180px 1fr; gap: 14px 20px; font-size: 0.98rem; line-height: 1.5;">
+          <div class="mono" style="font-size: 13px; color: #6d4bd8;">page gutter</div><div style="color: #3a3a3a;"><span class="mono" style="font-size: 0.9em;">6vw</span> left/right on every section &mdash; the one horizontal constant.</div>
+          <div class="mono" style="font-size: 13px; color: #6d4bd8;">nav padding</div><div style="color: #3a3a3a;"><span class="mono" style="font-size: 0.9em;">26px 6vw</span>, fixed, z-index 50.</div>
+          <div class="mono" style="font-size: 13px; color: #6d4bd8;">sticky offset</div><div style="color: #3a3a3a;">Locked section headers sit at <span class="mono" style="font-size: 0.9em;">top: 84px</span> (clears the nav).</div>
+          <div class="mono" style="font-size: 13px; color: #6d4bd8;">section rhythm</div><div style="color: #3a3a3a;">Vertical padding in <span class="mono" style="font-size: 0.9em;">vh</span>: welcome/contact full-height; work <span class="mono" style="font-size: 0.9em;">20vh / 16vh</span>.</div>
+          <div class="mono" style="font-size: 13px; color: #6d4bd8;">scroll driver</div><div style="color: #3a3a3a;">Teleprompter uses a <span class="mono" style="font-size: 0.9em;">640vh</span> tall wrapper with a <span class="mono" style="font-size: 0.9em;">sticky 100vh</span> stage.</div>
+          <div class="mono" style="font-size: 13px; color: #6d4bd8;">reading measure</div><div style="color: #3a3a3a;">Body prose capped at <span class="mono" style="font-size: 0.9em;">62ch</span>; leads at <span class="mono" style="font-size: 0.9em;">30&ndash;52ch</span>.</div>
+          <div class="mono" style="font-size: 13px; color: #6d4bd8;">radii</div><div style="color: #3a3a3a;">Sharp by default. Pills <span class="mono" style="font-size: 0.9em;">100px</span> (tags, buttons); button <span class="mono" style="font-size: 0.9em;">2px</span>.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 MOTION -->
+  <section id="motion" style="padding: 9vh 0; border-bottom: 1px solid #ececec;">
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 40px;">
+      <div>
+        <div class="mono" style="font-size: 12px; letter-spacing: 0.1em; color: #9a9a9a;">05</div>
+        <h2 style="margin-top: 8px; font-size: 1.5rem; font-variation-settings: 'wght' 640, 'wdth' 100; letter-spacing: -0.01em;">Motion</h2>
+        <p style="margin-top: 14px; font-size: 0.92rem; line-height: 1.5; color: #7a7a7a;">All scroll-driven work is rAF-throttled. Everything gates behind <span class="mono" style="font-size: 0.9em;">prefers-reduced-motion</span>.</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 28px;">
+        <div>
+          <div class="mono" style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #9a9a9a; margin-bottom: 14px;">Easing curves</div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div style="border: 1px solid #ececec; border-radius: 6px; padding: 16px;"><div class="mono" style="font-size: 12px; color: #6d4bd8;">standard</div><div class="mono" style="font-size: 12px; color: #7a7a7a; margin-top: 6px;">cubic-bezier(.2,.7,.2,1)</div><div style="font-size: 12px; color: #7a7a7a; margin-top: 6px;">reveals, hover shifts</div></div>
+            <div style="border: 1px solid #ececec; border-radius: 6px; padding: 16px;"><div class="mono" style="font-size: 12px; color: #6d4bd8;">overlay</div><div class="mono" style="font-size: 12px; color: #7a7a7a; margin-top: 6px;">cubic-bezier(.2,.8,.2,1)</div><div style="font-size: 12px; color: #7a7a7a; margin-top: 6px;">detail slide-up</div></div>
+            <div style="border: 1px solid #ececec; border-radius: 6px; padding: 16px;"><div class="mono" style="font-size: 12px; color: #6d4bd8;">wordmark</div><div class="mono" style="font-size: 12px; color: #7a7a7a; margin-top: 6px;">cubic-bezier(.2,.85,.24,1)</div><div style="font-size: 12px; color: #7a7a7a; margin-top: 6px;">letter assembly</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="mono" style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #9a9a9a; margin-bottom: 14px;">Durations &amp; named transitions</div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 12px 20px; font-size: 0.95rem; line-height: 1.5;">
+            <div class="mono" style="font-size: 13px; color: #6d4bd8;">reveal-in</div><div style="color: #3a3a3a;"><span class="mono" style="font-size: 0.9em;">0.85s</span> opacity + translateY(26px&rarr;0), IntersectionObserver @ 0.2 threshold, unobserve after.</div>
+            <div class="mono" style="font-size: 13px; color: #6d4bd8;">hover shift</div><div style="color: #3a3a3a;"><span class="mono" style="font-size: 0.9em;">0.4s</span> padding-left / background / weight on index rows &amp; cards.</div>
+            <div class="mono" style="font-size: 13px; color: #6d4bd8;">nav accent</div><div style="color: #3a3a3a;"><span class="mono" style="font-size: 0.9em;">0.5s</span> color crossfade as active section changes.</div>
+            <div class="mono" style="font-size: 13px; color: #6d4bd8;">overlay open</div><div style="color: #3a3a3a;"><span class="mono" style="font-size: 0.9em;">0.6s</span> translateY(100%&rarr;0).</div>
+            <div class="mono" style="font-size: 13px; color: #6d4bd8;">wordmark letter</div><div style="color: #3a3a3a;"><span class="mono" style="font-size: 0.9em;">0.55&ndash;0.9s</span>, staggered <span class="mono" style="font-size: 0.9em;">0.3 + i&times;0.08s</span>; scale 2.5&rarr;1, blur 9&rarr;0.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 COMPONENTS -->
+  <section id="components" style="padding: 9vh 0; border-bottom: 1px solid #ececec;">
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 40px;">
+      <div>
+        <div class="mono" style="font-size: 12px; letter-spacing: 0.1em; color: #9a9a9a;">06</div>
+        <h2 style="margin-top: 8px; font-size: 1.5rem; font-variation-settings: 'wght' 640, 'wdth' 100; letter-spacing: -0.01em;">Components</h2>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 30px;">
+
+        <!-- nav -->
+        <div style="border: 1px solid #ececec; border-radius: 8px; overflow: hidden;">
+          <div style="padding: 22px 26px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-variation-settings: 'wght' 620, 'wdth' 100;">jonokane.com</span>
+            <span class="mono" style="display: flex; gap: 24px; font-size: 14px;"><span style="color: #8a8a8a;">About</span><span style="color: #6d4bd8;">Work</span><span style="color: #8a8a8a;">Contact</span></span>
+          </div>
+          <div style="border-top: 1px solid #f0f0f0; padding: 14px 26px; background: #fafafa;">
+            <div class="mono" style="font-size: 12px; color: #7a7a7a; line-height: 1.6;"><b style="color: #0d0d0d;">Nav</b> &middot; fixed, z 50, 15px. Links default <span style="color:#8a8a8a;">#8a8a8a</span>; active link takes its section accent via scroll-spy (viewport-mid test).</div>
+          </div>
+        </div>
+
+        <!-- locked header -->
+        <div style="border: 1px solid #ececec; border-radius: 8px; overflow: hidden;">
+          <div style="padding: 26px; display: flex; align-items: baseline; gap: 18px;">
+            <span style="font-size: 2rem; font-variation-settings: 'wght' 700, 'wdth' 100; letter-spacing: -0.02em; color: #6d4bd8;">Selected work.</span>
+            <span class="mono" style="font-size: 0.95rem; color: #6d4bd8;">[ 08 ]</span>
+          </div>
+          <div style="border-top: 1px solid #f0f0f0; padding: 14px 26px; background: #fafafa;">
+            <div class="mono" style="font-size: 12px; color: #7a7a7a; line-height: 1.6;"><b style="color: #0d0d0d;">Locked section header</b> &middot; <span style="font-size:0.9em;">position: sticky; top: 84px; z 20;</span> opaque white bg so content scrolls under it. Title in section accent; optional mono count.</div>
+          </div>
+        </div>
+
+        <!-- index row -->
+        <div style="border: 1px solid #ececec; border-radius: 8px; overflow: hidden;">
+          <div style="padding: 10px 26px;">
+            <div style="display: grid; grid-template-columns: 50px 1fr auto; align-items: center; gap: 20px; padding: 22px 0; border-bottom: 1px solid #e6e6e6;">
+              <span class="mono" style="font-size: 13px; color: #9a9a9a;">01</span>
+              <span style="font-size: 1.6rem; font-variation-settings: 'wght' 480, 'wdth' 100;">Case study title</span>
+              <span style="font-size: 12px; color: #7a7a7a; text-align: right; line-height: 1.5;">Product Design &middot; Strategy<br>2024</span>
+            </div>
+          </div>
+          <div style="border-top: 1px solid #f0f0f0; padding: 14px 26px; background: #fafafa;">
+            <div class="mono" style="font-size: 12px; color: #7a7a7a; line-height: 1.6;"><b style="color: #0d0d0d;">Work index row</b> &middot; grid <span style="font-size:0.9em;">64px 1fr auto</span>. Hover: <span style="font-size:0.9em;">padding-left 0&rarr;24px</span>, bg #fafafa, title wght 480&rarr;620, num&rarr;accent, arrow fades in.</div>
+          </div>
+        </div>
+
+        <!-- card -->
+        <div style="border: 1px solid #ececec; border-radius: 8px; overflow: hidden;">
+          <div style="padding: 26px; display: grid; grid-template-columns: 1.05fr 0.85fr; gap: 28px;">
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: flex; justify-content: space-between;"><span class="mono" style="font-size: 12px; color: #6d4bd8;">01</span><span class="mono" style="font-size: 12px; color: #9a9a9a;">2024</span></div>
+              <div style="margin-top: 40px; font-size: 1.7rem; font-variation-settings: 'wght' 600, 'wdth' 100; letter-spacing: -0.015em; line-height: 1.05;">Project title</div>
+              <div style="margin-top: 14px; font-size: 1rem; line-height: 1.4; color: #3f3f3f; max-width: 30ch;">One-line impact statement in a single sentence.</div>
+              <div style="margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px;">
+                <span class="mono" style="font-size: 11px; color: #6d4bd8; border: 1px solid #e2ddf5; border-radius: 100px; padding: 4px 11px;">Product</span>
+                <span class="mono" style="font-size: 11px; color: #6d4bd8; border: 1px solid #e2ddf5; border-radius: 100px; padding: 4px 11px;">Strategy</span>
+              </div>
+              <div class="mono" style="margin-top: 20px; font-size: 12px; color: #6d4bd8;">View case study &rarr;</div>
+            </div>
+            <div style="border: 1px solid #ececec; background-image: repeating-linear-gradient(135deg, #f6f6f6 0 10px, #fbfbfb 10px 20px); display: flex; align-items: flex-end; padding: 14px; min-height: 200px;"><span class="mono" style="font-size: 11px; color: #b0b0b0;">selected screen</span></div>
+          </div>
+          <div style="border-top: 1px solid #f0f0f0; padding: 14px 26px; background: #fafafa;">
+            <div class="mono" style="font-size: 12px; color: #7a7a7a; line-height: 1.6;"><b style="color: #0d0d0d;">Work card</b> &middot; text col + image slot. Tags = accent-outline pills. <span style="font-size:0.9em;">.wshot / .dshot</span> is the image slot &mdash; hatched placeholder until a real screen is dropped in. Draft impact renders italic #b3b3b3.</div>
+          </div>
+        </div>
+
+        <!-- overlay + form + tags row -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div style="border: 1px solid #ececec; border-radius: 8px; padding: 20px 22px;">
+            <div style="font-variation-settings: 'wght' 560;">Detail overlay</div>
+            <div class="mono" style="font-size: 12px; color: #7a7a7a; line-height: 1.6; margin-top: 8px;">position: fixed; inset: 0; z 90. Slides translateY(100%&rarr;0) 0.6s. Pill close button top-right. Content: eyebrow, h1, impact, attribute grid (dt/dd), then labelled prose sections. Gaps flag as <span style="color:#b08b3a;">Needs input</span>.</div>
+          </div>
+          <div style="border: 1px solid #ececec; border-radius: 8px; padding: 20px 22px;">
+            <div style="font-variation-settings: 'wght' 560;">Contact form</div>
+            <div class="mono" style="font-size: 12px; color: #7a7a7a; line-height: 1.6; margin-top: 8px;">2-col grid, full-width fields span both. Inputs: transparent, bottom-border only (#d0d0d0 &rarr; accent on focus). Button: solid accent, 2px radius, translateY(-2px) on hover.</div>
+          </div>
+        </div>
+
+        <div style="border: 1px solid #ececec; border-radius: 8px; padding: 20px 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px;">
+          <button style="font-family: inherit; font-size: 0.95rem; font-variation-settings: 'wght' 560; color: #fff; background: #2f7d8f; border: none; padding: 14px 32px; border-radius: 2px; cursor: pointer;">Send message</button>
+          <span class="mono" style="font-size: 12px; color: #2f7d8f; border: 1px solid #cfe0e4; border-radius: 100px; padding: 5px 13px;">tag / pill</span>
+          <span class="mono" style="font-size: 12px; color: #9a9a9a; letter-spacing: 0.14em;">DT / DD LABEL</span>
+          <div class="mono" style="font-size: 12px; color: #7a7a7a; margin-left: auto;">buttons &middot; pills &middot; labels</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 PATTERNS -->
+  <section id="patterns" style="padding: 9vh 0 12vh;">
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 40px;">
+      <div>
+        <div class="mono" style="font-size: 12px; letter-spacing: 0.1em; color: #9a9a9a;">07</div>
+        <h2 style="margin-top: 8px; font-size: 1.5rem; font-variation-settings: 'wght' 640, 'wdth' 100; letter-spacing: -0.01em;">Signature patterns</h2>
+        <p style="margin-top: 14px; font-size: 0.92rem; line-height: 1.5; color: #7a7a7a;">The three scroll behaviors that define the site. Build these first.</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 22px;">
+
+        <div style="border: 1px solid #ececec; border-radius: 8px; padding: 24px 26px; border-left: 3px solid #3f9b4e;">
+          <div style="font-size: 1.2rem; font-variation-settings: 'wght' 600;">Teleprompter (About)</div>
+          <p style="margin-top: 10px; font-size: 1rem; line-height: 1.55; color: #3a3a3a; max-width: 64ch;">A <span class="mono" style="font-size: 0.9em;">640vh</span> wrapper drives a <span class="mono" style="font-size: 0.9em;">sticky 100vh</span> stage. Scroll progress maps to a moving focal center (60% of viewport height, &plusmn;24% focus range). Per word: weight interpolates 440&rarr;780, color mixes grey&rarr;accent/ink, opacity and blur fall off with distance. Words above the focus blur harder (7px) than words below (2px) &mdash; the "already read" feel. Right rail dots track the active statement.</p>
+        </div>
+
+        <div style="border: 1px solid #ececec; border-radius: 8px; padding: 24px 26px; border-left: 3px solid #6d4bd8;">
+          <div style="font-size: 1.2rem; font-variation-settings: 'wght' 600;">Horizontal gallery (Work)</div>
+          <p style="margin-top: 10px; font-size: 1rem; line-height: 1.55; color: #3a3a3a; max-width: 64ch;">Vertical scroll inside a sticky stage translates a horizontal <span class="mono" style="font-size: 0.9em;">#wtrack</span> in X. 8 headliner cards + a 9th "earlier work" panel (2-col list of 7). Wayfinding against disorientation: locked title, live <span class="mono" style="font-size: 0.9em;">01 / 09</span> counter, and a progress bar (<span class="mono" style="font-size: 0.9em;">#wprog</span>) pinned bottom. <b>Open decision:</b> horizontal poster view vs a filterable vertical index &mdash; hybrid keeps horizontal as the signature and offers the vertical list as the filtered alternate.</p>
+        </div>
+
+        <div style="border: 1px solid #ececec; border-radius: 8px; padding: 24px 26px; border-left: 3px solid #2f7d8f;">
+          <div style="font-size: 1.2rem; font-variation-settings: 'wght' 600;">Wordmark assembly (Welcome)</div>
+          <p style="margin-top: 10px; font-size: 1rem; line-height: 1.55; color: #3a3a3a; max-width: 64ch;">On load, letters resolve from scale 2.5 + 9px blur to rest, staggered <span class="mono" style="font-size: 0.9em;">0.3 + i&times;0.08s</span>. Eyebrow leads, tagline + scroll cue follow after the run completes. Reduced-motion jumps straight to the resolved state.</p>
+        </div>
+
+        <div style="background: #0d0d0d; border-radius: 8px; padding: 22px 24px;">
+          <div class="mono" style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6d4bd8; margin-bottom: 10px;">Implementation notes</div>
+          <div class="mono" style="font-size: 12px; line-height: 1.8; color: #e6e6e6;">&middot; Throttle all scroll handlers with requestAnimationFrame.<br>&middot; Re-measure block centers on resize + document.fonts.ready.<br>&middot; Scroll-spy = viewport-mid element test, not IntersectionObserver.<br>&middot; Reveals use IO @ 0.2, unobserve after firing (one-shot).<br>&middot; Gate teleprompter + wordmark behind prefers-reduced-motion.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</x-dc>
+</body>
+</html>

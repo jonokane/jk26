@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://use.typekit.net/aqv1jgr.css">
+<style>
+  :root { --work: #6d4bd8; --ink: #0d0d0d; --mute: #9a9a9a; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: #ffffff; }
+  body { font-family: "mae-variable", system-ui, sans-serif; font-variation-settings: 'wght' 400; background: #ffffff; color: var(--ink); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: "config-mono-vf", monospace; font-variation-settings: 'wght' 400; }
+
+  #nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 26px 6vw; font-size: 15px; letter-spacing: 0.01em; }
+  #nav .lk { display: flex; gap: 26px; font-weight: 500; }
+  #nav a { color: #8a8a8a; }
+  #nav a.on { color: var(--work); }
+
+  .pre { height: 60vh; display: flex; align-items: flex-end; padding: 0 6vw 8vh; }
+  .pre p { max-width: 30ch; color: var(--mute); font-size: clamp(1rem,1.5vw,1.3rem); line-height: 1.4; }
+
+  /* work horizontal */
+  #work-wrap { position: relative; }
+  #work-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+  #work-title { position: absolute; top: 8vh; left: 6vw; z-index: 12; font-size: clamp(2rem, 4.6vw, 4.2rem); font-variation-settings: 'wght' 700, 'wdth' 100; letter-spacing: -0.02em; line-height: 1; color: var(--work); }
+  #wtrack { position: absolute; top: 0; left: 0; height: 100%; display: flex; align-items: flex-end; padding-bottom: 15vh; will-change: transform; }
+
+  .wcard { flex: 0 0 auto; width: min(66vw, 820px); height: 56vh; margin-right: 5vw; display: grid; grid-template-columns: 1.05fr 0.85fr; gap: 3vw; cursor: pointer; transition: opacity 0.5s ease; }
+  .wcard:first-child { margin-left: 6vw; }
+  .wcard .wtext { display: flex; flex-direction: column; height: 100%; }
+  .wcard .wtop { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .wcard .wnum { font-size: 13px; color: var(--work); letter-spacing: 0.05em; }
+  .wcard .wyear { font-size: 12px; color: var(--mute); }
+  .wcard .wtitle { margin-top: auto; font-size: clamp(1.8rem, 3.2vw, 3rem); font-variation-settings: 'wght' 600, 'wdth' 100; letter-spacing: -0.015em; line-height: 1.05; }
+  .wcard .wimpact { margin-top: 20px; max-width: 30ch; font-size: clamp(1rem, 1.35vw, 1.22rem); line-height: 1.42; color: #3f3f3f; }
+  .wcard .wimpact.draft { color: #b3b3b3; font-style: italic; }
+  .wcard .wtags { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px 10px; }
+  .wcard .wtag { font-size: 11px; letter-spacing: 0.04em; color: var(--work); border: 1px solid #e2ddf5; border-radius: 100px; padding: 4px 11px; }
+  .wcard .wview { margin-top: 26px; font-size: 12px; letter-spacing: 0.06em; color: var(--work); display: inline-flex; gap: 8px; align-items: center; }
+  .wcard .wshot { position: relative; height: 100%; border: 1px solid #ececec; background-image: repeating-linear-gradient(135deg, #f6f6f6 0 10px, #fbfbfb 10px 20px); display: flex; align-items: flex-end; padding: 16px; overflow: hidden; }
+  .wcard .wshot span { font-size: 11px; letter-spacing: 0.06em; color: #b0b0b0; }
+  .wcard:hover .wtitle { color: var(--work); }
+  .wcard:hover .wview { gap: 14px; }
+
+  .wolder { width: min(80vw, 1040px); }
+  .wolder .oldhead { font-size: clamp(1.6rem, 3vw, 2.6rem); font-variation-settings: 'wght' 640, 'wdth' 100; letter-spacing: -0.015em; margin-bottom: 4vh; }
+  .oldgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 40px; }
+  .olditem { border-top: 1px solid #e6e6e6; padding-top: 12px; cursor: pointer; }
+  .olditem h4 { font-size: 1.15rem; font-variation-settings: 'wght' 560, 'wdth' 100; }
+  .olditem .om { font-size: 11px; color: var(--work); letter-spacing: 0.03em; margin-top: 4px; }
+  .olditem:hover h4 { color: var(--work); }
+
+  /* footer bar: counter + progress */
+  #wbar { position: absolute; left: 6vw; right: 6vw; bottom: 7vh; z-index: 12; display: flex; align-items: center; gap: 20px; }
+  #wcount { font-size: 12px; letter-spacing: 0.08em; color: var(--ink); white-space: nowrap; }
+  #wcount b { color: var(--work); font-variation-settings: 'wght' 500; }
+  #wprog { position: relative; flex: 1; height: 1px; background: #e2e2e2; }
+  #wprog i { position: absolute; left: 0; top: 0; height: 1px; width: 0; background: var(--work); }
+  #whint { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mute); white-space: nowrap; }
+
+  /* detail overlay */
+  #detail { position: fixed; inset: 0; z-index: 90; background: #ffffff; transform: translateY(100%); transition: transform 0.6s cubic-bezier(.2,.8,.2,1); overflow-y: auto; overscroll-behavior: contain; }
+  #detail.open { transform: translateY(0); }
+  #dclose { position: fixed; top: 24px; right: 6vw; z-index: 95; font-size: 13px; letter-spacing: 0.06em; color: var(--ink); background: #fff; border: 1px solid #e2e2e2; border-radius: 100px; padding: 9px 18px; cursor: pointer; }
+  #dclose:hover { border-color: var(--work); color: var(--work); }
+  .dwrap { max-width: 1000px; margin: 0 auto; padding: 16vh 6vw 16vh; }
+  .dwrap .deyebrow { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--work); }
+  .dwrap h1 { margin-top: 14px; font-size: clamp(2.4rem, 5.5vw, 5rem); font-variation-settings: 'wght' 700, 'wdth' 100; letter-spacing: -0.02em; line-height: 1.02; }
+  .dwrap .dimpact { margin-top: 22px; max-width: 46ch; font-size: clamp(1.2rem, 1.8vw, 1.55rem); line-height: 1.4; color: #333; }
+  .dattr { margin-top: 6vh; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 22px 30px; border-top: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6; padding: 28px 0; }
+  .dattr dt { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); }
+  .dattr dd { margin-top: 6px; font-size: 0.98rem; line-height: 1.4; }
+  .dbody { margin-top: 7vh; max-width: 62ch; }
+  .dbody h3 { font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--work); margin: 5vh 0 14px; }
+  .dbody p { font-size: clamp(1.05rem, 1.5vw, 1.28rem); line-height: 1.6; color: #262626; }
+  .dbody .needs { color: #b08b3a; font-style: italic; font-size: 0.95rem; }
+  .dshot { margin-top: 6vh; height: 46vh; border: 1px solid #ececec; background-image: repeating-linear-gradient(135deg, #f6f6f6 0 12px, #fbfbfb 12px 24px); display: flex; align-items: flex-end; padding: 18px; }
+  .dshot span { font-size: 11px; letter-spacing: 0.06em; color: #b0b0b0; }
+</style>
+</helmet>
+<div id="page">
+
+  <nav id="nav">
+    <span style="font-variation-settings: 'wght' 620, 'wdth' 100; color: var(--ink);">jonokane.com</span>
+    <span class="lk">
+      <a href="#">About</a>
+      <a href="#" class="on">Work</a>
+      <a href="#">Contact</a>
+    </span>
+  </nav>
+
+  <div class="pre">
+    <p>A vertical-scroll section that hands off to a horizontal read. Keep scrolling.</p>
+  </div>
+
+  <!-- WORK -->
+  <div id="work-wrap">
+    <div id="work-sticky">
+      <h2 id="work-title">Selected work.</h2>
+      <div id="wtrack">
+
+        <div class="wcard" data-key="collaya">
+          <div class="wtext">
+            <div class="wtop"><span class="wnum mono">01</span><span class="wyear mono">2024&#8211;now</span></div>
+            <h3 class="wtitle">Collaya</h3>
+            <p class="wimpact draft">One-line impact coming soon.</p>
+            <div class="wtags"><span class="wtag mono">Founder</span><span class="wtag mono">Product</span></div>
+            <span class="wview mono">View case study &#8594;</span>
+          </div>
+          <div class="wshot"><span class="mono">selected screen</span></div>
+        </div>
+
+        <div class="wcard" data-key="tappa">
+          <div class="wtext">
+            <div class="wtop"><span class="wnum mono">02</span><span class="wyear mono">&#8212;</span></div>
+            <h3 class="wtitle">Tappa</h3>
+            <p class="wimpact draft">One-line impact coming soon.</p>
+            <div class="wtags"><span class="wtag mono">Product Design</span></div>
+            <span class="wview mono">View case study &#8594;</span>
+          </div>
+          <div class="wshot"><span class="mono">selected screen</span></div>
+        </div>
+
+        <div class="wcard" data-key="meta1">
+          <div class="wtext">
+            <div class="wtop"><span class="wnum mono">03</span><span class="wyear mono">&#8212;</span></div>
+            <h3 class="wtitle">Meta Project 01</h3>
+            <p class="wimpact draft">One-line impact coming soon.</p>
+            <div class="wtags"><span class="wtag mono">Product Design</span></div>
+            <span class="wview mono">View case study &#8594;</span>
+          </div>
+          <div class="wshot"><span class="mono">selected screen</span></div>
+        </div>
+
+        <div class="wcard" data-key="meta2">
+          <div class="wtext">
+            <div class="wtop"><span class="wnum mono">04</span><span class="wyear mono">&#8212;</span></div>
+            <h3 class="wtitle">Meta Project 02</h3>
+            <p class="wimpact draft">One-line impact coming soon.</p>
+            <div class="wtags"><span class="wtag mono">Product Design</span></div>
+            <span class="wview mono">View case study &#8594;</span>
+          </div>
+          <div class="wshot"><span class="mono">selected screen</span></div>
+        </div>
+
+        <div class="wcard" data-key="incar">
+          <div class="wtext">
+            <div class="wtop"><span class="wnum mono">05</span><span class="wyear mono">2018</span></div>
+            <h3 class="wtitle">Amazon Key: In-Car Delivery</h3>
+            <p class="wimpact">Invented and shipped in-car package delivery for a brand-new Amazon program, zero to a live product across iOS, Android, and connected vehicles.</p>
+            <div class="wtags"><span class="wtag mono">Automotive / IoT</span><span class="wtag mono">Product Design</span><span class="wtag mono">Design Lead</span></div>
+            <span class="wview mono">View case study &#8594;</span>
+          </div>
+          <div class="wshot"><span class="mono">selected screen</span></div>
+        </div>
+
+        <div class="wcard" data-key="inhome">
+          <div class="wtext">
+            <div class="wtop"><span class="wnum mono">06</span><span class="wyear mono">2017</span></div>
+            <h3 class="wtitle">Amazon Key: In-Home Delivery</h3>
+            <p class="wimpact">Helped invent and launch secure in-home package delivery, the flagship program that in-car delivery grew out of.</p>
+            <div class="wtags"><span class="wtag mono">IoT</span><span class="wtag mono">Product Design</span></div>
+            <span class="wview mono">View case study &#8594;</span>
+          </div>
+          <div class="wshot"><span class="mono">selected screen</span></div>
+        </div>
+
+        <div class="wcard" data-key="8tracks">
+          <div class="wtext">
+            <div class="wtop"><span class="wnum mono">07</span><span class="wyear mono">2016</span></div>
+            <h3 class="wtitle">8tracks: First-Time Experience</h3>
+            <p class="wimpact">Rebuilt the first-run for a beloved music platform to learn taste faster and feed better recommendations from day one.</p>
+            <div class="wtags"><span class="wtag mono">Music Tech</span><span class="wtag mono">Product Design</span><span class="wtag mono">Design Lead</span></div>
+            <span class="wview mono">View case study &#8594;</span>
+          </div>
+          <div class="wshot"><span class="mono">selected screen</span></div>
+        </div>
+
+        <div class="wcard" data-key="fluence">
+          <div class="wtext">
+            <div class="wtop"><span class="wnum mono">08</span><span class="wyear mono">2015</span></div>
+            <h3 class="wtitle">Fluence: Platform &amp; Website</h3>
+            <p class="wimpact">Designed and built both the marketing face and the working web app for a platform connecting artists, promoters, and curators.</p>
+            <div class="wtags"><span class="wtag mono">Music Tech</span><span class="wtag mono">Full-stack Product</span></div>
+            <span class="wview mono">View case study &#8594;</span>
+          </div>
+          <div class="wshot"><span class="mono">selected screen</span></div>
+        </div>
+
+        <div class="wcard wolder" data-key="older">
+          <div class="wtext" style="justify-content:center;">
+            <h3 class="oldhead">Selected earlier work.</h3>
+            <div class="oldgrid">
+              <div class="olditem" data-key="cinematiq"><h4>Cinematiq</h4><div class="om mono">Creative Tech &#183; UX / Front-end &#183; 2015</div></div>
+              <div class="olditem" data-key="shift"><h4>Shift</h4><div class="om mono">Automotive Tech &#183; Full-stack &#183; 2014</div></div>
+              <div class="olditem" data-key="huddleup"><h4>HuddleUp</h4><div class="om mono">Collaboration &#183; Design Lead &#183; 2013</div></div>
+              <div class="olditem" data-key="intuit"><h4>Intuit</h4><div class="om mono">Fintech-adjacent &#183; Product Design &#183; 2012</div></div>
+              <div class="olditem" data-key="bubbles"><h4>Yahoo! Bubbles</h4><div class="om mono">Mobile &#183; Design Lead &#183; 2011</div></div>
+              <div class="olditem" data-key="ydn"><h4>Yahoo! Developer Network</h4><div class="om mono">Full-stack &#183; 2007&#8211;13</div></div>
+              <div class="olditem" data-key="ypatterns"><h4>Yahoo! Pattern Library</h4><div class="om mono">Design Systems &#183; Front-end &#183; 2010</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="wbar">
+        <span id="wcount" class="mono"><b>01</b> / 09</span>
+        <span id="wprog"><i></i></span>
+        <span id="whint">scroll</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:40vh;"></div>
+
+  <!-- DETAIL OVERLAY -->
+  <div id="detail">
+    <div class="dwrap" id="detail-body"></div>
+  </div>
+  <button id="dclose" style="display:none;">Close &#215;</button>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+  clamp(x, a, b) { return Math.min(b, Math.max(a, x)); }
+
+  DATA() {
+    return {
+      collaya: { eyebrow: 'Case study in progress', title: 'Collaya', impact: '', attr: { Role: 'Founder', Discipline: 'Product', Timeframe: '2024 to now' }, sections: [], stub: true },
+      tappa: { eyebrow: 'Case study in progress', title: 'Tappa', impact: '', attr: { Discipline: 'Product Design' }, sections: [], stub: true },
+      meta1: { eyebrow: 'Case study in progress', title: 'Meta Project 01', impact: '', attr: { Discipline: 'Product Design' }, sections: [], stub: true },
+      meta2: { eyebrow: 'Case study in progress', title: 'Meta Project 02', impact: '', attr: { Discipline: 'Product Design' }, sections: [], stub: true },
+      incar: {
+        eyebrow: 'Amazon Key', title: 'In-Car Delivery',
+        impact: 'Invented and shipped in-car package delivery for a brand-new Amazon program, from zero to a live product across iOS, Android, and connected vehicles.',
+        attr: { Client: 'Amazon', Sector: 'Automotive Tech, IoT', Discipline: 'Product Design, Strategy', Platform: 'iOS, Android, Vehicle', Role: 'Design Lead (in-car)', Timeframe: 'Launched Spring 2018', View: 'amazon.com/key' },
+        sections: [
+          ['Overview', 'In-car delivery was, for me, the defining work of a long career. I helped a team of designers, product partners, and engineers invent an entirely new way to receive Amazon packages: securely, inside your own vehicle. We shipped in-home delivery in Fall 2017 and followed with in-car in Spring 2018. I served as one of two design leads, focused on the in-car experience, which meant equal parts inventing something that did not exist and crafting it to feel unmistakably Amazon.'],
+          ['The challenge', 'A day-one product has no patterns to lean on. We had to solve three hard problems at once: explain a genuinely new concept (testing showed users did not grasp that their car had to be parked at the delivery location), earn trust (people consider their car private, and we were asking to open it), and work across a fragmented hardware reality where every vehicle maker implemented cloud connectivity differently, with no public API.'],
+          ['What I did', 'I owned the in-car setup experience end to end, carrying the design language, patterns, and tone from in-home into the vehicle use case. To solve comprehension, I paired lightweight onboarding cards with explanatory copy on every setup screen. To build trust, I tuned the voice toward a responsible, careful brand and designed delivery cards and notifications that reminded people where to park and clearly signaled when their vehicle would be accessed. To handle OEM fragmentation, I designed the flow around embedded webviews of each maker\u2019s sign-in and accounted for eligibility edge cases. The process was relentlessly iterative and deeply cross-functional: engineering was in the room from the first sketch.'],
+          ['Outcome', 'In-car delivery went live in April 2018 and iterated on weekly design sprints and roughly biweekly releases. Our north-star metric was customer happiness, tracked through two in-app feedback channels. What began as a strange, novel idea steadily became a normal, delightful way to receive packages. The bigger lesson stayed with me: when you invent something with no precedent, clarity and trust are not polish, they are the product.'],
+        ],
+      },
+      inhome: {
+        eyebrow: 'Amazon Key', title: 'In-Home Delivery',
+        impact: 'Helped invent and launch secure in-home package delivery, the flagship program that in-car delivery grew out of.',
+        attr: { Client: 'Amazon', Sector: 'IoT', Discipline: 'Product Design', Platform: 'iOS, Android', Role: 'Product Designer', Timeframe: 'Launched Fall 2017', View: 'amazon.com/key' },
+        sections: [
+          ['Overview', 'In-home delivery was the first chapter of Amazon Key and the foundation everything else was built on. With a team of designers, product partners, and engineers, I helped invent a way for customers to receive packages securely inside their homes using a smart lock and camera, launched in Fall 2017. The patterns, tone, and trust model we established here became the blueprint I later carried into the in-car experience.'],
+          ['The challenge', 'The central tension was trust. We were asking people to let a delivery driver, and by extension Amazon, into their home. Every decision had to reduce anxiety and increase a sense of control, from clear scheduling to visible confirmation of what happened and when.'],
+          ['What I did', '__NEEDS__Your specific role and contributions on the in-home flow.'],
+          ['Outcome', '__NEEDS__Any public metric or milestone you are comfortable citing.'],
+        ],
+      },
+      '8tracks': {
+        eyebrow: '8tracks', title: 'First-Time Experience',
+        impact: 'Rebuilt the first-time experience for a beloved music platform to learn user taste faster and feed better playlist recommendations from day one.',
+        attr: { Client: '8tracks', Sector: 'Music Tech', Discipline: 'Product Design, PM', Platform: 'iOS, Android, Web', Role: 'Design Lead', Timeframe: 'Launched Spring 2016', View: '8tracks.com' },
+        sections: [
+          ['Overview', 'The 8tracks first-time experience was the moment a new listener either fell for the product or drifted away. Over roughly three months, I led a redesign of the FTUX across iOS, Android, and web, with a clear job: engage new users immediately and capture enough taste signal to power more relevant recommendations, which supports retention.'],
+          ['The challenge', 'A first run has to earn attention in seconds while quietly doing real work: reading a person\u2019s taste well enough to make the next recommendation feel personal. Too much friction and people bail; too little signal and the recommendations fall flat. Finding that balance across three platforms was the puzzle.'],
+          ['What I did', 'I started from a shared team vision and treated it as a hypothesis rather than a spec. We validated and refined it with qualitative research, usability testing, and A/B testing, so the shipped design was earned by evidence. Once the interaction model held, I partnered with our visual designer for the polished finish, then worked closely with engineering to build it consistently across platforms.'],
+          ['Outcome', '__NEEDS__Any lift you can cite (activation, taste-capture completion, early retention).'],
+        ],
+      },
+      fluence: {
+        eyebrow: 'Fluence', title: 'Platform & Website',
+        impact: 'Designed and built both the marketing face and the working web app for a platform connecting artists, promoters, and curators.',
+        attr: { Client: 'Fluence', Sector: 'Music Tech', Discipline: 'Full-stack Product', Platform: 'Web, Desktop, Mobile', Role: 'Design + Front-end', Timeframe: 'Launched Spring 2015', View: 'fluence.io' },
+        sections: [
+          ['Overview', 'Fluence connected artists and promoters with the curators who could champion their work. I handled the full arc of the product surface: the marketing site that had to captivate and convert two very different audiences, and the responsive web app, which worked across desktop, tablet, and mobile. On both, I did the design and the front-end engineering.'],
+          ['The challenge', 'The marketing site had to speak persuasively to two audiences at once without diluting either message. The app had to make a novel value exchange feel simple and trustworthy on any screen.'],
+          ['What I did', 'I owned interaction design, visual design, and front-end engineering across the site and app. On the marketing side I also produced the photography and videography that carried the brand. On the product side, I designed the responsive experience and built the front end, so the handoff gap between design intent and shipped result simply did not exist.'],
+          ['Outcome', '__NEEDS__Anything public on traction or sign-ups; otherwise this stays qualitative, focused on craft and full-stack ownership.'],
+        ],
+      },
+      cinematiq: { eyebrow: 'Earlier work', title: 'Cinematiq', impact: '', attr: { Sector: 'Creative Tech', Discipline: 'Product, Full-stack', Role: 'UX, visual, front-end', Timeframe: 'Summer 2015', View: 'cinematiq.com' }, sections: [['Overview', 'Independent film festivals run on manual process. Cinematiq brought me in to define core interactions and a style guide for their web-based automation tools, moving quickly from stakeholder interviews through wireframes and visual design to front-end build.']] },
+      shift: { eyebrow: 'Earlier work', title: 'Shift', impact: '', attr: { Sector: 'Automotive Tech', Discipline: 'Product, Full-stack', Role: 'UX, visual, front-end', Timeframe: 'Spring 2014', View: 'driveshift.com' }, sections: [['Overview', 'A responsive, fully functioning MVP prototype that helped Shift secure funding. I was brought on to resolve the interaction issues in an existing prototype, refresh the visual design, and code the front end.']] },
+      huddleup: { eyebrow: 'Earlier work', title: 'HuddleUp', impact: '', attr: { Sector: 'Collaboration', Discipline: 'Product, Design Leadership', Role: 'Design Lead', Timeframe: 'Fall 2013', View: 'huddleuphub.com' }, sections: [['Overview', 'Built with the team behind the Net Promoter System, HuddleUp helps teams improve collaboration. At Tangible UX, I led the interaction design that evolved their early prototype into a usable, responsive app.']] },
+      intuit: { eyebrow: 'Earlier work', title: 'Intuit', impact: '', attr: { Sector: 'Fintech-adjacent', Discipline: 'Product Design', Role: 'Prototyping, research', Timeframe: 'Fall 2012', View: 'intuit.com' }, sections: [['Overview', 'Through Tangible UX, I designed, prototyped, and tested a unified authentication system and member center for Intuit, running several design rounds followed by a week of usability testing.']] },
+      bubbles: { eyebrow: 'Earlier work', title: 'Yahoo! Bubbles', impact: '', attr: { Sector: 'Creative Tech', Platform: 'iOS, Android', Discipline: 'Product, Design Leadership', Role: 'Design Lead', Timeframe: '2011' }, sections: [['Overview', 'My most significant Yahoo! project: Bubbles, a new kind of spatial networking app blending geo, social, and play, built under the Yahoo! Catalyst innovation program. I led design, authored the interaction spec for iOS and Android, and directed a small team alongside engineering, product, and QA.']] },
+      ydn: { eyebrow: 'Earlier work', title: 'Yahoo! Developer Network', impact: '', attr: { Sector: 'Creative Tech', Discipline: 'Full-stack Product', Role: 'Interaction, prototyping', Timeframe: '2007 to 2013', View: 'developer.yahoo.com' }, sections: [['Overview', 'Across several years I designed and prototyped features of Yahoo\u2019s Developer Network. In 2007 I pioneered rapid iterative prototyping in HTML and CSS for usability testing, in place of the then-standard Flash approach, and much of that prototype code shipped to production.']] },
+      ypatterns: { eyebrow: 'Earlier work', title: 'Yahoo! Design Pattern Library', impact: '', attr: { Sector: 'Creative Tech', Discipline: 'Full-stack, Design Systems', Role: 'Front-end', Timeframe: 'Fall 2010', View: 'developer.yahoo.com/ypatterns' }, sections: [['Overview', 'A cross-screen interaction pattern reference. I partnered with Christian Crumlish to build the front end that published the pattern library he curated at Yahoo!.']] },
+    };
+  }
+
+  componentDidMount() {
+    this.data = this.DATA();
+    this.wrap = document.getElementById('work-wrap');
+    this.sticky = document.getElementById('work-sticky');
+    this.track = document.getElementById('wtrack');
+    this.cards = [...this.track.querySelectorAll('.wcard')];
+    this.count = document.getElementById('wcount');
+    this.prog = document.querySelector('#wprog i');
+    this.detail = document.getElementById('detail');
+    this.detailBody = document.getElementById('detail-body');
+    this.dclose = document.getElementById('dclose');
+
+    this.wrap.style.height = '520vh';
+    this.measure();
+
+    // open detail
+    const open = (key) => this.openDetail(key);
+    this.cards.forEach((c) => {
+      if (c.dataset.key === 'older') return;
+      c.addEventListener('click', () => open(c.dataset.key));
+    });
+    this.track.querySelectorAll('.olditem').forEach((o) => o.addEventListener('click', (e) => { e.stopPropagation(); open(o.dataset.key); }));
+    this.dclose.addEventListener('click', () => this.closeDetail());
+    this.onKey = (e) => { if (e.key === 'Escape') this.closeDetail(); };
+    window.addEventListener('keydown', this.onKey);
+
+    this.raf = 0;
+    this.onScroll = () => { if (this.raf) return; this.raf = requestAnimationFrame(() => { this.raf = 0; this.update(); }); };
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    this.onResize = () => { this.measure(); this.update(); };
+    window.addEventListener('resize', this.onResize);
+    window.addEventListener('load', this.onResize);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { this.measure(); this.update(); });
+    this.update();
+  }
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('load', this.onResize);
+    window.removeEventListener('keydown', this.onKey);
+  }
+
+  measure() {
+    if (!this.track) return;
+    this.travel = Math.max(0, this.track.scrollWidth - window.innerWidth + window.innerWidth * 0.06);
+  }
+
+  update() {
+    if (!this.wrap) return;
+    const rect = this.wrap.getBoundingClientRect();
+    const total = this.wrap.offsetHeight - window.innerHeight;
+    const lp = this.clamp(-rect.top / (total || 1), 0, 1);
+    this.track.style.transform = `translateX(${(-lp * this.travel).toFixed(1)}px)`;
+    this.prog.style.width = (lp * 100).toFixed(2) + '%';
+
+    // active card = nearest to viewport center
+    const cx = window.innerWidth * 0.5;
+    let best = 0, bestD = Infinity;
+    this.cards.forEach((c, i) => {
+      const r = c.getBoundingClientRect();
+      const d = Math.abs((r.left + r.width / 2) - cx);
+      if (d < bestD) { bestD = d; best = i; }
+      c.style.opacity = d < window.innerWidth * 0.55 ? '1' : '0.42';
+    });
+    const n = this.cards.length;
+    this.count.innerHTML = `<b>${String(best + 1).padStart(2, '0')}</b> / ${String(n).padStart(2, '0')}`;
+  }
+
+  esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+  openDetail(key) {
+    const d = this.data[key];
+    if (!d) return;
+    let html = `<div class="deyebrow">${this.esc(d.eyebrow)}</div><h1>${this.esc(d.title)}</h1>`;
+    if (d.impact) html += `<p class="dimpact">${this.esc(d.impact)}</p>`;
+    html += '<dl class="dattr">';
+    for (const k in d.attr) html += `<div><dt>${this.esc(k)}</dt><dd>${this.esc(d.attr[k])}</dd></div>`;
+    html += '</dl>';
+    html += '<div class="dbody">';
+    if (d.stub) {
+      html += `<p class="needs">This case study is in progress. The layout, attribute block, and section structure are ready; the write-up will drop in here.</p>`;
+    } else {
+      for (const [h, body] of d.sections) {
+        html += `<h3>${this.esc(h)}</h3>`;
+        if (body.startsWith('__NEEDS__')) html += `<p class="needs">Needs input: ${this.esc(body.slice(9))}</p>`;
+        else html += `<p>${this.esc(body)}</p>`;
+      }
+    }
+    html += '</div>';
+    html += '<div class="dshot"><span class="mono">selected screens / artifacts</span></div>';
+    this.detailBody.innerHTML = html;
+    this.detail.scrollTop = 0;
+    this.detail.classList.add('open');
+    this.dclose.style.display = 'block';
+  }
+  closeDetail() {
+    this.detail.classList.remove('open');
+    this.dclose.style.display = 'none';
+  }
+
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="https://use.typekit.net/aqv1jgr.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: #e9e9ec; }
+  body { font-family: "config-variable", system-ui, sans-serif; font-variation-settings: 'wght' 400; color: #0d0d0d; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  .mono { font-family: "config-mono-vf", monospace; font-variation-settings: 'wght' 400; }
+
+  .wm { display: flex; font-family: 'config-variable', sans-serif; font-size: clamp(3rem, 8vw, 6.5rem); text-transform: uppercase; letter-spacing: 0.14em; line-height: 0.9; }
+  .wm .l { display: inline-block; font-variation-settings: 'wght' 300; }
+
+  /* A — accent wave through the letters */
+  .wmA .l { animation: waveA 5.5s ease-in-out infinite; }
+  @keyframes waveA {
+    0%, 52%, 100% { color: #0d0d0d; transform: translateY(0); }
+    7%  { color: #3f9b4e; transform: translateY(-0.03em); }
+    15% { color: #6d4bd8; }
+    23% { color: #2f7d8f; transform: translateY(0); }
+  }
+
+  /* B — living gradient wordmark */
+  .wmB {
+    background: linear-gradient(92deg, #3f9b4e 0%, #6d4bd8 38%, #2f7d8f 72%, #3f9b4e 100%);
+    background-size: 280% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    animation: drift 9s ease-in-out infinite;
+  }
+  @keyframes drift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+  /* C — ambient aurora behind ink type */
+  .aurora { position: absolute; inset: -20% -10%; z-index: 0; filter: blur(70px); opacity: 0.55; pointer-events: none; }
+  .aurora b { position: absolute; display: block; width: 42%; height: 70%; border-radius: 50%; }
+  .aurora .g1 { background: #3f9b4e; left: 4%;  top: 6%;  animation: floatA 11s ease-in-out infinite; }
+  .aurora .g2 { background: #6d4bd8; left: 34%; top: -8%; animation: floatB 13s ease-in-out infinite; }
+  .aurora .g3 { background: #2f7d8f; left: 60%; top: 14%; animation: floatC 12s ease-in-out infinite; }
+  @keyframes floatA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(8%,10%) scale(1.15); } }
+  @keyframes floatB { 0%,100% { transform: translate(0,0) scale(1.1); } 50% { transform: translate(-10%,8%) scale(0.9); } }
+  @keyframes floatC { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(6%,-10%) scale(1.2); } }
+
+  .card { background: #fff; border: 1px solid #dcdce0; border-radius: 14px; overflow: hidden; }
+  .cbar { display: flex; align-items: center; gap: 12px; padding: 16px 24px; border-bottom: 1px solid #eee; }
+  .badge { font-family: "config-mono-vf", monospace; font-size: 12px; font-variation-settings: 'wght' 500; color: #fff; background: #0d0d0d; border-radius: 100px; padding: 3px 11px; }
+  .stage { position: relative; padding: 72px 48px 60px; overflow: hidden; }
+  .eyebrow { font-family: "config-mono-vf", monospace; font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase; color: #9a9a9a; position: relative; z-index: 1; }
+  .tag { margin-top: 26px; max-width: 46ch; font-size: clamp(1rem, 1.4vw, 1.3rem); line-height: 1.34; color: #2e2e2e; position: relative; z-index: 1; }
+  .cue { margin-top: 34px; font-family: "config-mono-vf", monospace; font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: #9a9a9a; position: relative; z-index: 1; }
+</style>
+</helmet>
+
+<section style="padding: 60px clamp(24px, 5vw, 80px) 100px;">
+
+  <div style="max-width: 640px; margin-bottom: 44px;">
+    <div class="mono" style="font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: #8a8a8a;">Turn 2 &middot; welcome motion</div>
+    <h1 style="margin-top: 16px; font-size: 2.2rem; font-variation-settings: 'wght' 560; letter-spacing: -0.02em;">A pop of color for Welcome</h1>
+    <p style="margin-top: 14px; font-size: 1rem; line-height: 1.55; color: #4a4a4a;">All three pull from the section palette (green / violet / teal) and loop so you can watch the motion. Reference by id &mdash; <a href="#2a" style="color:#6d4bd8;">2a</a>, <a href="#2b" style="color:#6d4bd8;">2b</a>, <a href="#2c" style="color:#6d4bd8;">2c</a>.</p>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 22px;">
+
+    <!-- 2a wave -->
+    <div id="2a" class="card">
+      <div class="cbar">
+        <span class="badge">2a</span>
+        <span class="mono" style="font-size: 12px; color: #6a6a6a;">Accent wave through the assembly</span>
+        <span class="mono" style="font-size: 11px; color: #a0a0a0; margin-left: auto;">recommended</span>
+      </div>
+      <div class="stage">
+        <div class="eyebrow">Product Design Leader &amp; Strategist</div>
+        <div class="wm wmA" style="margin-top: 0.2em;" aria-label="jonokane">
+          <span class="l" style="animation-delay: 0s">j</span><span class="l" style="animation-delay: .13s">o</span><span class="l" style="animation-delay: .26s">n</span><span class="l" style="animation-delay: .39s">o</span><span class="l" style="animation-delay: .52s">k</span><span class="l" style="animation-delay: .65s">a</span><span class="l" style="animation-delay: .78s">n</span><span class="l" style="animation-delay: .91s">e</span>
+        </div>
+        <p class="tag">I shape strategy, build teams, lead design, and build the front end that brings it to life.</p>
+        <div class="cue">scroll</div>
+      </div>
+    </div>
+
+    <!-- 2b gradient -->
+    <div id="2b" class="card">
+      <div class="cbar">
+        <span class="badge">2b</span>
+        <span class="mono" style="font-size: 12px; color: #6a6a6a;">Living gradient wordmark</span>
+        <span class="mono" style="font-size: 11px; color: #a0a0a0; margin-left: auto;">permanent color</span>
+      </div>
+      <div class="stage">
+        <div class="eyebrow">Product Design Leader &amp; Strategist</div>
+        <div class="wm wmB" style="margin-top: 0.2em;" aria-label="jonokane">
+          <span class="l">j</span><span class="l">o</span><span class="l">n</span><span class="l">o</span><span class="l">k</span><span class="l">a</span><span class="l">n</span><span class="l">e</span>
+        </div>
+        <p class="tag">I shape strategy, build teams, lead design, and build the front end that brings it to life.</p>
+        <div class="cue">scroll</div>
+      </div>
+    </div>
+
+    <!-- 2c aurora -->
+    <div id="2c" class="card">
+      <div class="cbar">
+        <span class="badge">2c</span>
+        <span class="mono" style="font-size: 12px; color: #6a6a6a;">Ambient aurora behind the type</span>
+        <span class="mono" style="font-size: 11px; color: #a0a0a0; margin-left: auto;">atmosphere</span>
+      </div>
+      <div class="stage">
+        <div class="aurora"><b class="g1"></b><b class="g2"></b><b class="g3"></b></div>
+        <div class="eyebrow">Product Design Leader &amp; Strategist</div>
+        <div class="wm" style="margin-top: 0.2em; color: #0d0d0d; position: relative; z-index: 1;" aria-label="jonokane">
+          <span class="l">j</span><span class="l">o</span><span class="l">n</span><span class="l">o</span><span class="l">k</span><span class="l">a</span><span class="l">n</span><span class="l">e</span>
+        </div>
+        <p class="tag">I shape strategy, build teams, lead design, and build the front end that brings it to life.</p>
+        <div class="cue">scroll</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>
