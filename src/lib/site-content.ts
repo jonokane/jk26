@@ -9,6 +9,8 @@ export const siteContent = {
   kicker: "Product Design Leader & Strategist",
   tagline:
     "I shape strategy, build teams, lead design, and code the front end that brings it to life.",
+  /** The hero wordmark and the nav brand render this. */
+  wordmark: "JONOKANE",
   nav: [
     { label: "About", target: "about" },
     { label: "Work", target: "work" },
@@ -19,6 +21,7 @@ export const siteContent = {
     backToTop: "Back to top",
     home: "Jono Kane — home",
     allWork: "← All work",
+    scrollCue: "scroll",
   },
   /** Section heading titles (nav labels differ deliberately: "Work" vs "Selected Work"). */
   titles: {

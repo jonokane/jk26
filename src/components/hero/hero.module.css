@@ -1,102 +1,47 @@
-/* src/components/hero/hero.module.css — hero-only styles (spec §15) */
-.section {
+.hero {
   min-height: 100vh;
+  padding: 0 6vw;
   display: flex;
-  align-items: center; /* mid-left hero, locked in prototyping */
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
 }
 
-.inner {
-  padding-left: 7vw;
-  padding-right: 7vw;
-  max-width: 100%;
-}
-
-/* Kicker and tagline WRAP by default and are locked to one line only once the
-   lockup has measured and decided it can be (see [data-lockup="one-line"]).
-   That default is load-bearing twice over: it's the legible phone layout, and
-   before it, `nowrap` at the pre-lockup base size made the tagline 566px wide
-   in a 390px viewport — the transient horizontal overflow of the whole intro.
-   Both are opacity: 0 until the hero settles, so nothing is visible mid-flip. */
 .kicker {
-  display: inline-block;
-  margin-bottom: 1.1rem;
-  opacity: 0;
-  transition: opacity 0.8s ease 0.1s;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--mute);
 }
 
-/* the in-flow wordmark reserves layout + provides measurement; the fixed
-   live layer (Task 6 morph) renders on top of it */
 .wordmark {
-  font-family: var(--wordmark-family);
-  line-height: 1.1;
-  white-space: nowrap;
+  display: flex;
+  margin: 0.2em 0 0.26em 0;
+  font-family: var(--font-wordmark);
+  font-size: clamp(3rem, 9vw, 8rem);
+  font-variation-settings: "wght" 300;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 0.9;
   color: var(--ink);
-  text-shadow: 0 2px 30px var(--text-glow);
-}
-
-.wordmark span {
-  display: inline-block;
-  opacity: 0; /* revealed by the build-in (or instantly under reduced motion) */
-  will-change: transform, opacity, filter;
-}
-
-/* flow copy: still measured by the lockup, but never painted — the live
-   copy (below) is what's actually visible and what the morph animates */
-.wordmarkFlow {
-  visibility: hidden;
-}
-
-/* fixed live wordmark layer (Task 6 morph): flies from its hero position
-   into the header slot, reversibly, as the page scrolls */
-.wordmarkLive {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 41; /* above the header pill (z-40) so it can land on the slot */
-  transform-origin: top left;
-  pointer-events: none;
 }
 
 .tagline {
-  display: inline-block;
-  margin-top: 1.3rem;
-  line-height: 1.45;
+  max-width: 52ch;
+  font-size: clamp(1.15rem, 1.9vw, 1.72rem);
+  font-variation-settings: "wght" 400;
+  line-height: 1.34;
   color: var(--ink);
-  opacity: 0;
-  transition: opacity 0.8s ease 0.25s;
-  max-width: 40ch; /* a sane measure while wrapping; the one-line lock overrides */
 }
 
-.section[data-settled="true"] .kicker {
-  opacity: 1;
-}
-
-.section[data-settled="true"] .tagline {
-  opacity: 0.85;
-}
-
-/* The measuring state (one synchronous turn inside the lockup — never painted).
-   The ratios need each line's true UNWRAPPED width, so nothing may wrap, clamp
-   or shrink-to-fit against the parent while they're read. This is load-bearing:
-   measured against the 40ch clamp below, the tagline under-reports its one-line
-   width by ~30% and the lockup then sizes it to overshoot the wordmark. */
-.inner[data-lockup="measuring"] .kicker,
-.inner[data-lockup="measuring"] .tagline {
-  white-space: nowrap;
-  width: max-content;
-  max-width: none;
-}
-
-/* The one-line lockup (spec §5): kicker ≡ the JONO segment's width, tagline ≡
-   the full wordmark's. The lockup hook only grants this once computeLockup
-   reports the sizes it needs clear the legibility floors — below ~760px (or
-   wherever a one-line fit would go under them) the two stay wrapping text at a
-   readable size instead of being squeezed to 4px to span the wordmark. */
-.inner[data-lockup="one-line"] .kicker,
-.inner[data-lockup="one-line"] .tagline {
-  white-space: nowrap;
-}
-
-.inner[data-lockup="one-line"] .tagline {
-  max-width: none;
+.scrollCue {
+  position: absolute;
+  left: 6vw;
+  bottom: 6vh;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mute);
 }

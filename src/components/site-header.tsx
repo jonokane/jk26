@@ -7,7 +7,6 @@ import { navigateTo } from "@/lib/scroll-nav";
 import { HeaderWorkRow } from "@/components/work/header-work-row";
 import { useShelfState } from "@/components/work/shelf-store";
 import { siteContent } from "@/lib/site-content";
-import { WORDMARK_TEXT, wordmarkConfig, wordmarkFvs } from "@/lib/wordmark-config";
 import { useHeaderHeight } from "@/lib/use-header-height";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { useScrollSpy } from "@/lib/use-scroll-spy";
@@ -76,17 +75,12 @@ export function SiteHeader() {
   const slot = (
     <span
       id={NAV_WORDMARK_SLOT_ID}
-      style={{
-        fontFamily: wordmarkConfig.family,
-        fontSize: "1.05rem",
-        letterSpacing: `${wordmarkConfig.trackEm}em`,
-        /* the locked Area axes — without these the slot renders at the font's
-           default axes, which is what you actually see under reduced motion */
-        fontVariationSettings: wordmarkFvs(wordmarkConfig.axes.wght),
-        opacity: slotVisible ? 1 : 0,
-      }}
+      className={styles.brandSlot}
+      /* opacity is live state, so it stays inline; the type is a design
+         decision and lives in CSS. */
+      style={{ opacity: slotVisible ? 1 : 0 }}
     >
-      {WORDMARK_TEXT}
+      {siteContent.wordmark}
     </span>
   );
 
