@@ -95,3 +95,31 @@ describe("tokeniseStatements", () => {
     }
   });
 });
+
+/* The About copy's emphasis marks are a DESIGN decision the prototype already
+   made — not a judgment for whoever edits the file. This pins the intent that
+   is checkable without reading .velite: statement 1 uses the italic role, and
+   the heavy words are the prototype's.
+   The full word-by-word diff against the prototype's own data-role markup
+   lives in the phase's verification, since it needs the compiled collection
+   and no test here may import #site/content. */
+describe("the About copy's emphasis marks match the prototype", () => {
+  const st1 =
+    "I help teams build products people **love,** spanning **design,** product management, **strategy,** and hands-on building to turn *concept* and *vision* into **shipped products.**";
+
+  it("marks exactly the prototype's heavy words in statement 1", () => {
+    const marked = tokeniseStatements(st1)[0]
+      .filter((w) => w.role !== "ambient")
+      .map((w) => `${w.text}/${w.role[0]}`);
+    expect(marked).toEqual([
+      "love,/e", "design,/e", "strategy,/e", "concept/i", "vision/i", "shipped/e", "products./e",
+    ]);
+  });
+
+  /* `product management` is AMBIENT in the prototype. An earlier draft of the
+     content bolded it, diluting the "field of green with black bold hits". */
+  it("leaves product management ambient", () => {
+    const w = tokeniseStatements(st1)[0].find((x) => x.text === "management,");
+    expect(w?.role).toBe("ambient");
+  });
+});
