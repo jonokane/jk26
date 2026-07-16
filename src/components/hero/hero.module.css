@@ -47,20 +47,35 @@
 }
 
 /* Each letter carries its own gradient — never the container. The letters are
-   transformed during the build-in (Task 3), and a container-level
-   background-clip: text makes them invisible while transformed (spec §6). */
-.letter {
-  background: linear-gradient(92deg,
-    var(--about) 0%,
-    var(--work) 40%,
-    var(--contact) 74%,
-    var(--about) 100%);
-  background-size: 280% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: drift 9s ease-in-out infinite;
+   transformed during the build-in (Task 3), and a container-level clip to
+   text makes them invisible while transformed (spec §6).
+
+   The gradient, the clip and the resulting transparent fill only apply
+   where the browser can actually clip a background to glyph outlines (see
+   @supports below). Elsewhere the letter spans set none of it, so they
+   inherit the wordmark's opaque ink colour — readable and static, rather
+   than an invisible wordmark.
+
+   Order below is load-bearing, in the feature query and the rule body
+   alike: the vendor-prefixed clip declaration must come before the
+   standard one. Authored the other way round, Turbopack silently drops the
+   unprefixed declaration from the compiled chunk and the clip dies in the
+   browser while tests, build and lint all stay green (see
+   site-header.module.css — same trap, for backdrop-filter). */
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .letter {
+    background: linear-gradient(92deg,
+      var(--about) 0%,
+      var(--work) 40%,
+      var(--contact) 74%,
+      var(--about) 100%);
+    background-size: 280% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: drift 9s ease-in-out infinite;
+  }
 }
 
 /* Negative delays offset each letter into the SAME 9s loop, so colour travels
