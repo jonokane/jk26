@@ -22,6 +22,11 @@ export const siteContent = {
     home: "Jono Kane — home",
     allWork: "← All work",
     scrollCue: "scroll",
+    /** The theme control names the mode it switches TO, not the current one. */
+    theme: {
+      toLight: "Light",
+      toDark: "Dark",
+    },
   },
   /** Section heading titles (nav labels differ deliberately: "Work" vs "Selected Work"). */
   titles: {

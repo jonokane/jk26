@@ -8,6 +8,7 @@ import { siteContent } from "@/lib/site-content";
 import { useHeaderHeight } from "@/lib/use-header-height";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { useScrollSpy } from "@/lib/use-scroll-spy";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import styles from "@/components/site-header.module.css";
 
 export const NAV_WORDMARK_SLOT_ID = "nav-wordmark-slot";
@@ -113,6 +114,7 @@ export function SiteHeader() {
               {label}
             </Link>
           ))}
+          <ThemeToggle />
         </nav>
       </div>
     </header>
