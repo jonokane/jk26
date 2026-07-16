@@ -117,11 +117,16 @@ Expected: five OK lines. This proves `main` carries the reuse targets and none o
 
 ```bash
 pnpm install
-pnpm test run 2>&1 | tail -5
+pnpm test 2>&1 | tail -5
 pnpm build 2>&1 | tail -5
 ```
 
-Expected: tests pass and the build succeeds. Record the test count — later tasks delete tests, and you need to know the starting number to tell a deletion from a regression.
+Expected: tests pass and the build succeeds.
+
+**Baseline, measured 2026-07-16: 22 test files, 211 tests passing; build green.**
+Later tasks delete tests on purpose. Compare against this number to tell a deletion from a regression.
+
+> `package.json` declares `"test": "vitest run"` — already non-watch. Use `pnpm test`, or `pnpm test <path>` for one file. `pnpm test run` appends `run` as a filename filter, matches nothing, and exits 1.
 
 Nothing to commit; the branch itself is the deliverable.
 
@@ -194,7 +199,7 @@ Expected: no output.
 - [ ] **Step 6: Run tests and build**
 
 ```bash
-pnpm test run 2>&1 | tail -5
+pnpm test 2>&1 | tail -5
 pnpm build 2>&1 | tail -5
 ```
 
@@ -318,7 +323,7 @@ Expected: no output.
 - [ ] **Step 6: Run tests and build**
 
 ```bash
-pnpm test run 2>&1 | tail -5
+pnpm test 2>&1 | tail -5
 pnpm build 2>&1 | tail -5
 ```
 
@@ -528,7 +533,7 @@ Expected: no output.
 - [ ] **Step 8: Run tests and build**
 
 ```bash
-pnpm test run 2>&1 | tail -5
+pnpm test 2>&1 | tail -5
 pnpm build 2>&1 | tail -5
 ```
 
@@ -782,7 +787,7 @@ Expected: no output. If `work.module.css` still holds shelf rules, Step 6 replac
 - [ ] **Step 9: Run tests and build**
 
 ```bash
-pnpm test run 2>&1 | tail -5
+pnpm test 2>&1 | tail -5
 pnpm build 2>&1 | tail -5
 ```
 
@@ -854,7 +859,7 @@ describe("type tokens", () => {
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `pnpm test run src/app/globals.css.test.ts`
+Run: `pnpm test src/app/globals.css.test.ts`
 Expected: FAIL — `--font-wordmark` is still `"totalblack-variable"`, `--font-mono` is still `var(--font-geist-mono)`, and Geist fallbacks are present.
 
 - [ ] **Step 3: Update the type tokens**
@@ -909,7 +914,7 @@ In `src/app/layout.tsx`, delete `import { Geist, Geist_Mono } from "next/font/go
 - [ ] **Step 6: Run tests to verify they pass**
 
 ```bash
-pnpm test run src/app/globals.css.test.ts
+pnpm test src/app/globals.css.test.ts
 grep -rn "geist\|Geist" src/ || echo "OK: no Geist references"
 ```
 
@@ -1006,7 +1011,7 @@ describe("palettes", () => {
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `pnpm test run src/app/globals.css.test.ts`
+Run: `pnpm test src/app/globals.css.test.ts`
 Expected: FAIL — `no :root[data-theme="dark"] block`.
 
 - [ ] **Step 3: Write the palettes**
@@ -1097,7 +1102,7 @@ Delete the stale `--background: #ffffff; --foreground: #171717;` pair and the `@
 
 - [ ] **Step 5: Run tests to verify they pass**
 
-Run: `pnpm test run src/app/globals.css.test.ts`
+Run: `pnpm test src/app/globals.css.test.ts`
 Expected: PASS, all cases.
 
 - [ ] **Step 6: Verify no scene tokens survive**
@@ -1222,7 +1227,7 @@ describe("THEME_STORAGE_KEY", () => {
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `pnpm test run src/lib/theme-engine.test.ts`
+Run: `pnpm test src/lib/theme-engine.test.ts`
 Expected: FAIL — `Cannot find module '@/lib/theme-engine'`.
 
 - [ ] **Step 3: Write the engine**
@@ -1269,7 +1274,7 @@ export function applyTheme(theme: Theme): void {
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `pnpm test run src/lib/theme-engine.test.ts`
+Run: `pnpm test src/lib/theme-engine.test.ts`
 Expected: PASS, all cases.
 
 - [ ] **Step 5: Write the failing test for the pre-hydration script**
@@ -1350,7 +1355,7 @@ describe("preHydrationThemeScript", () => {
 
 - [ ] **Step 6: Run it to make sure it fails**
 
-Run: `pnpm test run src/lib/pre-hydration-theme.test.ts`
+Run: `pnpm test src/lib/pre-hydration-theme.test.ts`
 Expected: FAIL — `Cannot find module '@/lib/pre-hydration-theme'`.
 
 - [ ] **Step 7: Write the script**
@@ -1378,7 +1383,7 @@ document.documentElement.dataset.theme=c;
 
 - [ ] **Step 8: Run the tests to verify they pass**
 
-Run: `pnpm test run src/lib/pre-hydration-theme.test.ts`
+Run: `pnpm test src/lib/pre-hydration-theme.test.ts`
 Expected: PASS, all six cases.
 
 - [ ] **Step 9: Mount the script**
@@ -1408,7 +1413,7 @@ import { preHydrationThemeScript } from "@/lib/pre-hydration-theme";
 - [ ] **Step 10: Run the full suite and build**
 
 ```bash
-pnpm test run 2>&1 | tail -5
+pnpm test 2>&1 | tail -5
 pnpm build 2>&1 | tail -5
 ```
 
@@ -1529,7 +1534,7 @@ describe("ThemeToggle", () => {
 
 - [ ] **Step 3: Run it to make sure it fails**
 
-Run: `pnpm test run src/components/theme/theme-toggle.test.tsx`
+Run: `pnpm test src/components/theme/theme-toggle.test.tsx`
 Expected: FAIL — `Cannot find module '@/components/theme/theme-toggle'`.
 
 - [ ] **Step 4: Write the hook**
@@ -1649,7 +1654,7 @@ Create `src/components/theme/theme-toggle.module.css`:
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
-Run: `pnpm test run src/components/theme/theme-toggle.test.tsx`
+Run: `pnpm test src/components/theme/theme-toggle.test.tsx`
 Expected: PASS, all four cases.
 
 - [ ] **Step 8: Mount it in the nav**
@@ -1669,7 +1674,7 @@ If the links container is a flex row, the toggle inherits its gap. If `site-head
 - [ ] **Step 9: Run the full suite and build**
 
 ```bash
-pnpm test run 2>&1 | tail -5
+pnpm test 2>&1 | tail -5
 pnpm build 2>&1 | tail -5
 ```
 
@@ -1707,7 +1712,7 @@ Spec §4"
 
 Before planning Phase 2, all of these must hold:
 
-- [ ] `pnpm test run` and `pnpm build` both pass.
+- [ ] `pnpm test` and `pnpm build` both pass.
 - [ ] `grep -rniE "scene|sky|slab|decode|farewell|shelf|collector|geist|totalblack" src/` returns nothing but doc comments.
 - [ ] The site renders every real word — kicker, tagline, four About statements, the work index, the contact form — in Mae Variable on a stark canvas.
 - [ ] Light and dark both paint, the toggle works, and reloading in dark shows **no white flash**.
