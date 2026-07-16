@@ -31,11 +31,9 @@
   --nav-glass: rgba(255, 255, 255, 0.6);
   --nav-edge:  rgba(15, 15, 15, 0.06);
 
-  /* type system (spec §4): Mae for display + body, tunable base weights */
+  /* type system (spec §4): Mae for display + body */
   --font-display: "mae-variable", system-ui, sans-serif;
   --font-body: "mae-variable", system-ui, sans-serif;
-  --dw: 180;
-  --bw: 140;
 }
 
 /* ── Dark ─────────────────────────────────────────────────────────────
@@ -148,17 +146,21 @@ html.lenis body {
     border-width: 1.5px;
   }
 
-  /* Display headings: Mae at the section-heading role weight, scene glow. */
+  /* Display headings: Mae at the section-heading role weight (spec's type
+     scale: section titles wght 700), scene glow. */
   .heading-display {
     font-family: var(--font-display);
+    font-variation-settings: "wght" 700;
     text-shadow: 0 2px 26px var(--text-glow);
   }
 
-  /* Uppercase kicker/label style. */
+  /* Uppercase kicker/label style — mono labels sit at the base wght 400
+     (spec's type scale), same as the .mono rule above. */
   .text-kicker {
     text-transform: uppercase;
     letter-spacing: 0.22em;
     color: var(--sub);
+    font-variation-settings: "wght" 400;
   }
 
   /* The nav pill. Carries the slab material, but sets its own (tighter)
@@ -232,19 +234,5 @@ html.lenis body {
   .site-header nav a[aria-current] {
     color: var(--ink);
     text-decoration: underline;
-  }
-
-  /* Mae axis weights apply only once Mae is confirmed rendering —
-     the fallback face would render near-Thin at these values. */
-  html.fonts-mae body {
-    font-variation-settings: "wght" var(--bw);
-  }
-
-  html.fonts-mae .heading-display {
-    font-variation-settings: "wght" calc(var(--dw) + 260);
-  }
-
-  html.fonts-mae .text-kicker {
-    font-variation-settings: "wght" calc(var(--bw) + 150);
   }
 }
