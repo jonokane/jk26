@@ -710,9 +710,17 @@ In `hero.tsx`, extract the letters into a local so both copies share one source,
         {letters}
       </h1>
 
-      {/* The fly is the copy you actually see, and it BECOMES the nav brand —
-          it never fades out, so the living gradient rides along at nav scale
-          (spec §7). Purely decorative: the anchor owns the name. */}
+      {/* The fly is the copy you actually see once the morph arms, and it
+          BECOMES the nav brand — it never fades out, so the living gradient
+          rides along at nav scale (spec §7). Purely decorative: the anchor
+          owns the name.
+
+          It starts hidden and is revealed by the hook only AFTER its first
+          apply() positions it. Without that, the fly renders at its CSS
+          default (position:fixed; top:0; left:0, full size, untransformed)
+          from mount until `active` flips at ~1540ms — a second wordmark
+          pinned to the viewport's top-left corner throughout the build-in.
+          The prototype hits the same trap and solves it the same way. */}
       {!reduced && (
         <div
           ref={liveRef}
@@ -758,14 +766,6 @@ Add the imports: `useRef` from react, and `useWordmarkMorph` from `@/components/
 Append to `hero.module.css`:
 
 ```css
-/* The anchor is invisible but still owns layout AND the accessibility tree.
-   opacity, not visibility:hidden — the latter would remove the wordmark's
-   only accessible name. */
-.hero:has([data-wordmark="fly"]) .wordmark[data-wordmark="anchor"] {
-  opacity: 0;
-  pointer-events: none;
-}
-
 .fly {
   position: fixed;
   top: 0;
@@ -775,12 +775,30 @@ Append to `hero.module.css`:
   transform-origin: 0 0;
   pointer-events: none;
   will-change: transform;
+  /* Hidden until the hook has positioned it — see the handover note below. */
+  opacity: 0;
+}
+
+/* The hook stamps this only AFTER its first apply() has placed the fly on
+   the anchor. Until then the fly would paint at top-left, full size. */
+.fly[data-morph="live"] {
+  opacity: 1;
+}
+
+/* The handover. The anchor is the visible copy during the build-in; it goes
+   invisible only once the fly is positioned AND shown, so there is never a
+   frame with both hidden (a blank wordmark) or both visible (a doubled one).
+   opacity, not visibility:hidden — the latter would strip the wordmark's only
+   accessible name out of the tree. */
+.hero:has(.fly[data-morph="live"]) .wordmark[data-wordmark="anchor"] {
+  opacity: 0;
+  pointer-events: none;
 }
 ```
 
-> `:has()` means the anchor only hides when a fly copy exists — under reduced motion the fly is not rendered, so the anchor stays fully visible with no extra branch.
+> Under reduced motion the fly is never rendered, so `:has()` never matches and the anchor simply stays visible — no extra branch, no way to strand it.
 
-- [ ] **Step 6: Give the fly the anchor's font-size**
+- [ ] **Step 6: Give the fly the anchor's font-size, and reveal it once placed**
 
 The fly is `position: fixed`, so it inherits nothing from the hero's layout. In `use-wordmark-morph.ts`'s `measure()`, before reading rects, add:
 
@@ -789,6 +807,25 @@ The fly is `position: fixed`, so it inherits nothing from the hero's layout. In 
          fluid clamp() font-size. Copy it from the anchor before measuring. */
       live.style.fontSize = getComputedStyle(flow).fontSize;
 ```
+
+Then, immediately after the hook's initial `measure(); apply(0);` pair, hand over from the anchor to the fly:
+
+```ts
+    /* Reveal only once the fly is actually placed. It renders at its CSS
+       default (fixed, top-left, full size) until apply() first runs, and this
+       hook does not arm until the build-in finishes — so without this the fly
+       would sit in the corner as a second wordmark for the whole run. The CSS
+       hides the anchor off the same attribute, so the handover is atomic. */
+    live.dataset.morph = "live";
+```
+
+and clear it in the cleanup, next to the existing `clearProps`:
+
+```ts
+      delete live.dataset.morph;
+```
+
+**Verify this specifically in the browser (Step 10 covers it):** during the build-in there must be exactly ONE wordmark on screen, in the hero — not a second one in the top-left corner.
 
 - [ ] **Step 7: Measure every frame**
 
@@ -835,7 +872,9 @@ Expected: all clean. Test count up from 56.
 
 With the dev server confirmed fresh:
 
-1. Load `/`. At scrollY 0: no nav (spec §6), wordmark large in the hero.
+1. Load `/` and watch the build-in. **There must be exactly ONE wordmark on screen throughout** — if a
+   second one appears pinned to the top-left corner, the fly's handover is broken. Then at scrollY 0:
+   no nav (spec §6), wordmark large in the hero.
 2. Scroll slowly to ~0.85×vh. Expected: the wordmark flies up and left, shrinking, and **lands centred on the nav links** — becoming the header mark. The nav glass fades in as it arrives.
 3. At the landed state, confirm **the gradient is still drifting on the nav mark** (spec §7 — the fly *becomes* the brand and never fades out). A flat-ink brand means the fly was faded and the wrong copy is showing.
 4. `document.elementFromPoint()` over the theme toggle must return the toggle button — the nav must still be usable after the morph.
