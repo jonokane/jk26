@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    /* The jk26-v3 design handoff: HTML prototypes plus the design tool's
+       bundled runtime. Reference material, never shipped and never imported
+       (its README: "support.js — design-tool runtime only. Do not ship."), so
+       linting it only reports on code we do not own and cannot change. */
+    "docs/notes/jk26-v3-handoff/**",
   ]),
 ]);
 
