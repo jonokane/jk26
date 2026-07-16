@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { HERO_BUILD } from "@/components/hero/hero-config";
@@ -40,6 +40,26 @@ export function Hero() {
       cancelAnimationFrame(raf);
       clearTimeout(t);
     };
+  }, [reduced]);
+
+  /* The morph is the only writer of header-on on `/`, and it's gated on
+     `runDone` — a fixed ~1.5s timeout, the build-in's length. A load that
+     starts already scrolled past the header threshold (a deep link that
+     lands below the fold, scroll restoration) gets no nav at all for that
+     whole window: the morph hasn't armed yet to write the class, so the
+     pill — and the theme toggle inside it — stays invisible even though the
+     scroll position already warrants it. A previous phase carried a guard
+     for exactly this; a later task deleted it along with the function that
+     held it. Re-added here, un-gated by `runDone`, as a layout effect so it
+     lands before the first paint. The morph's own apply() takes over
+     normally once it arms; this only covers the gap before that. Reduced
+     motion is unaffected — site-header.tsx already writes header-on
+     directly there, with no morph to hand off to. */
+  useLayoutEffect(() => {
+    if (reduced) return;
+    if (window.scrollY > window.innerHeight * 0.85) {
+      document.documentElement.classList.add("header-on");
+    }
   }, [reduced]);
 
   const flowRef = useRef<HTMLHeadingElement>(null);
