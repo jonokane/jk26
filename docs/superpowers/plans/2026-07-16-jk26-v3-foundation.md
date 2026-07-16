@@ -73,13 +73,21 @@ Expected: the tag lists and points at commit `fa0914b` ("feat(work): replace hor
 
 Both doc commits live on `cold-noon-visual-language` (that is where they were written). They belong on `main`, which is where v3 branches from.
 
+Every commit on `cold-noon-visual-language` after `fa0914b` is docs-only — verify that first, then take the range. A range rather than a SHA list, so this step does not rot if the docs are amended again before it runs.
+
 ```bash
-git switch main
-git cherry-pick 07f9b29 abcdfae
-git log --oneline -2
+git diff --name-only fa0914b..cold-noon-visual-language | sed 's|/.*||' | sort -u
 ```
 
-Expected: two commits — `docs: implementation plan for jk26-v3 Phase 1 (foundation)` and `docs: spec the jk26-v3 stark visual language`. If either cherry-pick conflicts, stop — `main` should not contain these files at all.
+Expected: exactly `docs`. If anything else appears, stop and read it — the range is only safe while it is documentation.
+
+```bash
+git switch main
+git cherry-pick fa0914b..cold-noon-visual-language
+git log --oneline -4
+```
+
+Expected: the spec, this plan, and any doc fixups, sitting on top of main's `b65f1b2`. If a cherry-pick conflicts, stop — `main` should not contain these files at all.
 
 - [ ] **Step 5: Verify the docs landed**
 
