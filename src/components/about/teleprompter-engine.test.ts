@@ -91,3 +91,52 @@ describe("TELEPROMPTER config", () => {
     expect(T.stageHeightVh).toBe(640);
   });
 });
+
+describe("degenerate focal range", () => {
+  /* 0/0 at exactly x === edge0 — which is the block ON the focal centre, i.e.
+     the statement being read. NaN then flows into its weight and blur, and the
+     browser silently drops blur(NaNpx) rather than complaining, so it would
+     degrade invisibly. */
+  it("never produces NaN when the focal range collapses to zero", () => {
+    for (const delta of [-100, -1, 0, 1, 100]) {
+      const focus = focusFor(delta, 0);
+      expect(Number.isNaN(focus), `focusFor(${delta}, 0)`).toBe(false);
+      const { blur, opacity } = blockStyle(delta, focus);
+      expect(Number.isNaN(blur), `blur at ${delta}`).toBe(false);
+      expect(Number.isNaN(opacity), `opacity at ${delta}`).toBe(false);
+      for (const role of ["ambient", "emphasis", "italic"] as const) {
+        expect(Number.isNaN(wordWeight(role, focus)), `${role} weight at ${delta}`).toBe(false);
+      }
+    }
+  });
+
+  it("collapses to a step function, the limit of a zero-width ramp", () => {
+    expect(smoothstep(0, 0, -1)).toBe(0);
+    expect(smoothstep(0, 0, 0)).toBe(1);
+    expect(smoothstep(0, 0, 1)).toBe(1);
+  });
+});
+
+describe("blockStyle interpolates linearly", () => {
+  /* Endpoints alone cannot catch a broken SLOPE — a reversed or non-linear
+     falloff preserving both ends would pass every other test here. */
+  it("sits exactly halfway at half focus, both sides", () => {
+    const above = blockStyle(-100, 0.5);
+    expect(above.blur).toBeCloseTo(T.blurAbove / 2, 10);
+    expect(above.opacity).toBeCloseTo((T.opacityAbove + 1) / 2, 10);
+
+    const below = blockStyle(100, 0.5);
+    expect(below.blur).toBeCloseTo(T.blurBelow / 2, 10);
+    expect(below.opacity).toBeCloseTo((T.opacityBelow + 1) / 2, 10);
+  });
+
+  it("is monotonic — more focus is never blurrier or fainter", () => {
+    let prevBlur = Infinity, prevOpacity = -Infinity;
+    for (const f of [0, 0.25, 0.5, 0.75, 1]) {
+      const { blur, opacity } = blockStyle(-100, f);
+      expect(blur).toBeLessThanOrEqual(prevBlur);
+      expect(opacity).toBeGreaterThanOrEqual(prevOpacity);
+      prevBlur = blur; prevOpacity = opacity;
+    }
+  });
+});

@@ -6,8 +6,18 @@
 import { TELEPROMPTER as T } from "@/components/about/teleprompter-config";
 import type { WordRole } from "@/components/about/statement-tokens";
 
-/** The classic smoothstep: clamped, then eased with t²(3−2t). */
+/**
+ * The classic smoothstep: clamped, then eased with t²(3−2t).
+ *
+ * The degenerate guard is not academic. With zero-width edges the ratio is
+ * `0/0` at exactly `x === edge0` — and that is the block sitting ON the focal
+ * centre, i.e. the statement the visitor is reading. NaN then flows into its
+ * weight and blur, and the browser silently drops `blur(NaNpx)` rather than
+ * complaining, so it would degrade invisibly. A zero range means "no zone", so
+ * collapse to the step function that is its limit.
+ */
 export function smoothstep(edge0: number, edge1: number, x: number): number {
+  if (edge0 === edge1) return x < edge0 ? 0 : 1;
   const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
   return t * t * (3 - 2 * t);
 }
@@ -24,9 +34,11 @@ export function focusFor(delta: number, focalRange: number): number {
 export function blockStyle(delta: number, focus: number): { blur: number; opacity: number } {
   const above = delta < 0;
   const slack = 1 - focus;
+  const floor = above ? T.opacityAbove : T.opacityBelow;
   return {
     blur: slack * (above ? T.blurAbove : T.blurBelow),
-    opacity: (above ? T.opacityAbove : T.opacityBelow) + focus * (1 - (above ? T.opacityAbove : T.opacityBelow)),
+    /* lerp(floor, 1, focus), written out: floor + focus × (1 − floor). */
+    opacity: floor + focus * (1 - floor),
   };
 }
 
