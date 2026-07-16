@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it, afterEach } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { Hero } from "@/components/hero/hero";
+import { HERO_BUILD } from "@/components/hero/hero-config";
 import { siteContent } from "@/lib/site-content";
 
 const css = readFileSync(
@@ -10,7 +11,17 @@ const css = readFileSync(
   "utf8",
 );
 
-afterEach(cleanup);
+function matchMediaReduced(reduced: boolean) {
+  window.matchMedia = ((q: string) => ({
+    matches: reduced && q.includes("reduced-motion"),
+    media: q, onchange: null,
+    addListener: () => {}, removeListener: () => {},
+    addEventListener: () => {}, removeEventListener: () => {},
+    dispatchEvent: () => false,
+  })) as unknown as typeof window.matchMedia;
+}
+
+afterEach(() => { cleanup(); matchMediaReduced(false); });
 
 describe("Hero markup", () => {
   it("renders one span per wordmark letter", () => {
@@ -110,5 +121,41 @@ describe("living gradient", () => {
     const block = css.slice(open, end);
     expect(block).toContain(".letter");
     expect(block).toMatch(/animation:\s*none/);
+  });
+});
+
+describe("HERO_BUILD", () => {
+  /* 0.3 + n*0.08 + 0.6 — the prototype's own arithmetic. */
+  it("computes the run length from the letter count", () => {
+    expect(HERO_BUILD.totalMs(8)).toBe(1540);
+    expect(HERO_BUILD.totalMs(0)).toBe(900);
+  });
+
+  it("exposes the stagger and lead as tunables", () => {
+    expect(HERO_BUILD.letterLeadMs).toBe(300);
+    expect(HERO_BUILD.letterStaggerMs).toBe(80);
+    expect(HERO_BUILD.settleMs).toBe(600);
+  });
+});
+
+describe("build-in", () => {
+  it("starts unbuilt and resolves after the run", async () => {
+    const { container } = render(<Hero />);
+    const section = container.querySelector("section")!;
+    /* data-built is the single switch the CSS keys off, so the from-state
+       cannot be left stranded on any copy (spec §6, bug 1). */
+    expect(section.getAttribute("data-built")).toBe("false");
+    await waitFor(() => expect(section.getAttribute("data-built")).toBe("true"), {
+      timeout: HERO_BUILD.totalMs(siteContent.wordmark.length) + 500,
+    });
+  });
+
+  /* The prototype's reduced-motion path resets the FLY copy, which is
+     display:none in that mode — leaving the visible wordmark permanently
+     scale(2.5) + blur(9px) (spec §6, bug 1). Resolve immediately instead. */
+  it("is already built on first render under reduced motion", () => {
+    matchMediaReduced(true);
+    const { container } = render(<Hero />);
+    expect(container.querySelector("section")!.getAttribute("data-built")).toBe("true");
   });
 });
