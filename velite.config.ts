@@ -3,6 +3,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { splitMarkdownSections } from "./src/components/work/case-study-sections";
+import { tokeniseStatements } from "./src/components/about/statement-tokens";
 
 /**
  * The case study body, a second time, split into its `## ` sections (spec §8,
@@ -64,6 +65,34 @@ const work = defineCollection({
     }),
 });
 
+/**
+ * The About statements (spec §5). Jono authors them as ordinary markdown
+ * paragraphs and marks the heavy words with `**bold**`; the tokeniser turns
+ * that into the role-tagged words the teleprompter animates. Editing the copy,
+ * or which words land, never touches a component.
+ *
+ * `.min(1)` turns an empty body into a loud build failure rather than an About
+ * section that silently renders nothing.
+ *
+ * `ctx.meta.content` is the body with frontmatter already stripped — velite's
+ * matter loader does `value.slice(match[0].length).trim()` — so paragraph
+ * splitting is safe here.
+ */
+const statements = () =>
+  s.preprocess(
+    (_value, ctx) => tokeniseStatements(ctx.meta.content ?? ""),
+    s
+      .array(
+        s.array(
+          s.object({
+            text: s.string(),
+            role: s.enum(["ambient", "emphasis", "italic"]),
+          }),
+        ),
+      )
+      .min(1),
+  );
+
 const earlier = defineCollection({
   name: "EarlierProject",
   pattern: "earlier/**/*.mdx",
@@ -81,6 +110,16 @@ const earlier = defineCollection({
   }),
 });
 
+const site = defineCollection({
+  name: "SitePage",
+  pattern: "site/**/*.mdx",
+  schema: s.object({
+    title: s.string(),
+    lede: s.string(),
+    statements: statements(),
+  }),
+});
+
 export default defineConfig({
   root: "content",
   output: {
@@ -90,7 +129,7 @@ export default defineConfig({
     name: "[name]-[hash:6].[ext]",
     clean: true,
   },
-  collections: { work, earlier },
+  collections: { work, earlier, site },
   mdx: {
     remarkPlugins: [remarkGfm],
     rehypePlugins: [
