@@ -1,19 +1,8 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/smooth-scroll";
-import { preHydrationSceneScript } from "@/lib/pre-hydration-scene";
 import { FontsReady } from "@/components/fonts-ready";
-import { SceneProvider } from "@/components/sky/scene-provider";
-import { Sky } from "@/components/sky/sky";
-import { SunMoon } from "@/components/sky/sun-moon";
-import { Rays } from "@/components/sky/rays";
-import { Stars } from "@/components/sky/stars";
-import { Clouds } from "@/components/sky/clouds";
-import { Birds } from "@/components/sky/birds";
-import { TimeScrubber } from "@/components/sky/time-scrubber";
-import { SceneTunePanel } from "@/components/sky/scene-tune-panel";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,31 +43,8 @@ export default function RootLayout({
         precedence="default"
       />
       <body className="min-h-full flex flex-col">
-        {/* Paints the correct scene before hydration so the page never flashes
-            the default midnight palette. `beforeInteractive` is the only
-            strategy that lands in the server HTML ahead of framework JS; a raw
-            <script> element would warn (React never executes scripts rendered
-            on the client) and would not run on a client navigation. */}
-        <Script
-          id="scene-first-paint"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: preHydrationSceneScript }}
-        />
         <FontsReady />
-        <SmoothScroll>
-          <SceneProvider>
-            <Sky>
-              <SunMoon />
-              <Rays />
-              <Stars />
-              <Clouds />
-              <Birds />
-            </Sky>
-            {children}
-            <TimeScrubber />
-            <SceneTunePanel />
-          </SceneProvider>
-        </SmoothScroll>
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );
