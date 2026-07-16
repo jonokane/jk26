@@ -70,3 +70,31 @@ describe("palettes", () => {
     }
   });
 });
+
+const headerCss = readFileSync(
+  path.resolve(__dirname, "../components/site-header.module.css"),
+  "utf8",
+);
+
+describe("nav glass", () => {
+  /* The tokens existed in both palettes for a whole phase while the header
+     rendered transparent, because nothing consumed them. Assert the wiring,
+     not just the declaration. */
+  it("consumes the nav glass tokens", () => {
+    expect(headerCss).toContain("var(--nav-glass)");
+    expect(headerCss).toContain("var(--nav-edge)");
+  });
+
+  it("applies the prototype's blur and saturate", () => {
+    expect(headerCss).toMatch(/backdrop-filter:\s*blur\(20px\)\s+saturate\(1\.4\)/);
+    expect(headerCss).toMatch(/-webkit-backdrop-filter:\s*blur\(20px\)\s+saturate\(1\.4\)/);
+  });
+
+  /* --scrim was a scene token deleted in Phase 1. Referencing it silently
+     paints nothing. */
+  it("references no deleted scene tokens", () => {
+    expect(headerCss).not.toContain("--scrim");
+    expect(headerCss).not.toContain("--card-bg");
+    expect(headerCss).not.toContain("--sub");
+  });
+});
