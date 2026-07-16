@@ -25,3 +25,48 @@ describe("type tokens", () => {
     expect(css).not.toContain("font-geist");
   });
 });
+
+const TOKENS = [
+  "--canvas", "--ink", "--mute", "--dim",
+  "--hairline", "--row-hover", "--about", "--work", "--contact",
+];
+
+/** `:root { ... }` and `:root[data-theme="dark"] { ... }` bodies. */
+function paletteBody(selector: string): string {
+  const i = css.indexOf(selector);
+  if (i === -1) throw new Error(`no ${selector} block`);
+  return css.slice(css.indexOf("{", i) + 1, css.indexOf("}", i));
+}
+
+describe("palettes", () => {
+  it("declares every token in both themes", () => {
+    const light = paletteBody(":root {");
+    const dark = paletteBody(':root[data-theme="dark"]');
+    for (const t of TOKENS) {
+      expect(light, `light is missing ${t}`).toContain(`${t}:`);
+      expect(dark, `dark is missing ${t}`).toContain(`${t}:`);
+    }
+  });
+
+  it("keeps the handoff's light values verbatim", () => {
+    const light = paletteBody(":root {");
+    expect(light).toMatch(/--canvas:\s*#ffffff/);
+    expect(light).toMatch(/--ink:\s*#0d0d0d/);
+    expect(light).toMatch(/--about:\s*#3f9b4e/);
+    expect(light).toMatch(/--work:\s*#6d4bd8/);
+    expect(light).toMatch(/--contact:\s*#2f7d8f/);
+  });
+
+  it("uses a pure black dark canvas", () => {
+    expect(paletteBody(':root[data-theme="dark"]')).toMatch(/--canvas:\s*#000000/);
+  });
+
+  /* The whole point of two locked palettes: a hex is a hex. If a dark value
+     is ever expressed as a function of a light one, the muddiness that killed
+     Cold Noon has a way back in. */
+  it("derives nothing — no colour functions in either palette", () => {
+    for (const body of [paletteBody(":root {"), paletteBody(':root[data-theme="dark"]')]) {
+      expect(body).not.toMatch(/color-mix|oklch|hsl\(|rgb\(|calc\(/);
+    }
+  });
+});

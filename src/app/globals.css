@@ -1,57 +1,35 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-canvas: var(--canvas);
+  --color-ink: var(--ink);
+  --color-mute: var(--mute);
+  --color-about: var(--about);
+  --color-work: var(--work);
+  --color-contact: var(--contact);
   --font-mono: "config-mono-vf", monospace;
   --font-wordmark: "config-variable", sans-serif;
-  --color-ink: var(--ink);
-  --color-sub: var(--sub);
-  --color-surface: var(--surface);
-  --color-card: var(--card-bg);
-  --color-card-border: var(--card-border);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-/* ---------- scene tokens (written live by applySceneToRoot; defaults = Midnight) ---------- */
+/* ── Light ────────────────────────────────────────────────────────────
+   The handoff's palette, verbatim. Hand-edited. Nothing here is derived
+   from anything: a hex is a hex (spec §3).                             */
 :root {
-  --sky-top: #050818;
-  --sky-mid: #16173f;
-  --sky-hor: #2c4a78;
-  --ink: #edf2ff;
-  --sub: #a9b6e6;
-  --surface: #060a19;
-  --scrim: #060a1994;
-  --card-bg: rgba(10, 13, 28, 0.55);
-  --card-border: rgba(255, 255, 255, 0.15);
-  --text-glow: rgba(4, 7, 18, 0.55);
-  --elev: rgba(3, 6, 16, 0.5);
-  --cover-a: #16173f;
-  --cover-b: #2c4a78;
-  --w-stars: 1;
-  --w-rays: 0;
-  --w-clouds: 0;
-  --w-birds: 0;
-  --w-sun: 0;
-  --w-moon: 1;
-  --sun-x: 6vw;
-  --sun-y: 78vh;
-  /* moonPosition(0) — keep in sync with scene-engine */
-  --moon-x: 40.87vw;
-  --moon-y: 23.00vh;
+  --canvas:    #ffffff;
+  --ink:       #0d0d0d;
+  --mute:      #9a9a9a;
+  --dim:       #bcbcbc; /* teleprompter resting word */
+  --hairline:  #e6e6e6;
+  --row-hover: #fafafa;
+
+  --about:     #3f9b4e;
+  --work:      #6d4bd8;
+  --contact:   #2f7d8f;
+
+  --nav-glass: rgba(255, 255, 255, 0.6);
+  --nav-edge:  rgba(15, 15, 15, 0.06);
 
   /* type system (spec §4): Mae for display + body, tunable base weights */
   --font-display: "mae-variable", system-ui, sans-serif;
@@ -60,9 +38,33 @@
   --bw: 140;
 }
 
+/* ── Dark ─────────────────────────────────────────────────────────────
+   Same tokens, same order, so the two read side by side. The handoff has
+   no dark mode; these are authored here. The accents are lifted to clear
+   4.5:1 on #000 (the handoff's violet lands ~3.2:1) while holding hue.
+
+   EXPECT TO TUNE THESE BY HAND. Look at the About wall first — it is a
+   near-full-screen field of --about and the likeliest place for "muddy"
+   to return (spec §15).                                                 */
+:root[data-theme="dark"] {
+  --canvas:    #000000;
+  --ink:       #f2f2f2;
+  --mute:      #7d7d7d;
+  --dim:       #3a3a3a;
+  --hairline:  #1c1c1c;
+  --row-hover: #0a0a0a;
+
+  --about:     #57c46a;
+  --work:      #9d86f0;
+  --contact:   #5ab6cb;
+
+  --nav-glass: rgba(0, 0, 0, 0.6);
+  --nav-edge:  rgba(255, 255, 255, 0.08);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--canvas);
+  color: var(--ink);
   font-family: var(--font-body), system-ui, sans-serif;
   font-variation-settings: "wght" 400;
 }
