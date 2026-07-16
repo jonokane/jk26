@@ -104,7 +104,27 @@ describe("nav geometry", () => {
   it("has no radius", () => {
     expect(navRule).not.toMatch(/border-radius/);
   });
-});
+
+  /* Checking the .site-header RULE is not enough — the element wears several
+     classes, and a radius can arrive from any of them. It did: `slab` (the
+     parked design's frosted material) carries border-radius: 18px, which the
+     pill's own 15px used to mask. Removing the pill unmasked it and the bar
+     rendered with rounded corners while this file's rule looked perfectly
+     correct. Assert the ELEMENT's class list, not just the rule. */
+  it("does not wear the parked frosted material", () => {
+    const header = readFileSync(
+      path.resolve(__dirname, "../components/site-header.tsx"),
+      "utf8",
+    );
+    /* Match the className EXPRESSION, not the file. An earlier version of this
+       test sliced from indexOf("site-header") — which finds the import on line
+       12 — and then matched the explanatory comment right above the className,
+       because that comment names the material it is warning about. Scoping to
+       the template literal makes prose irrelevant. */
+    const classExpr = header.match(/className=\{`site-header[^`]*`\}/)?.[0];
+    expect(classExpr, "the header's className expression").toBeTruthy();
+    expect(classExpr).not.toMatch(/\bslab\b/);
+  });});
 
 describe("nav glass", () => {
   /* The tokens existed in both palettes for a whole phase while the header

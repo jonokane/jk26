@@ -94,7 +94,12 @@ export function SiteHeader() {
   return (
     <header
       ref={headerRef}
-      className={`site-header slab ${styles.header}`}
+      /* Not `slab`: that is the parked design's frosted material, and on the
+         nav it now contributes only a stray `border-radius: 18px` — its
+         background, border and shadow all read tokens deleted two phases ago,
+         and its blur loses to this bar's own. The pill's own 15px radius used
+         to mask it; making the nav a full-bleed bar unmasked it (spec §7). */
+      className={`site-header ${styles.header}`}
       data-static={isHome ? undefined : ""}
     >
       <div className={styles.top}>
