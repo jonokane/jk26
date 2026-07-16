@@ -55,3 +55,7 @@ next-env.d.ts
 
 # pnpm local store (created by a stray `pnpm install --store-dir .`)
 .pnpm-store/
+
+# Session scratch: rendered screenshots land at the repo root and are never
+# shipped. A `git add -A` swept 25 of them (26 MiB) into a docs commit once.
+/*.png
