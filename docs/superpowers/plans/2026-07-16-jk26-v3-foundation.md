@@ -349,8 +349,8 @@ The Area/TotalBlack hero and its engines go; the hero becomes a plain type stub 
 - Modify: `src/components/hero/hero.tsx`, `src/components/hero/hero.module.css`, `src/components/site-header.tsx`
 
 **Interfaces:**
-- Consumes: `siteContent.kicker`, `siteContent.tagline`, `siteContent.labels.home` from `src/lib/site-content.ts`.
-- Produces: `WORDMARK_TEXT` exported from `src/components/hero/hero.tsx` as `"JONOKANE"` — Phase 2 and `site-header.tsx` both read it. `use-wordmark-morph.ts` survives untouched.
+- Consumes: `siteContent.kicker`, `siteContent.tagline` from `src/lib/site-content.ts`.
+- Produces: `siteContent.wordmark` (`"JONOKANE"`) and `siteContent.labels.scrollCue` (`"scroll"`) — `site-header.tsx` and Phase 2 both read the wordmark. `<Hero />` renders `#welcome`. `use-wordmark-morph.ts` survives untouched.
 
 - [ ] **Step 1: Confirm the parked hero is unmounted**
 
@@ -379,20 +379,24 @@ git rm src/lib/wordmark-engine.ts src/lib/wordmark-engine.test.ts
 Replace `src/components/hero/hero.tsx` entirely. Phase 2 rebuilds the per-letter build-in, the living gradient, and the morph on top of this shell — the letter spans are already here so that work has somewhere to land.
 
 ```tsx
-"use client";
-
 import { siteContent } from "@/lib/site-content";
 import styles from "@/components/hero/hero.module.css";
 
-/** The wordmark's letters. Phase 2 animates these per-letter (spec §6). */
-export const WORDMARK_TEXT = "JONOKANE";
-
+/**
+ * Phase 1 stub. The letters are already split into spans so Phase 2's
+ * per-letter build-in and living gradient have somewhere to land (spec §6).
+ *
+ * The accessible name sits on the <h1> itself, never on a copy that motion
+ * can hide. The prototype puts it on the fly copy, which is display:none
+ * under reduced motion — leaving the wordmark with no accessible name at all
+ * (spec §6, bug 2). Keep it here when Phase 2 adds the fly copy.
+ */
 export function Hero() {
   return (
     <section className={styles.hero} id="welcome">
       <p className={styles.kicker}>{siteContent.kicker}</p>
-      <h1 className={styles.wordmark} aria-label={WORDMARK_TEXT}>
-        {WORDMARK_TEXT.split("").map((letter, i) => (
+      <h1 className={styles.wordmark} aria-label={siteContent.wordmark}>
+        {siteContent.wordmark.split("").map((letter, i) => (
           <span key={i} className={styles.letter} aria-hidden="true">
             {letter}
           </span>
@@ -405,9 +409,20 @@ export function Hero() {
 }
 ```
 
-- [ ] **Step 4: Add the scroll-cue copy**
+> No `"use client"`: the stub has no hooks or handlers, so it stays a server component. Phase 2 adds the directive when it adds the build-in.
 
-`siteContent.labels.scrollCue` does not exist yet. In `src/lib/site-content.ts`, inside the `labels` object, add:
+- [ ] **Step 4: Add the wordmark and scroll-cue copy**
+
+Neither string exists in `site-content.ts` yet. The wordmark text is visitor-facing copy and an accessible name, so it lives here — not in a component (Global Constraints; spec §14).
+
+At the top level of the `siteContent` object, beside `kicker`, add:
+
+```ts
+  /** The hero wordmark and the nav brand render this. */
+  wordmark: "JONOKANE",
+```
+
+And inside the `labels` object, add:
 
 ```ts
     scrollCue: "scroll",
@@ -469,11 +484,7 @@ Replace `src/components/hero/hero.module.css` entirely. Values come from spec §
 
 - [ ] **Step 6: Point the header at the new wordmark source**
 
-`src/components/site-header.tsx:10` imports `WORDMARK_TEXT, wordmarkConfig, wordmarkFvs` from the deleted `@/lib/wordmark-config`. Replace that line with:
-
-```tsx
-import { WORDMARK_TEXT } from "@/components/hero/hero";
-```
+`src/components/site-header.tsx:10` imports `WORDMARK_TEXT, wordmarkConfig, wordmarkFvs` from the deleted `@/lib/wordmark-config`. **Delete that import line entirely** — the file already imports `siteContent` at line 9, which is now where the wordmark text lives.
 
 The only uses are in the brand slot at `site-header.tsx:76-91`. Replace that whole `const slot = (...)` block with:
 
@@ -486,7 +497,7 @@ The only uses are in the brand slot at `site-header.tsx:76-91`. Replace that who
          decision and lives in CSS. */
       style={{ opacity: slotVisible ? 1 : 0 }}
     >
-      {WORDMARK_TEXT}
+      {siteContent.wordmark}
     </span>
   );
 ```
