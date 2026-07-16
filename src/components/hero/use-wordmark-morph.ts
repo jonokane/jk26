@@ -93,9 +93,15 @@ export function useWordmarkMorph({ liveRef, flowRef, active, onProgress }: Morph
     /* Reveal only once the fly is actually placed. It renders at its CSS
        default (fixed, top-left, full size) until apply() first runs, and this
        hook does not arm until the build-in finishes — so without this the fly
-       would sit in the corner as a second wordmark for the whole run. The CSS
-       hides the anchor off the same attribute, so the handover is atomic. */
+       would sit in the corner as a second wordmark for the whole run.
+
+       Stamping the anchor's own hide in the same synchronous breath (rather
+       than a `.hero:has(.fly[data-morph="live"])` selector reacting to the
+       fly's attribute) keeps the handover atomic without depending on
+       :has() — which has no degrade path, and whose failure mode is a
+       permanently doubled wordmark on the hero of a design portfolio. */
     live.dataset.morph = "live";
+    flow.dataset.morph = "hidden";
 
     /* Re-measure once the wordmark's real face lands: Config Variable is
        materially wider than the fallback, so a pre-font measurement sends the
@@ -116,6 +122,7 @@ export function useWordmarkMorph({ liveRef, flowRef, active, onProgress }: Morph
       document.documentElement.classList.remove("header-on");
       gsap.set(live, { clearProps: "transform" });
       delete live.dataset.morph;
+      delete flow.dataset.morph;
     };
   }, [active, liveRef, flowRef, onProgress]);
 }

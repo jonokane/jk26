@@ -203,8 +203,15 @@
    invisible only once the fly is positioned AND shown, so there is never a
    frame with both hidden (a blank wordmark) or both visible (a doubled one).
    opacity, not visibility:hidden — the latter would strip the wordmark's only
-   accessible name out of the tree. */
-.hero:has(.fly[data-morph="live"]) .wordmark[data-wordmark="anchor"] {
+   accessible name out of the tree.
+
+   Keyed off a plain attribute the hook stamps on the anchor itself in the
+   same breath as the fly's reveal — not `.hero:has(.fly[data-morph="live"])`.
+   :has() has no degrade path: an unsupporting browser would simply never
+   match this rule, leaving the anchor visible alongside the (also visible)
+   fly — a permanently doubled wordmark. A plain attribute selector fails
+   safe the same way every other selector here does. */
+.wordmark[data-wordmark="anchor"][data-morph="hidden"] {
   opacity: 0;
   pointer-events: none;
 }
