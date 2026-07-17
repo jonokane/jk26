@@ -23,8 +23,9 @@ export const siteContent = {
     home: "Jono Kane — home",
     allWork: "← All work",
     scrollCue: "scroll",
-    /** The teleprompter's right rail of dots (spec §8). */
-    aboutRail: "Jump to a statement",
+    /* No aboutRail label. The teleprompter's rail of dots (spec §8) is a
+       decorative progress indicator with nothing to activate, so it is
+       aria-hidden and has no accessible name to write. */
     /** The theme control names the mode it switches TO, not the current one. */
     theme: {
       toLight: "Light",

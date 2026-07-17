@@ -81,12 +81,23 @@ describe("About", () => {
   });
 
   /* Reduced motion gets the whole thing at rest — every statement legible at
-     once, no focal zone, no sticky stage. Established by CSS, never by a
-     post-hydration effect (Phase 2 shipped that bug). */
-  it("marks the stage inert under reduced motion", () => {
-    matchMediaReduced(true);
+     once, no focal zone, no sticky stage. That is established by a media query
+     in about.module.css, so it is right at first paint (spec §11).
+     There is deliberately no test here asserting a `data-static` attribute:
+     one used to exist, and it passed while reading nothing. Nothing in the
+     codebase selected [data-static] on this section, so the assertion would
+     have stayed green if the entire reduced-motion block had been deleted —
+     green on markup, blind to the behaviour. The mechanism is CSS, so the
+     tests that can actually see it are the CSS ones (teleprompter-config.test)
+     and the browser. */
+
+  /* The rail is decorative and offers nothing to activate — see the note at
+     its markup. This is the one thing a unit test CAN pin about it. */
+  it("does not promise assistive tech a jump it cannot deliver", () => {
     const { container } = render(<About />);
-    expect(container.querySelector("section")?.getAttribute("data-static")).toBe("");
+    const rail = container.querySelector("ol");
+    expect(rail?.getAttribute("aria-hidden")).toBe("true");
+    expect(screen.queryByRole("list", { name: /jump/i })).toBeNull();
   });
 });
 

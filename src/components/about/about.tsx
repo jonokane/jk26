@@ -3,7 +3,7 @@
 import { Fragment, useCallback, useRef, useState } from "react";
 import { aboutPage } from "@/components/about/about-data";
 import type { Word } from "@/components/about/statement-tokens";
-import { siteContent } from "@/lib/site-content";
+import { takeHashClick } from "@/lib/scroll-nav";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { useReservedWidths } from "@/components/about/use-reserved-widths";
 import { useTeleprompter } from "@/components/about/use-teleprompter";
@@ -71,7 +71,16 @@ function Statement({ words }: { words: Word[] }) {
       {runs.map((run, i) => (
         <Fragment key={i}>
           {run.href ? (
-            <a href={run.href} className={styles.link}>
+            /* A real href — cmd-click, open-in-new-tab and copy-link all work,
+               and the a11y tree announces a link. takeHashClick intercepts only
+               the plain left-click on a same-page #hash and hands it to the same
+               Lenis navigation the header's nav links use; anything else (an
+               external URL, a modified click) falls through to the browser. */
+            <a
+              href={run.href}
+              className={styles.link}
+              onClick={(e) => takeHashClick(e, run.href!)}
+            >
               <Words words={run.words} />
             </a>
           ) : (
@@ -107,16 +116,13 @@ export function About() {
   useTeleprompter({ wrapRef, columnRef, active: !reduced, onActiveStatement });
 
   return (
-    <section
-      className={styles.about}
-      id="about"
-      aria-labelledby="about-title"
-      /* Under reduced motion the stage is inert: no sticky wrapper, no focal
-         zone, every statement legible at once. CSS does the whole job off this
-         attribute — never a post-hydration effect, which would flash the
-         animated state first (spec §11). */
-      data-static={reduced ? "" : undefined}
-    >
+    /* No `data-static` here. It looked like the switch for the reduced-motion
+       path and was read by nothing: about.module.css establishes that path with
+       a plain `@media (prefers-reduced-motion: reduce)` query, which is what
+       makes it correct at FIRST PAINT (spec §11) — an attribute could only ever
+       arrive after hydration, having already flashed the animated state. The
+       one [data-static] selector in the codebase is the site header's. */
+    <section className={styles.about} id="about" aria-labelledby="about-title">
       <div ref={wrapRef} className={styles.wrap}>
         <div className={styles.stage}>
           <h2 className={styles.title} id="about-title">
@@ -140,7 +146,15 @@ export function About() {
             ))}
           </div>
 
-          <ol className={styles.rail} aria-label={siteContent.labels.aboutRail}>
+          {/* Decorative: it reports which statement is in the focal zone and
+              offers no way to act on it. It was announced as a list named "Jump
+              to a statement" holding four EMPTY listitems — telling a screen
+              reader user they could jump, then handing them nothing to jump
+              with. The reading order it tracks is the statements themselves,
+              which are already in the a11y tree, so the honest thing is to say
+              nothing rather than to name a control that does not exist. Real
+              jump controls would be a design change, not a fix. */}
+          <ol className={styles.rail} aria-hidden="true">
             {aboutPage.statements.map((_, i) => (
               <li
                 key={i}
