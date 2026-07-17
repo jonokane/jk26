@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseStudyArticle } from "@/components/work/case-study-article";
-import { nextStudy, studyNumber } from "@/components/work/work-lists";
+import { nextStudy } from "@/components/work/work-lists";
 import { publishedWork } from "@/components/work/work-data";
 import { SiteHeader } from "@/components/site-header";
 import { siteContent } from "@/lib/site-content";
@@ -44,16 +44,10 @@ export default async function CaseStudyPage({
     <>
       <SiteHeader />
       <main className="flex-1">
-        {/* straight to the section, not via the /work redirect: a client-side
-            <Link> navigation to "/work" drops the fragment the redirect adds,
-            landing the visitor at the top of the home page instead of #work */}
-        <div className="px-[7vw] pt-32">
-          {/* text-mute, not text-sub. `--sub` was a Cold Noon token and did not
-              survive the v3 palette, so `text-sub` had been compiling to NOTHING
-              — verified in the built CSS, where .text-ink emits one rule and
-              .text-sub emits zero. Tailwind does not warn about a utility whose
-              token is gone; it just silently emits no rule, so the link sat at
-              inherited ink and its hover was a no-op. */}
+        {/* Straight to the section, not via the /work redirect: a client-side
+            <Link> to "/work" drops the fragment the redirect adds, landing the
+            visitor at the top of the home page instead of #work. */}
+        <div className="mx-auto w-full max-w-[1000px] px-[6vw] pt-24">
           <Link href="/#work" className="font-mono text-sm text-mute transition-colors hover:text-ink">
             {siteContent.labels.allWork}
           </Link>
@@ -61,7 +55,6 @@ export default async function CaseStudyPage({
 
         <CaseStudyArticle
           study={study}
-          number={studyNumber(publishedWork, slug)}
           headingLevel={1}
           next={next ? { title: next.title, url: next.url } : undefined}
         />

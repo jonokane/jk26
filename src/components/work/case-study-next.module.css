@@ -2,10 +2,11 @@
    teaser. The arrow is a design decision, so it lives here, not in the JSX
    (spec §15). */
 .next {
-  margin-top: 2rem;
+  margin-top: 8vh;
+  font-family: var(--font-mono);
   font-size: 0.95rem;
-  color: var(--sub);
   letter-spacing: 0.06em;
+  color: var(--mute);
 }
 
 .next a {
