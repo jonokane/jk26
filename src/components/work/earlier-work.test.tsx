@@ -61,10 +61,12 @@ describe("EarlierWork", () => {
 
   it("renders each entry's attributes as one line", () => {
     render(<EarlierWork />);
-    /* getAllByText, not getByText: both mock entries share the default role
-       and sector (only title/view are overridden for "Shift"), so either
+    /* getAllByText, not getByText: both mock entries share the default sector
+       and discipline (only title/view are overridden for "Shift"), so either
        string legitimately matches twice. */
-    expect(screen.getAllByText(/Design Lead/).length).toBeGreaterThan(0);
+    /* Design Systems is the sector, Front-end the discipline — both still in
+       the compact meta; role (Design Lead) and platform are no longer shown. */
     expect(screen.getAllByText(/Design Systems/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Front-end/).length).toBeGreaterThan(0);
   });
 });

@@ -7,27 +7,37 @@
   margin-right: 6vw;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* Top-aligned, NOT centred, so the heading sits on the card's top edge (this
+     panel shares the card's 56vh and bottom alignment, so its box top already
+     lands there). Centring instead let the taller-than-a-card list spill UPWARD
+     into the pinned title on short windows — the collision this fixes. The list
+     is a shade over a card tall, so the rows are packed a little tighter than
+     the study cards' prose to keep all seven entries clear of the counter. */
+  justify-content: flex-start;
+  /* A hair of clearance below the card-top line, so the heading stays off the
+     pinned title even on the shortest windows where the title's baseline and the
+     card line nearly meet. */
+  padding-top: clamp(8px, 1.6vh, 16px);
 }
 
 .heading {
   font-size: clamp(1.6rem, 3vw, 2.6rem);
   font-variation-settings: "wght" 640;
   letter-spacing: -0.015em;
-  margin-bottom: 4vh;
+  margin-bottom: 2.4vh;
   color: var(--ink);
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 22px 40px;
+  gap: 13px 40px;
   list-style: none;
 }
 
 .item {
   border-top: 1px solid var(--hairline);
-  padding-top: 12px;
+  padding-top: 9px;
 }
 
 .title {
@@ -35,6 +45,13 @@
   font-variation-settings: "wght" 560;
   color: var(--ink);
   transition: color 0.4s ease;
+}
+
+/* The title is the entry's link when it has a live URL — it carries the colour
+   itself and drops the underline, so the list stays a clean two lines per row. */
+.titleLink {
+  color: inherit;
+  text-decoration: none;
 }
 
 .item:hover .title {
@@ -47,6 +64,12 @@
   letter-spacing: 0.03em;
   color: var(--work);
   margin-top: 4px;
+  /* One line, always: the panel's height budget assumes it, and a wrapped meta
+     on one entry would misalign the two columns and push the list into the
+     counter. Ellipsis is a safety net the real data does not trigger. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* The separator is a design decision, not copy: it must never reach the
@@ -54,12 +77,6 @@
 .attributes span + span::before {
   content: " · ";
   color: var(--mute);
-}
-
-.link {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--work);
 }
 
 /* One column when there is not room for two. */
