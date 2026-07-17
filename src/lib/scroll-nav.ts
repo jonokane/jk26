@@ -1,5 +1,6 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import { getLenis } from "@/components/smooth-scroll";
 
 /**
@@ -56,4 +57,39 @@ export function navigateTo(
     onComplete: release,
   });
   return true;
+}
+
+/** The only click we're allowed to hijack: plain left-click, no modifiers. */
+export function isPlainClick(e: MouseEvent): boolean {
+  return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+}
+
+/**
+ * Hand a plain click on an in-page `#hash` link to Lenis, so EVERY in-page link
+ * on the site glides the same way and one mechanism owns it.
+ *
+ * This lives here, next to navigateTo, because it was the nav's private
+ * behaviour for a phase and the About statement's "Hit me up" was a raw
+ * `<a href="#contact">` that fell through to the browser: the header's Contact
+ * eased 5897 → 7868 over ~1.2s while the identical destination, one section
+ * up, arrived at 7868 in 60ms. Same site, same link, two different mechanisms —
+ * which is exactly how they drift.
+ *
+ * The href stays real and untouched (cmd-click, open-in-new-tab, copy-link and
+ * the a11y tree all keep working); only the plain left-click is intercepted.
+ * Anything that is not a same-page `#hash` — an external URL, a modified click,
+ * a hash with no element behind it — is left entirely to the browser.
+ */
+export function takeHashClick(e: MouseEvent, href: string): void {
+  if (!href.startsWith("#") || !isPlainClick(e)) return;
+  const target = href.slice(1);
+  const el = document.getElementById(target);
+  if (!el) return;
+  e.preventDefault();
+  history.pushState(null, "", `#${target}`);
+  /* navigateTo, not lenis.scrollTo: it marks the scroll as a NAVIGATION so the
+     collector's snap stands aside instead of hijacking it mid-flight. No
+     `offset` either — Lenis honors the section's scroll-margin-top and an
+     explicit offset would COMPOUND with it. */
+  if (!navigateTo(el)) el.scrollIntoView();
 }

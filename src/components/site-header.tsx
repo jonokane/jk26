@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, type MouseEvent } from "react";
-import { navigateTo } from "@/lib/scroll-nav";
+import { isPlainClick, navigateTo, takeHashClick } from "@/lib/scroll-nav";
 import { siteContent } from "@/lib/site-content";
 import { useHeaderHeight } from "@/lib/use-header-height";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
@@ -12,11 +12,6 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import styles from "@/components/site-header.module.css";
 
 export const NAV_WORDMARK_SLOT_ID = "nav-wordmark-slot";
-
-/** The only click we're allowed to hijack: plain left-click, no modifiers. */
-function isPlainClick(e: MouseEvent): boolean {
-  return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
-}
 
 /**
  * The floating nav pill (spec §6), route-aware.
@@ -60,16 +55,10 @@ export function SiteHeader() {
   const slotVisible = !isHome || reducedMotion;
 
   const onNavClick = (e: MouseEvent<HTMLAnchorElement>, target: string) => {
-    if (!isHome || !isPlainClick(e)) return; // off-home: a real navigation
-    const el = document.getElementById(target);
-    if (!el) return;
-    e.preventDefault();
-    history.pushState(null, "", `#${target}`);
-    /* navigateTo, not lenis.scrollTo: it marks the scroll as a NAVIGATION so
-       the collector's snap stands aside instead of hijacking it mid-flight.
-       No `offset` either — Lenis honors the section's scroll-margin-top
-       (scroll-mt-28) and an explicit offset would COMPOUND with it. */
-    if (!navigateTo(el)) el.scrollIntoView();
+    if (!isHome) return; // off-home: a real navigation to /#…
+    /* takeHashClick, shared with the About statement's link (spec §8), so every
+       in-page link on the site glides through the same Lenis navigation. */
+    takeHashClick(e, `#${target}`);
   };
 
   const onHomeClick = (e: MouseEvent<HTMLElement>) => {
