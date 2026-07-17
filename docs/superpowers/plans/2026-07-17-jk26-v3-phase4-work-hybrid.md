@@ -669,11 +669,18 @@ Message: the gallery's strings land; the parked shelf's strings go, naming what 
 Create `src/components/work/work-card.test.tsx`:
 
 ```tsx
-import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
 import type { CaseStudy } from "#site/content";
 import { WorkCard } from "@/components/work/work-card";
 import { siteContent } from "@/lib/site-content";
+
+/* afterEach(cleanup) is not boilerplate here. vitest.config.ts does not set
+   `test.globals: true`, so Testing Library never finds a global afterEach to
+   register its automatic cleanup with — renders from earlier tests stay in the
+   DOM and getByText starts finding three of everything. Every render-based test
+   in this repo does this explicitly; match them. */
+afterEach(cleanup);
 
 const study = (over: Partial<CaseStudy> = {}) =>
   ({
@@ -1011,8 +1018,8 @@ Message: why the card is the link, why it is handed its number, and why the geom
 Create `src/components/work/earlier-work.test.tsx`:
 
 ```tsx
-import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
 import type { EarlierProject } from "#site/content";
 import { siteContent } from "@/lib/site-content";
 
@@ -1033,6 +1040,14 @@ vi.mock("@/components/work/work-data", () => ({
 }));
 
 const { EarlierWork } = await import("@/components/work/earlier-work");
+
+/* afterEach(cleanup) is not boilerplate here. vitest.config.ts does not set
+   `test.globals: true`, so Testing Library never finds a global afterEach to
+   register its automatic cleanup with — renders from earlier tests stay in the
+   DOM and getByText starts finding three of everything. Every render-based test
+   in this repo does this explicitly; match them. */
+afterEach(cleanup);
+
 
 describe("EarlierWork", () => {
   it("renders the locked heading from site-content", () => {
@@ -1454,8 +1469,8 @@ Message: why there is no RAF loop, why the wrapper's height is written from a me
 Create `src/components/work/work-gallery.test.tsx`:
 
 ```tsx
-import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
 import type { CaseStudy } from "#site/content";
 import { siteContent } from "@/lib/site-content";
 
@@ -1476,6 +1491,14 @@ vi.mock("@/components/work/work-data", () => ({
 }));
 
 const { WorkGallery } = await import("@/components/work/work-gallery");
+
+/* afterEach(cleanup) is not boilerplate here. vitest.config.ts does not set
+   `test.globals: true`, so Testing Library never finds a global afterEach to
+   register its automatic cleanup with — renders from earlier tests stay in the
+   DOM and getByText starts finding three of everything. Every render-based test
+   in this repo does this explicitly; match them. */
+afterEach(cleanup);
+
 
 describe("WorkGallery", () => {
   it("renders one card per published study", () => {
@@ -1745,8 +1768,8 @@ Message: the gallery lands; say what you measured, not that it "works".
 Create `src/components/work/work-index.test.tsx`:
 
 ```tsx
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { CaseStudy } from "#site/content";
 import { siteContent } from "@/lib/site-content";
 
@@ -1769,6 +1792,14 @@ vi.mock("@/components/work/work-data", () => ({
 }));
 
 const { WorkIndex } = await import("@/components/work/work-index");
+
+/* afterEach(cleanup) is not boilerplate here. vitest.config.ts does not set
+   `test.globals: true`, so Testing Library never finds a global afterEach to
+   register its automatic cleanup with — renders from earlier tests stay in the
+   DOM and getByText starts finding three of everything. Every render-based test
+   in this repo does this explicitly; match them. */
+afterEach(cleanup);
+
 
 describe("WorkIndex", () => {
   it("renders one row per study, each linking to its page", () => {
