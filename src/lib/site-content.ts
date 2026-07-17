@@ -58,24 +58,34 @@ export const siteContent = {
       { label: "Collaya", key: "collaya" },
     ],
   },
-  /** Work section (spec §8). */
+  /** Work section (spec §9). Two views over one dataset. */
   work: {
     intro:
       "Each study is the whole story: what it was, what made it hard, what I did, and what happened.",
     earlierTitle: "Selected earlier work.",
     nextLabel: "Next",
-    /** The shelf (spec §8): every word and separator it prints. */
-    shelf: {
-      /** The first panel of every study. The MDX headings name the others. */
-      introPanel: "Intro",
-      /** Joins the headings of a panel that carries more than one section. */
-      headingJoin: " & ",
-      /** Between the study title and the panel label in the shelf caption. */
-      captionSeparator: " — ",
-      /** The shelf's own landmark name. */
-      region: "Case studies",
-      /** The header's expanding work row (spec §6): the study-pill list's name. */
-      studyPills: "Jump to a case study",
+    /** The view toggle. Each names the view it switches TO, like the theme
+     *  control — never the view you are already in. */
+    galleryLabel: "Gallery",
+    indexLabel: "Index",
+    /** The card's call to action. The arrow beside it is CSS content, not copy. */
+    viewLabel: "View case study",
+    /** Sits in a card's image slot until a real `cover` is set in frontmatter. */
+    shotPending: "Case study imagery in progress",
+    /** Between the active card's number and the total: "01 / 05". */
+    counterSeparator: " / ",
+    /** The gallery's own landmark name. */
+    region: "Selected work gallery",
+    filters: {
+      sector: "Sector",
+      discipline: "Discipline",
+      clear: "Clear filters",
+      /** The filter bar's landmark name. */
+      region: "Filter the work",
+      /** Joins a filter pill's facet to its value in the ACCESSIBLE name only:
+       *  the pill shows "Music", a screen reader hears "Sector: Music". Without
+       *  it the control is a button called "Music" with no stated subject. */
+      pillPrefix: ": ",
     },
     metaLabels: {
       client: "Client",
