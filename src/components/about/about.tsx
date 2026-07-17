@@ -41,20 +41,45 @@ export function About() {
             {aboutPage.title}
           </h2>
 
+          {/* Statements only. The prototype's #about-col holds four .ablocks
+              and nothing else, and the handoff README says "a column of
+              statement blocks" — there is no lede here.
+
+              An earlier version rendered siteContent.about.lede at the top of
+              this column, carried over from the parked design's About. It was
+              not a [data-statement], so the hook never touched it: no blur, no
+              fade, no focus falloff. It scrolled under "Who I am." at full
+              contrast and collided with it. Anything inside this column must be
+              a statement, or the focal zone does not apply to it. */}
           <div ref={columnRef} className={styles.column}>
-            <p className={styles.lede}>{aboutPage.lede}</p>
             {aboutPage.statements.map((statement, i) => (
-              <p key={i} data-statement className={styles.statement}>
+              /* The sentence is named ONCE, and the per-word spans are hidden
+                 from assistive tech.
+
+                 The words have to be separate elements — each one animates its
+                 own colour and weight — and they carry no whitespace between
+                 them, because the flex `column-gap` does the spacing and a real
+                 space would separate a word from its punctuation (spec §5). The
+                 cost is that the accessibility tree sees "I" "help" "teams" as
+                 unrelated text runs.
+
+                 A visually-hidden space between the spans does NOT fix that: it
+                 puts spaces in `textContent`, so a test asserting on
+                 `textContent` passes, while Chrome's accessibility tree still
+                 contains zero whitespace nodes — verified. textContent is not
+                 what a screen reader reads. Naming the sentence on the
+                 paragraph and hiding the fragments is the standard fix, and it
+                 is deterministic across assistive tech rather than depending on
+                 how each one joins adjacent runs. */
+              <p
+                key={i}
+                data-statement
+                className={styles.statement}
+                aria-label={statement.map((w) => w.text).join(" ")}
+              >
                 {statement.map((word, j) => (
-                  <span key={j} data-word={word.role} className={styles.word}>
+                  <span key={j} data-word={word.role} aria-hidden="true" className={styles.word}>
                     {word.text}
-                    {/* A real space character, so the paragraph still reads as one
-                        sentence to a screen reader, but visually hidden: the
-                        flex row's column-gap already spaces the words, and a
-                        visible space here would double it (spec §5). */}
-                    {j < statement.length - 1 && (
-                      <span className={styles.wordGap}> </span>
-                    )}
                   </span>
                 ))}
               </p>

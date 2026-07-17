@@ -54,11 +54,27 @@ describe("About", () => {
      whitespace between them (spec §5). If the spans were joined by text
      nodes the spacing would double. But the statement must still read as
      one sentence to a screen reader. */
-  it("reads each statement as one accessible sentence", () => {
+  /* This asserts the ACCESSIBLE NAME, not textContent. An earlier version
+     checked textContent and passed while the accessibility outcome was
+     unchanged: a visually-hidden space between the word spans puts spaces in
+     textContent, but Chrome's accessibility tree contained ZERO whitespace
+     nodes — verified against the real tree via CDP. textContent is not what a
+     screen reader reads, so a test on it proves nothing about this. */
+  it("names each statement as one accessible sentence", () => {
+    render(<About />);
+    for (const statement of fixture.statements) {
+      const sentence = statement.map((w) => w.text).join(" ");
+      expect(screen.getByLabelText(sentence)).toBeTruthy();
+    }
+  });
+
+  /* The fragments must not reach assistive tech at all — otherwise the reader
+     gets the sentence once from the label and again as loose words. */
+  it("hides the per-word fragments from assistive tech", () => {
     const { container } = render(<About />);
-    const first = container.querySelector("[data-statement]");
-    const text = fixture.statements[0].map((w) => w.text).join(" ");
-    expect(first?.textContent?.replace(/\s+/g, " ").trim()).toBe(text);
+    const words = container.querySelectorAll("[data-word]");
+    expect(words.length).toBeGreaterThan(0);
+    for (const w of words) expect(w.getAttribute("aria-hidden")).toBe("true");
   });
 
   it("keeps the landmark named", () => {
