@@ -14,6 +14,7 @@ const FILES = [
   "case-study-meta.module.css",
   "case-study-cover.module.css",
   "case-study-next.module.css",
+  "case-study-modal.module.css",
 ];
 
 describe("case-study CSS uses only live stark tokens", () => {

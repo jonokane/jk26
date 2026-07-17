@@ -35,7 +35,7 @@ export function CaseStudyMeta({ study }: { study: CaseStudy }) {
   return (
     <dl className={styles.meta} data-case-study-panel="meta">
       {rows.map(({ key, label, value }) => (
-        <div key={key} className={styles.row}>
+        <div key={key}>
           <dt className={styles.label}>{label}</dt>
           <dd className={styles.value}>{value}</dd>
         </div>
