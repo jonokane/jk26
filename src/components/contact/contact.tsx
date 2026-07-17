@@ -130,124 +130,133 @@ export function Contact() {
   }
 
   return (
-    <section
-      id="contact"
-      aria-labelledby="contact-title"
-      className={`${styles.section} on-scrim scroll-mt-28`}
-    >
-      <div className={styles.inner}>
-        <h2 id="contact-title" className={`heading-display ${styles.title}`}>
-          {siteContent.titles.contact}
-        </h2>
-        <p className={styles.lede}>{siteContent.contact.lede}</p>
+    <section id="contact" aria-labelledby="contact-title" className={styles.section}>
+      <h2 id="contact-title" className={styles.title}>
+        {siteContent.titles.contact}
+      </h2>
+      <p className={styles.lede}>{siteContent.contact.lede}</p>
 
-        <form className={`slab ${styles.form}`} noValidate onSubmit={handleSubmit}>
-          <div className={styles.field}>
-            <label htmlFor={nameId} className={styles.label}>
-              {siteContent.contact.fields.name}
-            </label>
-            <input
-              id={nameId}
-              name="name"
-              type="text"
-              required
-              maxLength={MAX_LENGTHS.name}
-              autoComplete="name"
-              disabled={sending}
-              aria-invalid={fieldErrors.name ? true : undefined}
-              aria-describedby={fieldErrors.name ? nameErrorId : undefined}
-              onChange={(e) => clearFieldError("name", e.currentTarget)}
-              className={styles.input}
-            />
-            {fieldErrors.name && (
-              <span id={nameErrorId} role="alert" className={styles.fieldError}>
-                {fieldErrors.name}
-              </span>
-            )}
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor={emailId} className={styles.label}>
-              {siteContent.contact.fields.email}
-            </label>
-            <input
-              id={emailId}
-              name="email"
-              type="email"
-              required
-              maxLength={MAX_LENGTHS.email}
-              autoComplete="email"
-              disabled={sending}
-              aria-invalid={fieldErrors.email ? true : undefined}
-              aria-describedby={fieldErrors.email ? emailErrorId : undefined}
-              onChange={(e) => clearFieldError("email", e.currentTarget)}
-              className={styles.input}
-            />
-            {fieldErrors.email && (
-              <span id={emailErrorId} role="alert" className={styles.fieldError}>
-                {fieldErrors.email}
-              </span>
-            )}
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor={messageId} className={styles.label}>
-              {siteContent.contact.fields.message}
-            </label>
-            <textarea
-              id={messageId}
-              name="message"
-              required
-              maxLength={MAX_LENGTHS.message}
-              rows={5}
-              disabled={sending}
-              aria-invalid={fieldErrors.message ? true : undefined}
-              aria-describedby={fieldErrors.message ? messageErrorId : undefined}
-              onChange={(e) => clearFieldError("message", e.currentTarget)}
-              className={styles.textarea}
-            />
-            {fieldErrors.message && (
-              <span id={messageErrorId} role="alert" className={styles.fieldError}>
-                {fieldErrors.message}
-              </span>
-            )}
-          </div>
-
-          {/* Honeypot (spec §10): off-screen via clip/position, never
-              display:none, so a scripted form-filler still finds and fills
-              it while sighted visitors never see it and tabIndex={-1} +
-              aria-hidden keep keyboard/screen-reader users from ever
-              landing on it. Not a "real" field, so no associated label. */}
-          <div className={styles.honeypot} aria-hidden="true">
-            <input
-              id={honeypotId}
-              name="company"
-              type="text"
-              tabIndex={-1}
-              autoComplete="off"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className={`pill ${styles.submit}`}
+      <form className={styles.form} noValidate onSubmit={handleSubmit}>
+        <div className={styles.field}>
+          <label htmlFor={nameId} className={styles.label}>
+            {siteContent.contact.fields.name}
+          </label>
+          <input
+            id={nameId}
+            name="name"
+            type="text"
+            required
+            maxLength={MAX_LENGTHS.name}
+            autoComplete="name"
             disabled={sending}
-            aria-busy={sending || undefined}
-          >
-            {sending ? siteContent.contact.sending : siteContent.contact.submit}
-          </button>
+            aria-invalid={fieldErrors.name ? true : undefined}
+            aria-describedby={fieldErrors.name ? nameErrorId : undefined}
+            onChange={(e) => clearFieldError("name", e.currentTarget)}
+            className={styles.input}
+          />
+          {fieldErrors.name && (
+            <span id={nameErrorId} role="alert" className={styles.fieldError}>
+              {fieldErrors.name}
+            </span>
+          )}
+        </div>
 
-          <div role="status" aria-live="polite" className={styles.statusRegion}>
-            {status === "sending" && <p className={styles.sending}>{siteContent.contact.sending}</p>}
-            {status === "success" && <p className={styles.success}>{siteContent.contact.success}</p>}
-            {status === "error" && (
-              <p className={styles.errorMessage}>
-                {siteContent.contact.error}{" "}
-                <a href={`mailto:${siteContent.links.email}`}>{siteContent.links.email}</a>
-              </p>
-            )}
-          </div>
-        </form>
+        <div className={styles.field}>
+          <label htmlFor={emailId} className={styles.label}>
+            {siteContent.contact.fields.email}
+          </label>
+          <input
+            id={emailId}
+            name="email"
+            type="email"
+            required
+            maxLength={MAX_LENGTHS.email}
+            autoComplete="email"
+            disabled={sending}
+            aria-invalid={fieldErrors.email ? true : undefined}
+            aria-describedby={fieldErrors.email ? emailErrorId : undefined}
+            onChange={(e) => clearFieldError("email", e.currentTarget)}
+            className={styles.input}
+          />
+          {fieldErrors.email && (
+            <span id={emailErrorId} role="alert" className={styles.fieldError}>
+              {fieldErrors.email}
+            </span>
+          )}
+        </div>
+
+        <div className={`${styles.field} ${styles.fieldFull}`}>
+          <label htmlFor={messageId} className={styles.label}>
+            {siteContent.contact.fields.message}
+          </label>
+          <textarea
+            id={messageId}
+            name="message"
+            required
+            maxLength={MAX_LENGTHS.message}
+            rows={5}
+            disabled={sending}
+            aria-invalid={fieldErrors.message ? true : undefined}
+            aria-describedby={fieldErrors.message ? messageErrorId : undefined}
+            onChange={(e) => clearFieldError("message", e.currentTarget)}
+            className={styles.textarea}
+          />
+          {fieldErrors.message && (
+            <span id={messageErrorId} role="alert" className={styles.fieldError}>
+              {fieldErrors.message}
+            </span>
+          )}
+        </div>
+
+        {/* Honeypot (spec §10): off-screen via clip/position, never
+            display:none, so a scripted form-filler still finds and fills
+            it while sighted visitors never see it and tabIndex={-1} +
+            aria-hidden keep keyboard/screen-reader users from ever
+            landing on it. Not a "real" field, so no associated label. */}
+        <div className={`${styles.honeypot} ${styles.fieldFull}`} aria-hidden="true">
+          <input
+            id={honeypotId}
+            name="company"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className={styles.submit}
+          disabled={sending}
+          aria-busy={sending || undefined}
+        >
+          {sending ? siteContent.contact.sending : siteContent.contact.submit}
+        </button>
+
+        <div role="status" aria-live="polite" className={`${styles.statusRegion} ${styles.fieldFull}`}>
+          {status === "sending" && <p className={styles.sending}>{siteContent.contact.sending}</p>}
+          {status === "success" && <p className={styles.success}>{siteContent.contact.success}</p>}
+          {status === "error" && (
+            <p className={styles.errorMessage}>
+              {siteContent.contact.error}{" "}
+              <a href={`mailto:${siteContent.links.email}`}>{siteContent.links.email}</a>
+            </p>
+          )}
+        </div>
+      </form>
+
+      <div className={styles.footer} data-contact-footer>
+        <a href={`mailto:${siteContent.links.email}`}>{siteContent.links.email}</a>
+        {siteContent.contact.footerLinks.map((link) => {
+          const href = siteContent.links[link.key];
+          /* A link with no URL is not rendered — the About CTA's rule. Résumé
+             waits on links.resume. */
+          if (!href) return null;
+          return (
+            <a key={link.key} href={href} target="_blank" rel="noreferrer">
+              {link.label}
+            </a>
+          );
+        })}
       </div>
     </section>
   );

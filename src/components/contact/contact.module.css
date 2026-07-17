@@ -1,124 +1,150 @@
-/* src/components/contact/contact.module.css — contact-only styles (spec §15) */
+/* Contact (spec §12): the stark treatment. Replaces the parked Cold Noon
+   "frosted slab", whose tokens (--scrim, --sub, --card-border) were removed with
+   that palette and had been resolving to nothing — the form styled against air. */
 
 .section {
-  padding-left: 7vw;
-  padding-right: 7vw;
-  padding-top: 14vh;
-  padding-bottom: 14vh;
-  background: var(--scrim);
+  min-height: 100vh;
+  padding: 16vh 6vw 10vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.inner {
-  max-width: 640px;
-  margin-inline: auto;
-}
-
+/* Sticky, so the section name holds while the form scrolls under it. Its own
+   canvas background covers the fields as they pass; `top` clears the nav pill
+   via its live measured height. z-index below the nav (10) but above the form. */
 .title {
-  font-size: clamp(2.25rem, 5vw, 3rem);
-  color: var(--ink);
+  position: sticky;
+  top: var(--header-h, 84px);
+  z-index: 5;
+  align-self: flex-start;
+  background: var(--canvas);
+  padding: 6px 0;
+  font-size: clamp(2.6rem, 7vw, 6.5rem);
+  font-variation-settings: "wght" 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--contact);
 }
 
 .lede {
-  margin-top: 1rem;
-  max-width: 52ch;
-  color: var(--sub);
-  line-height: 1.6;
+  max-width: 34ch;
+  margin-top: 26px;
+  font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+  line-height: 1.45;
+  color: var(--ink);
 }
 
 .form {
-  margin-top: 2.5rem;
+  margin-top: 7vh;
   display: grid;
-  gap: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px 40px;
+  max-width: 900px;
 }
 
 .field {
-  display: grid;
-  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* The message, the honeypot's box, the button, and the status region all span
+   both columns. */
+.fieldFull {
+  grid-column: 1 / -1;
 }
 
 .label {
-  font-size: 0.875rem;
-  letter-spacing: 0.02em;
-  color: var(--sub);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mute);
 }
 
-/* Inputs cut back to the page's --scrim tone against the slab's --card-bg,
-   so the field boundary reads clearly in both a light-ink midday scene and a
-   dark-ink midnight one without ever naming a literal color. */
 .input,
 .textarea {
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid var(--card-border);
-  background: var(--scrim);
-  color: var(--ink);
-  padding: 0.75rem 0.9rem;
   font: inherit;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.input::placeholder,
-.textarea::placeholder {
-  color: var(--sub);
-  opacity: 0.8;
-}
-
-.input:focus-visible,
-.textarea:focus-visible {
+  font-size: 1.1rem;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  padding: 10px 2px;
   outline: none;
-  border-color: var(--ink);
-  box-shadow: 0 0 0 3px var(--card-border);
-}
-
-/* No semantic "error" color exists in the token set — invalid fields are
-   marked by border weight/style, not hue. */
-.input[aria-invalid="true"],
-.textarea[aria-invalid="true"] {
-  border-width: 2px;
-  border-style: dashed;
+  transition: border-color 0.3s ease;
 }
 
 .textarea {
-  resize: vertical;
-  min-height: 9rem;
+  resize: none;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: var(--contact);
+}
+
+/* No error hue in the token set — an invalid field is marked by a heavier,
+   accent border, distinct from the 1px hairline. Focus (also --contact) and
+   invalid can coexist: the field is simply accented while it needs attention. */
+.input[aria-invalid="true"],
+.textarea[aria-invalid="true"] {
+  border-bottom-width: 2px;
+  border-bottom-color: var(--contact);
 }
 
 .fieldError {
-  font-size: 0.8125rem;
-  color: var(--ink);
-  border-left: 2px solid var(--card-border);
-  padding-left: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--contact);
 }
 
-/* Honeypot: genuinely off-screen (not display:none, which many spam bots
-   check for and skip), plus aria-hidden + tabIndex={-1} on the input so
-   sighted visitors, keyboard users, and screen readers never encounter it. */
+/* Honeypot: genuinely off-screen (never display:none, which spam bots skip),
+   plus aria-hidden + tabIndex={-1} on the input, so sighted, keyboard, and
+   screen-reader users never meet it. */
 .honeypot {
   position: absolute;
   width: 1px;
   height: 1px;
   overflow: hidden;
-  clip: rect(0 0 0 0);
   clip-path: inset(50%);
   white-space: nowrap;
   left: -9999px;
 }
 
 .submit {
+  grid-column: 1 / -1;
   justify-self: start;
-  border: none;
-  cursor: pointer;
+  margin-top: 10px;
   font: inherit;
+  font-size: 1rem;
+  font-variation-settings: "wght" 560;
+  letter-spacing: 0.02em;
+  color: var(--canvas);
+  background: var(--contact);
+  border: none;
+  border-radius: 2px;
+  padding: 16px 40px;
+  cursor: pointer;
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.3s ease;
+}
+
+.submit:hover {
+  transform: translateY(-2px);
+  opacity: 0.92;
 }
 
 .submit:disabled {
   cursor: progress;
   opacity: 0.7;
+  transform: none;
 }
 
 .statusRegion {
+  grid-column: 1 / -1;
   min-height: 1.5rem;
 }
 
@@ -126,19 +152,44 @@
 .success,
 .errorMessage {
   margin: 0;
-  font-size: 0.9375rem;
+  font-size: 0.95rem;
   color: var(--ink);
 }
 
 .errorMessage a {
-  color: var(--ink);
+  color: var(--contact);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-@media (max-width: 480px) {
-  .section {
-    padding-top: 10vh;
-    padding-bottom: 10vh;
+.footer {
+  margin-top: 12vh;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--mute);
+}
+
+.footer a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.footer a:hover {
+  color: var(--contact);
+  border-color: var(--contact);
+}
+
+/* One column when the two do not fit. */
+@media (max-width: 640px) {
+  .form {
+    grid-template-columns: 1fr;
   }
 }
