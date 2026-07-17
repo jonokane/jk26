@@ -22,8 +22,20 @@
   gap: 3vw;
   color: inherit;
   text-decoration: none;
-  /* The hook writes opacity per frame; this only sets how it gets there. */
-  transition: opacity 0.5s ease;
+  /* Opacity is the hook's (this only sets how it gets there); shadow and
+     transform are the hover lift. */
+  transition:
+    opacity 0.5s ease,
+    box-shadow 0.4s ease,
+    transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Rises on hover — a bigger (×3) shadow and a slight scale, so the card lifts
+   toward the reader. The scale is the card's own transform, independent of the
+   track's translate, so it does not fight the pan. */
+.card:hover {
+  box-shadow: var(--shadow-elevation-lift);
+  transform: scale(1.02);
 }
 
 .card:first-child {

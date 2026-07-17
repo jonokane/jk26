@@ -97,6 +97,18 @@
     -0.4px 2.6px 3.6px -0.6px hsl(var(--shadow-color) / 0.29),
     -0.6px 3.6px 5.1px -0.7px hsl(var(--shadow-color) / 0.33),
     -0.8px 4.8px 6.8px -0.7px hsl(var(--shadow-color) / 0.37);
+  /* The high elevation with every distance and blur ×3 — the lifted state a card
+     rises into on hover and a field on focus. Same layers, same opacities. */
+  --shadow-elevation-lift:
+    0px 0.3px 0.3px hsl(var(--shadow-color) / 0.07),
+    -0.3px 1.2px 1.8px -0.3px hsl(var(--shadow-color) / 0.11),
+    -0.3px 2.1px 3px -0.6px hsl(var(--shadow-color) / 0.14),
+    -0.6px 3px 4.2px -0.9px hsl(var(--shadow-color) / 0.18),
+    -0.6px 4.2px 6px -1.2px hsl(var(--shadow-color) / 0.22),
+    -0.9px 5.7px 8.1px -1.5px hsl(var(--shadow-color) / 0.25),
+    -1.2px 7.8px 10.8px -1.8px hsl(var(--shadow-color) / 0.29),
+    -1.8px 10.8px 15.3px -2.1px hsl(var(--shadow-color) / 0.33),
+    -2.4px 14.4px 20.4px -2.1px hsl(var(--shadow-color) / 0.37);
 }
 
 body {

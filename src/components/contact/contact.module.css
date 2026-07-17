@@ -91,10 +91,12 @@
   resize: none;
 }
 
+/* The field rises on focus — the accent border plus the lifted (×3) shadow, so
+   the active field pops toward the reader the way a hovered card does. */
 .input:focus,
 .textarea:focus {
   border-color: var(--contact);
-  box-shadow: var(--shadow-elevation-medium);
+  box-shadow: var(--shadow-elevation-lift);
 }
 
 /* No error hue in the token set — an invalid field is marked by a heavier,
