@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { siteContent } from "@/lib/site-content";
 
 const back = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ back }) }));
@@ -34,6 +35,13 @@ describe("CaseStudyModal", () => {
     const dialog = screen.getByRole("dialog");
     expect(dialog.getAttribute("aria-modal")).toBe("true");
     expect(dialog.getAttribute("aria-label")).toBe("Alpha");
+  });
+
+  it("gives the close pill an accessible name that excludes the decorative ✕", () => {
+    render(<CaseStudyModal label="Alpha">body</CaseStudyModal>);
+    expect(screen.getByRole("button").getAttribute("aria-label")).toBe(
+      siteContent.work.detailCloseLabel,
+    );
   });
 
   it("navigates back after the close slide finishes", () => {

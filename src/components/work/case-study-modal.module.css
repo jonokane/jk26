@@ -1,6 +1,7 @@
 /* The slide-up sheet (spec §10, prototype `#detail`). Opaque canvas — it covers
-   the page, no scrim. `data-lenis-prevent` (on the JSX) lets it scroll while
-   Lenis is stopped; overscroll-behavior stops any chain to the frozen page. */
+   the page, no scrim. `.sheet` is only the transform layer (it is the
+   containing block for the close pill's `position: absolute`); it does not
+   scroll itself — see `.scroller` below. */
 .sheet {
   position: fixed;
   inset: 0;
@@ -8,19 +9,30 @@
   background: var(--canvas);
   transform: translateY(100%);
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
 }
 
 .sheet[data-open="true"] {
   transform: translateY(0);
 }
 
-/* Pill close, top-right. Fixed inside the transformed sheet resolves against the
-   sheet's box (a transform is a containing block for fixed descendants), so it
-   slides in with the sheet and then holds while the content scrolls. */
+/* The actual scroll container. `data-lenis-prevent` (on the JSX) lets it
+   scroll natively while Lenis is stopped; overscroll-behavior stops any
+   chain to the frozen page beneath. Kept separate from `.sheet` so the pill
+   isn't a `position: fixed` descendant of a transformed + scrolling
+   ancestor — that combination resolves fixed positioning against the
+   scrolling box and drags the pill off-screen with the content. */
+.scroller {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Pill close, top-right. A direct child of `.sheet` (sibling of `.scroller`),
+   positioned absolute against the sheet's own (non-scrolling) box — it slides
+   in with the sheet and then holds in place while `.scroller` scrolls. */
 .close {
-  position: fixed;
+  position: absolute;
   top: 24px;
   right: 6vw;
   z-index: 95;

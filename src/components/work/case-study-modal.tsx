@@ -15,9 +15,12 @@ import styles from "@/components/work/case-study-modal.module.css";
  * which pops the intercepted entry and restores the page and its scroll beneath.
  *
  * Lenis is stopped while open so the frozen page cannot scroll behind the sheet;
- * `data-lenis-prevent` lets the sheet itself scroll natively past the stopped
- * instance (CLAUDE.md: one ticker, no second RAF loop). Under reduced motion the
- * sheet does not slide (CSS drops the transition) and closing navigates at once.
+ * `data-lenis-prevent` lets the inner scroller scroll natively past the stopped
+ * instance (CLAUDE.md: one ticker, no second RAF loop). The sheet itself only
+ * carries the slide transform — the scroller is a separate element so the close
+ * pill (a child of the non-scrolling sheet) can hold in place while content
+ * scrolls. Under reduced motion the sheet does not slide (CSS drops the
+ * transition) and closing navigates at once.
  */
 export function CaseStudyModal({ label, children }: { label: string; children: ReactNode }) {
   const router = useRouter();
@@ -68,16 +71,22 @@ export function CaseStudyModal({ label, children }: { label: string; children: R
       ref={sheetRef}
       className={styles.sheet}
       data-open={open}
-      data-lenis-prevent
       role="dialog"
       aria-modal="true"
       aria-label={label}
       onTransitionEnd={onTransitionEnd}
     >
-      <button type="button" className={styles.close} onClick={close}>
+      <button
+        type="button"
+        className={styles.close}
+        aria-label={siteContent.work.detailCloseLabel}
+        onClick={close}
+      >
         {siteContent.work.detailCloseLabel}
       </button>
-      {children}
+      <div className={styles.scroller} data-lenis-prevent>
+        {children}
+      </div>
     </div>
   );
 }
