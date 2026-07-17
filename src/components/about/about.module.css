@@ -1,4 +1,12 @@
 .about {
+  /* The one source of the section's horizontal inset. It is spent in two
+     different ways and must never be written twice: the animated path applies
+     it per-child, because all three children are absolutely positioned and an
+     abspos box's containing block is its ancestor's PADDING BOX — padding
+     cannot inset it. Reduced motion puts the children back in normal flow and
+     spends it once, on .stage. Two hardcoded 6vw values are exactly how the
+     title and the statements drifted 6vw apart under reduce. */
+  --about-gutter: 6vw;
   position: relative;
 }
 
@@ -9,18 +17,30 @@
   height: 640vh;
 }
 
+/* `clip`, NOT `hidden`. They clip identically, and that is where the likeness
+   ends: `hidden` makes this box a SCROLL CONTAINER. The column is abspos inside
+   it and translated by up to a screen height, so the stage measured
+   scrollHeight 1033 against clientHeight 950 — a real, 83px scrollport nobody
+   asked for. Tabbing to the link in the last statement made the browser scroll
+   it to bring the link into view, which drags every child with it (the stage is
+   the abspos containing block): "Who I am." went to 47px under the nav and
+   stayed, because the teleprompter only ever writes `transform` and never reads
+   or resets `scrollTop`. `clip` removes the scrollport, so there is nothing to
+   scroll. Do not "modernise" this back to `hidden`. */
 .stage {
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow: hidden;
-  padding: 0 6vw;
+  overflow: clip;
+  /* No horizontal padding: it would be dead here. All three children are
+     absolutely positioned and take --about-gutter themselves (see .about).
+     The reduced-motion block puts them back in flow and pays it here instead. */
 }
 
 .title {
   position: absolute;
   top: 13vh;
-  left: 6vw;
+  left: var(--about-gutter);
   z-index: 8;
   font-size: clamp(2.6rem, 7vw, 6.5rem);
   font-variation-settings: "wght" 700;
@@ -34,7 +54,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  padding: 0 6vw;
+  padding: 0 var(--about-gutter);
   will-change: transform;
 }
 
@@ -65,6 +85,20 @@
   word-spacing: 0.058em;
 }
 
+/* A statement holding the keyboard focus resolves, wherever the scroll happens
+   to have left it. Focus is not an input to the teleprompter — it drives blur
+   and opacity from scroll progress alone — so Tabbing to "Hit me up" from the
+   top of the page landed the focus ring on a statement at opacity 0.14 behind
+   blur(2px), and the ring composited at 14% with it (WCAG 2.4.7).
+   `!important` is not a shortcut here, it is the only thing that works: the
+   hook writes opacity and filter as INLINE styles on this element every frame,
+   and an inline declaration is only beaten by !important. Do not "clean it up".
+   :focus-visible, not :focus — a mouse click must leave the design alone. */
+.statement:has(:focus-visible) {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
 /* inline-block so use-reserved-widths can pin a width on it — a width does not
    apply to an inline box, and without the pin the statement re-wraps as the
    teleprompter lerps its weights (a heavier glyph is a wider glyph).
@@ -83,7 +117,7 @@
 
 .rail {
   position: absolute;
-  right: 6vw;
+  right: var(--about-gutter);
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
@@ -116,11 +150,16 @@
     height: auto;
   }
 
+  /* Every child is back in normal flow here, so the stage's own padding is the
+     single thing that insets all of them — and .title's `left` is dead the
+     moment it stops being positioned, which is how the title ended up flush at
+     x=0 while the statements sat 6vw in. One gutter, paid once, in the one box
+     that can still reach every child. */
   .stage {
     position: static;
     height: auto;
     overflow: visible;
-    padding: 16vh 0 10vh;
+    padding: 16vh var(--about-gutter) 10vh;
   }
 
   .title,
@@ -128,6 +167,11 @@
   .rail {
     position: static;
     transform: none;
+  }
+
+  /* .stage pays the gutter now — keeping this one would double it. */
+  .column {
+    padding: 0;
   }
 
   .rail {
