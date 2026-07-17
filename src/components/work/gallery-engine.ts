@@ -133,6 +133,33 @@ export function cardOpacityFor(distanceFromFocus: number, viewportWidth: number)
 }
 
 /**
+ * How far the focused card's perimeter stroke has traced, 0→1, for the card at
+ * `index` (spec §9). The stroke is the visible answer to "the card is holding
+ * still, am I still scrolling?" — it advances with the LINEAR scroll across the
+ * card's active band, so it keeps moving through the dwell hold while the card
+ * itself sits at the focus, and completes exactly as the card hands off to the
+ * next.
+ *
+ * `index`'s band is the stretch of progress over which it is the nearest card:
+ * the segment midpoints on either side, `(index ± 0.5) / (panelCount − 1)`,
+ * clamped so the first and last cards' bands stop at the ends rather than run
+ * past them. A lone card owns the whole scroll.
+ */
+export function cardStrokeProgress(
+  progress: number,
+  panelCount: number,
+  index: number,
+): number {
+  const p = Math.min(1, Math.max(0, progress));
+  if (panelCount <= 1) return p;
+  const segment = 1 / (panelCount - 1);
+  const bandStart = Math.max(0, (index - 0.5) * segment);
+  const bandEnd = Math.min(1, (index + 0.5) * segment);
+  if (bandEnd <= bandStart) return 0;
+  return Math.min(1, Math.max(0, (p - bandStart) / (bandEnd - bandStart)));
+}
+
+/**
  * The vertical scroll a horizontal gesture is worth (spec §9).
  *
  * Horizontal input pans by driving vertical scroll, NOT by writing the track's

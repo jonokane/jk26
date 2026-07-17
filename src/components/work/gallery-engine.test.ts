@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   activeIndexFor,
   cardOpacityFor,
+  cardStrokeProgress,
   dwelledIndex,
   focusOffset,
   linearProgress,
@@ -160,6 +161,41 @@ describe("cardOpacityFor", () => {
   /* Distance is unsigned: a card the same way off to the left reads the same. */
   it("does not care which side of the focus the card is on", () => {
     expect(cardOpacityFor(-800, 1000)).toBe(cardOpacityFor(800, 1000));
+  });
+});
+
+describe("cardStrokeProgress", () => {
+  /* Each card's stroke runs 0→1 across its own active band, and — the point of
+     it — completes exactly as the card hands off to the next, so the ring closes
+     just as the card leaves the focus. With 5 panels the segment is 0.25 and the
+     handoff out of card 1 is at progress 0.375. */
+  it("runs 0 to 1 across the card's active band and closes at the handoff", () => {
+    expect(cardStrokeProgress(0.125, 5, 1)).toBeCloseTo(0, 5); // band start (handoff in)
+    expect(cardStrokeProgress(0.25, 5, 1)).toBeCloseTo(0.5, 5); // card 1 centred
+    expect(cardStrokeProgress(0.375, 5, 1)).toBeCloseTo(1, 5); // band end (handoff out)
+  });
+
+  /* The first card has no incoming band, so its stroke starts drawing from
+     progress 0 rather than from a negative phantom band before it. */
+  it("starts the first card's stroke at 0 progress, not before", () => {
+    expect(cardStrokeProgress(0, 5, 0)).toBeCloseTo(0, 5);
+    expect(cardStrokeProgress(0.125, 5, 0)).toBeCloseTo(1, 5); // full at its handoff
+  });
+
+  /* The last card's band is clamped to the end, so its stroke completes exactly
+     at progress 1 and never demands scroll that does not exist. */
+  it("completes the last card's stroke at the very end", () => {
+    expect(cardStrokeProgress(0.875, 5, 4)).toBeCloseTo(0, 5);
+    expect(cardStrokeProgress(1, 5, 4)).toBeCloseTo(1, 5);
+  });
+
+  /* Before a card is anywhere near the focus its stroke is empty, not partway. */
+  it("is 0 for a card whose band the scroll has not reached", () => {
+    expect(cardStrokeProgress(0, 5, 3)).toBe(0);
+  });
+
+  it("tracks the whole scroll for a single card", () => {
+    expect(cardStrokeProgress(0.4, 1, 0)).toBeCloseTo(0.4, 5);
   });
 });
 

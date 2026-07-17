@@ -27,6 +27,25 @@ export function WorkCard({ study, number }: { study: CaseStudy; number: number }
       data-slug={study.slug}
       style={{ opacity: 1 }}
     >
+      {/* The perimeter stroke the gallery traces while this card holds at the
+          focus (spec §9): the moving proof that a still card is still catching
+          the scroll. use-gallery drives `stroke-dashoffset` on the rect; the
+          card owns none of that logic. `pathLength={1}` normalises the perimeter
+          so the offset is a plain 0..1 fraction whatever the card's real size,
+          and non-scaling-stroke keeps it a crisp 2px. Decorative — aria-hidden. */}
+      <svg className={styles.trace} preserveAspectRatio="none" aria-hidden="true">
+        <rect
+          data-trace
+          className={styles.traceRect}
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          pathLength={1}
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+
       <div className={styles.text}>
         <div className={styles.top}>
           <span className={styles.num}>{formatStudyNumber(number)}</span>

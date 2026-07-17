@@ -2,6 +2,7 @@
    only thing that reads it — a config entry nothing consumes is a lie that
    passes its tests (Phase 3 shipped three of them). */
 .card {
+  position: relative; /* the trace SVG insets to this box */
   flex: 0 0 auto;
   width: min(66vw, 820px);
   height: 56vh;
@@ -17,6 +18,47 @@
 
 .card:first-child {
   margin-left: 6vw;
+}
+
+/* The focus stroke. Covers the whole card box; the rect traces its perimeter.
+   Behind the content (z-index 0) so text stays crisp over it, and never a click
+   target. `overflow: visible` lets the 2px stroke straddle the very edge instead
+   of being clipped to half. */
+.trace {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.traceRect {
+  fill: none;
+  stroke: var(--work);
+  stroke-width: 2px;
+  /* dash = whole perimeter (pathLength normalised to 1), so the offset alone
+     controls how much is drawn: 1 shows nothing, 0 the full ring. The hook sets
+     it to 1 − strokeProgress each frame. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  /* Fades in when this card takes the focus and out when it hands off, so the
+     completed ring dissolves as the card dims rather than blinking away. The
+     dashoffset itself is NOT transitioned — it is driven per frame by scroll. */
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.traceRect[data-tracing] {
+  opacity: 1;
+}
+
+/* The card content sits above the stroke. */
+.text,
+.shot {
+  position: relative;
+  z-index: 1;
 }
 
 .text {

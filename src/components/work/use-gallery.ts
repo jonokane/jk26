@@ -7,6 +7,7 @@ import { WORK } from "@/components/work/work-config";
 import {
   activeIndexFor,
   cardOpacityFor,
+  cardStrokeProgress,
   dwelledIndex,
   focusOffset,
   linearProgress,
@@ -82,6 +83,10 @@ export function useGallery({
        already runs. */
     let cards: HTMLElement[] = [];
     let centres: number[] = [];
+    /* Each card's perimeter-stroke rect, cached alongside the centres. Parallel
+       to `cards`, so `traceRects[i]` belongs to `cards[i]`; the earlier-work
+       panel has no rect, hence the nulls. */
+    let traceRects: (SVGElement | null)[] = [];
     /* The progress bar we actually wrote to, so the cleanup can clear exactly
        that element. Reading `progressRef.current` back in the cleanup would find
        null on unmount — React detaches refs before a passive effect's teardown. */
@@ -99,6 +104,7 @@ export function useGallery({
          and unaffected by the track's own transform, so a centre measured here
          stays valid every frame however far the track has panned. */
       centres = cards.map((card) => card.offsetLeft + card.offsetWidth / 2);
+      traceRects = cards.map((card) => card.querySelector<SVGElement>("[data-trace]"));
       travel = travelFor(centres);
       /* The wrapper's height IS the scroll budget, derived from what we just
          measured. The prototype hardcoded 520vh and let the two drift apart
@@ -134,11 +140,26 @@ export function useGallery({
       });
 
       /* Only on change: this runs every frame and a setState per frame would
-         re-render the section 60 times a second. */
+         re-render the section 60 times a second. The stroke also hands off here
+         — the leaving card's ring fades out (drops `data-tracing`) as the
+         arriving card's fades in. */
       const active = activeIndexFor(index);
       if (active !== lastIndex) {
+        if (lastIndex >= 0) traceRects[lastIndex]?.removeAttribute("data-tracing");
+        traceRects[active]?.setAttribute("data-tracing", "");
         lastIndex = active;
         onActiveIndex(active);
+      }
+
+      /* Trace the focused card's ring by its progress through its own band, so
+         it keeps advancing while the card holds still — the answer to "am I still
+         scrolling?". 1 − progress because dashoffset 1 draws nothing, 0 the full
+         ring. */
+      const ring = traceRects[active];
+      if (ring) {
+        ring.style.strokeDashoffset = (
+          1 - cardStrokeProgress(progress, centres.length, active)
+        ).toFixed(3);
       }
     };
 
@@ -220,6 +241,12 @@ export function useGallery({
       if (writtenBar) writtenBar.style.width = "";
       for (const card of track.querySelectorAll<HTMLElement>(PANEL_SELECTOR)) {
         card.style.opacity = "";
+      }
+      /* Reset the strokes too: this DOM is shared with the index and the
+         reduced-motion views, and a frozen half-drawn ring would carry over. */
+      for (const ring of track.querySelectorAll<SVGElement>("[data-trace]")) {
+        ring.removeAttribute("data-tracing");
+        ring.style.strokeDashoffset = "";
       }
     };
   }, [wrapRef, trackRef, progressRef, active, onActiveIndex]);

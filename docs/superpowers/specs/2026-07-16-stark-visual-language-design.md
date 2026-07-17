@@ -295,7 +295,9 @@ progress.width  = lp * 100 + '%'
 
 Active index is `round(idx)`; because each card is genuinely centred at focus, the counter agrees with the eye by construction. Cards within `focalBand × innerWidth` of the focus sit at opacity 1, else `0.42`, `transition: opacity 0.5s ease`.
 
-Wayfinding: the pinned title, a live `01 / NN` counter (`NN` = panel count, off the data — `01 / 05` today), progress bar pinned bottom.
+**The focused card traces its own perimeter as you scroll through its dwell.** A high dwell holds a card almost still, which raises the question "am I still scrolling?" — the stroke answers it. A 2px ring (`--work`) draws from the top-left corner clockwise around the card, `0→1` across the card's active band (`cardStrokeProgress`), completing exactly as the card hands off; it fades in on focus and out as the card dims. It is an SVG `rect` with `pathLength=1`, so `stroke-dashoffset = 1 − progress` traces it whatever the card's real size, driven per frame by the hook. Purpose: keep the eye moving on a held card, draw attention to it as the clickable thing, and tell the visitor their scroll is landing — either click this one or keep going to the next. Decorative, `aria-hidden`, `pointer-events:none` so it never intercepts a click.
+
+Wayfinding: the pinned title, a live `01 / NN` counter (`NN` = panel count, off the data — `01 / 05` today), progress bar pinned bottom, and the per-card perimeter trace.
 
 ### Horizontal input pans it too
 
