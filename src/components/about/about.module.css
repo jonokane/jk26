@@ -41,25 +41,36 @@
 /* The statement measure is NOT 30ch — that was the Phase 1 stub borrowing the
    work card's impact measure by mistake. The prototype runs statements near
    full width. */
+/* Normal inline flow, NOT the prototype's flex row.
+   Flex blockifies its children, so every word computed to display:block and
+   the clipboard serialiser put a newline between each one — copying a
+   statement gave one word per line. (Screen readers were unaffected: they read
+   the aria-label, a different pipeline entirely.)
+   The prototype needs flex + column-gap because its spans carry no whitespace
+   and punctuation has to ride on the word. Our tokeniser already attaches
+   punctuation at the data level, so real spaces between the words are free —
+   and a real space is what makes a copy, a find-in-page, and a translation
+   engine see a sentence.
+   The spaces live in this block, whose weight never animates, so their width
+   is stable while the words' weights move 400 -> 780. */
 .statement {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  column-gap: 0.26em;
-  row-gap: 0.02em;
-  /* the prototype's .ablock measure, verbatim — not a ch-based one */
   max-width: 74vw;
   margin-top: 0.9em;
   font-size: clamp(1.4rem, 2.5vw, 2.5rem);
   line-height: 1.18;
   letter-spacing: -0.005em;
+  /* Mae's natural space measures 0.202em here; the prototype's flex row sets
+     the word gap to 0.26em. Make up the difference so the design is unchanged
+     by the switch to real spaces. In em, so it tracks the clamped size. */
+  word-spacing: 0.058em;
 }
 
 /* The spans carry no whitespace between them — column-gap above does the
    spacing, so a word never separates from its punctuation. */
 .word {
+  /* inline-block, not block: a block-level box makes the clipboard
+     serialiser break the line after every word. */
   display: inline-block;
-  white-space: pre;
 }
 
 .word[data-word="italic"] {

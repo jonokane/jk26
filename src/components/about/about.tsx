@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { Fragment, useCallback, useRef, useState } from "react";
 import { aboutPage } from "@/components/about/about-data";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
@@ -53,24 +53,28 @@ export function About() {
               a statement, or the focal zone does not apply to it. */}
           <div ref={columnRef} className={styles.column}>
             {aboutPage.statements.map((statement, i) => (
-              /* The sentence is named ONCE, and the per-word spans are hidden
-                 from assistive tech.
+              /* Each word is its own element because each animates its own
+                 colour and weight — but they are separated by REAL spaces, in
+                 normal inline flow.
+                 The prototype uses a flex row with a column-gap and no
+                 whitespace, because its spans need punctuation to ride on the
+                 word. Our tokeniser already attaches punctuation at the data
+                 level, so real spaces cost nothing — and they are what a copy,
+                 a find-in-page and a translation engine actually see. With flex
+                 the words computed to display:block and copying a statement
+                 produced one word per line.
+                 The space sits in the paragraph, not inside a word span: this
+                 block's weight never animates, so the gap stays put while the
+                 words move 400 -> 780.
 
-                 The words have to be separate elements — each one animates its
-                 own colour and weight — and they carry no whitespace between
-                 them, because the flex `column-gap` does the spacing and a real
-                 space would separate a word from its punctuation (spec §5). The
-                 cost is that the accessibility tree sees "I" "help" "teams" as
-                 unrelated text runs.
-
-                 A visually-hidden space between the spans does NOT fix that: it
-                 puts spaces in `textContent`, so a test asserting on
-                 `textContent` passes, while Chrome's accessibility tree still
-                 contains zero whitespace nodes — verified. textContent is not
-                 what a screen reader reads. Naming the sentence on the
-                 paragraph and hiding the fragments is the standard fix, and it
-                 is deterministic across assistive tech rather than depending on
-                 how each one joins adjacent runs. */
+                 The sentence is still named ONCE and the fragments hidden.
+                 Screen readers read the accessibility tree, which saw "I"
+                 "help" "teams" as unrelated runs; note that a visually-hidden
+                 space did NOT fix that — it put spaces in textContent, so a
+                 test on textContent passed while the tree still held zero
+                 whitespace nodes. textContent is not what a screen reader
+                 reads, and it is not what the clipboard reads either. Three
+                 pipelines, three checks. */
               <p
                 key={i}
                 data-statement
@@ -78,9 +82,12 @@ export function About() {
                 aria-label={statement.map((w) => w.text).join(" ")}
               >
                 {statement.map((word, j) => (
-                  <span key={j} data-word={word.role} aria-hidden="true" className={styles.word}>
-                    {word.text}
-                  </span>
+                  <Fragment key={j}>
+                    <span data-word={word.role} aria-hidden="true" className={styles.word}>
+                      {word.text}
+                    </span>
+                    {j < statement.length - 1 ? " " : null}
+                  </Fragment>
                 ))}
               </p>
             ))}
