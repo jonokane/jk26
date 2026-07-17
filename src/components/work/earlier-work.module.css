@@ -1,72 +1,74 @@
-/* src/components/work/earlier-work.module.css — compact "Selected earlier
-   work" cards (spec §8). Colors come only from scene tokens (spec §15). */
-.earlier {
-  padding: 4rem 7vw 6rem;
-  border-top: 1px solid var(--card-border);
+/* The gallery's last panel (spec §9): a 2-col list, wider than a study card
+   because it holds every earlier entry at once. */
+.panel {
+  flex: 0 0 auto;
+  width: min(80vw, 1040px);
+  height: 56vh;
+  margin-right: 6vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .heading {
-  margin: 0 0 2.5rem;
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+  font-variation-settings: "wght" 640;
+  letter-spacing: -0.015em;
+  margin-bottom: 4vh;
+  color: var(--ink);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  margin: 0;
-  padding: 0;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 40px;
   list-style: none;
 }
 
-@media (min-width: 40rem) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 64rem) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.card {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  gap: 0.6rem;
+.item {
+  border-top: 1px solid var(--hairline);
+  padding-top: 12px;
 }
 
 .title {
-  margin: 0;
+  font-size: 1.15rem;
+  font-variation-settings: "wght" 560;
+  color: var(--ink);
+  transition: color 0.4s ease;
+}
+
+.item:hover .title {
+  color: var(--work);
 }
 
 .attributes {
-  margin: 0;
-  color: var(--sub);
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--work);
+  margin-top: 4px;
 }
 
-.attributes span:not(:last-child)::after {
-  content: "·";
-  display: inline-block;
-  margin: 0 0.5em;
-}
-
-.body {
-  margin: 0;
-  flex: 1;
-  color: var(--ink);
-  line-height: 1.6;
-}
-
-.body :where(p) {
-  margin: 0;
+/* The separator is a design decision, not copy: it must never reach the
+   clipboard or a screen reader (spec §15). */
+.attributes span + span::before {
+  content: " · ";
+  color: var(--mute);
 }
 
 .link {
-  align-self: flex-start;
-  margin-top: 0.25rem;
-  color: var(--ink);
-  text-underline-offset: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--work);
+}
+
+/* One column when there is not room for two. */
+@media (max-width: 900px) {
+  .panel {
+    width: 88vw;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
