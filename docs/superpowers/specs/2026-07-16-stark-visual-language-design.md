@@ -262,17 +262,19 @@ Guard fix: the prototype uses `if (!this.first) return`, so a first-block centre
 
 ## 9. Work — hybrid
 
-Two views over one dataset. Toggled from the Work section's own locked header, beside the `01 / 09` counter — **not** the nav. Global chrome stays global; view state stays local. This is also what keeps the theme toggle from crowding the nav.
+Two views over one dataset. Toggled from the Work section's own locked header, beside the counter — **not** the nav. Global chrome stays global; view state stays local. This is also what keeps the theme toggle from crowding the nav.
 
 ### Why horizontal can work here, when the shelf didn't
 
 The Cold Noon shelf was killed for being scroll-jacked and disorienting, with reveals firing off-screen. The failure was not "horizontal" — it was **reading long-form prose sideways**: four panels *per study*, ~28 panels deep, on a reading surface.
 
-This is **one card per study, nine panels, an index**. You skim a poster wall; you don't read it. Same word, different mechanic. And the index toggle is a permanent escape hatch the shelf never had. If the gallery still doesn't earn its place on the pixels, the index is already built and the toggle becomes a default.
+This is **one card per study, a single-figure panel count, an index**. You skim a poster wall; you don't read it. Same word, different mechanic. And the index toggle is a permanent escape hatch the shelf never had. If the gallery still doesn't earn its place on the pixels, the index is already built and the toggle becomes a default.
 
 ### Gallery (default)
 
-Sticky `100vh` stage; vertical scroll translates `#wtrack` in X. 8 cards + a 9th "earlier work" panel (2-col list of 7).
+Sticky `100vh` stage; vertical scroll translates `#wtrack` in X. One card per published study, plus a final "earlier work" panel (2-col list).
+
+**Every count here is derived from the content, never written down.** The prototype's nine panels were eight studies plus the earlier panel; today four studies are published and the rest are `draft: true` until their copy is written, so it renders five. That number changes as studies land and no code may change with it — see gap 1 (wrapper height) and gap 4 (card numbers) below, which are both this same fault in the prototype.
 
 ```js
 travel = max(0, track.scrollWidth - innerWidth + innerWidth * 0.06)   // trailing gutter = 6vw inset
@@ -283,7 +285,24 @@ progress.width  = lp * 100 + '%'
 
 Active index is the card nearest viewport horizontal centre (not derived from `lp`); cards within `0.55 × innerWidth` of centre sit at opacity 1, else 0.42, `transition: opacity 0.5s ease`.
 
-Wayfinding: locked title, live `01 / 09` counter, progress bar pinned bottom.
+Wayfinding: locked title, live `01 / NN` counter (`NN` = panel count, off the data — `01 / 05` today), progress bar pinned bottom.
+
+### Horizontal input pans it too
+
+Vertical scroll is not the only way in. A horizontal gesture over the pinned stage — a trackpad's two-finger swipe, a horizontal wheel, shift+wheel — pans the track, as it would on any horizontal surface. A visitor who sees a row of cards will try to swipe it sideways, and that must work.
+
+It must pan by driving **vertical scroll**, never by moving the track directly. `translateX` is derived from `lp`, which is derived from `window.scrollY`. A handler that wrote `translateX` itself would be a second source of truth for the same pixel, and the next vertical frame would snap the track back out from under the gesture. So horizontal input converts to its vertical equivalent through the same ratio it came out of:
+
+```js
+scrollDelta = deltaX * (wrapH - vh) / travel   // the inverse of the translate above
+```
+
+Two hazards, either of which makes the feature worse than its absence:
+
+1. **macOS reads a two-finger horizontal swipe as Back.** Panning the gallery must never navigate the visitor off the site. The stage needs `overscroll-behavior-x: contain` and/or a `preventDefault` on the events it consumes. This is not a polish item — it is the difference between the feature and a trap.
+2. **Lenis owns the wheel.** It is configured `gestureOrientation: 'vertical'` (its default), so it reads `deltaY` and ignores `deltaX`; it also `preventDefault`s to do its own smoothing. Horizontal input must therefore cooperate with Lenis — feed it, or be scoped around it — and must not become a second scroll mechanism running beside it. CLAUDE.md's standing rule applies: one RAF loop, one scroll owner.
+
+Live only while the stage is pinned; outside it, horizontal gestures do whatever they normally do. Inert under reduced motion and in the index view, neither of which has a track.
 
 Card: `width: min(66vw, 820px)`, `height: 56vh`, `margin-right: 5vw`, grid `1.05fr 0.85fr`. Number (accent) + year (mute) top; title `clamp(1.8rem,3.2vw,3rem)` wght 600 pinned bottom via `margin-top:auto`; impact `max-width:30ch`; accent-outline tag pills (radius 100px); "View case study →". Image slot `.wshot` — hatched `repeating-linear-gradient` placeholder, wired to the optional `cover` field already in the schema, so a real screen drops in with no code change. Draft impact renders italic.
 
