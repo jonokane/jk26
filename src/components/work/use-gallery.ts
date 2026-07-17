@@ -3,15 +3,20 @@
 import { useEffect } from "react";
 import type { RefObject } from "react";
 import { getLenis } from "@/components/smooth-scroll";
+import { WORK } from "@/components/work/work-config";
 import {
   activeIndexFor,
   cardOpacityFor,
+  dwelledIndex,
+  focusOffset,
   linearProgress,
   scrollDeltaForPan,
-  trackOffsetFor,
   travelFor,
   wrapperHeightFor,
 } from "@/components/work/gallery-engine";
+
+/** The cards and the earlier-work panel — everything the track pans. */
+const PANEL_SELECTOR = "[data-work-card], [data-work-panel]";
 
 /**
  * A wheel event's horizontal delta, in PIXELS whatever unit it arrived in.
@@ -68,6 +73,15 @@ export function useGallery({
 
     let travel = 0;
     let lastIndex = -1;
+    /* The cards, and their track-local centres, cached from `measure`. Reading
+       them here rather than per frame is the difference between one layout pass
+       when the size changes and one forced reflow every single frame (a card's
+       `getBoundingClientRect` in `update` synchronously flushed layout, which
+       Task 6's review flagged). Track-local centres do not move as the track
+       pans, so they only change on resize or font load — exactly when `measure`
+       already runs. */
+    let cards: HTMLElement[] = [];
+    let centres: number[] = [];
     /* The progress bar we actually wrote to, so the cleanup can clear exactly
        that element. Reading `progressRef.current` back in the cleanup would find
        null on unmount — React detaches refs before a passive effect's teardown. */
@@ -80,9 +94,12 @@ export function useGallery({
 
     const measure = () => {
       if (disposed) return;
-      /* scrollWidth, not getBoundingClientRect: the track is translated, and a
-         rect would report where it currently IS rather than how wide it is. */
-      travel = travelFor(track.scrollWidth, window.innerWidth);
+      cards = [...track.querySelectorAll<HTMLElement>(PANEL_SELECTOR)];
+      /* Track-local: `offsetLeft` is relative to the track (its offset parent),
+         and unaffected by the track's own transform, so a centre measured here
+         stays valid every frame however far the track has panned. */
+      centres = cards.map((card) => card.offsetLeft + card.offsetWidth / 2);
+      travel = travelFor(centres);
       /* The wrapper's height IS the scroll budget, derived from what we just
          measured. The prototype hardcoded 520vh and let the two drift apart
          every time a study was added or drafted (spec §9, gap 1). */
@@ -96,7 +113,12 @@ export function useGallery({
         wrap.offsetHeight,
         window.innerHeight,
       );
-      track.style.transform = `translateX(${trackOffsetFor(progress, travel).toFixed(1)}px)`;
+      /* The horizontal teleprompter: hold each card at the focus, ease to the
+         next (spec §9). The dwell is what keeps the first, most-recent study from
+         being scrolled past. */
+      const index = dwelledIndex(progress, centres.length, WORK.dwell);
+      const offset = focusOffset(centres, index, window.innerWidth);
+      track.style.transform = `translateX(${offset.toFixed(1)}px)`;
 
       const bar = progressRef.current;
       if (bar) {
@@ -104,24 +126,19 @@ export function useGallery({
         writtenBar = bar;
       }
 
-      const cards = [...track.querySelectorAll<HTMLElement>("[data-work-card], [data-work-panel]")];
-      const centres = cards.map((card) => {
-        const rect = card.getBoundingClientRect();
-        return rect.left + rect.width / 2;
-      });
-
+      const focus = WORK.focusX * window.innerWidth;
       cards.forEach((card, i) => {
-        card.style.opacity = String(
-          cardOpacityFor(centres[i] - window.innerWidth * 0.5, window.innerWidth),
-        );
+        /* Its live viewport centre is its cached track-local centre plus however
+           far the track has panned — no per-card layout read. */
+        card.style.opacity = String(cardOpacityFor(centres[i] + offset - focus, window.innerWidth));
       });
 
       /* Only on change: this runs every frame and a setState per frame would
          re-render the section 60 times a second. */
-      const index = activeIndexFor(centres, window.innerWidth);
-      if (index !== lastIndex) {
-        lastIndex = index;
-        onActiveIndex(index);
+      const active = activeIndexFor(index);
+      if (active !== lastIndex) {
+        lastIndex = active;
+        onActiveIndex(active);
       }
     };
 
@@ -201,7 +218,7 @@ export function useGallery({
       wrap.style.height = "";
       track.style.transform = "";
       if (writtenBar) writtenBar.style.width = "";
-      for (const card of track.querySelectorAll<HTMLElement>("[data-work-card], [data-work-panel]")) {
+      for (const card of track.querySelectorAll<HTMLElement>(PANEL_SELECTOR)) {
         card.style.opacity = "";
       }
     };

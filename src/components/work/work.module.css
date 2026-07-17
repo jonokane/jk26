@@ -4,12 +4,24 @@
    the edges and put the stage's centre out of step with the maths. The heading
    block carries its own inset instead. */
 .work {
-  min-height: 100vh;
-  padding: 0 0 10vh;
+  /* No min-height and no padding: the gallery wrapper carries its own measured
+     height, and the stage is full-bleed. The heading is pinned inside the stage
+     now (like About), not a block above it. */
+  position: relative;
 }
 
-.head {
-  padding: 16vh 6vw 0;
+/* "Selected work." pinned top-left inside the sticky stage — the horizontal
+   teleprompter's echo of About's pinned "Who I am." It stays put while the
+   cards pan below it, which is the signal that vertical scroll now drives
+   horizontal movement. z-index above the track so a panning card slides behind
+   it, not over it. */
+.pinnedHead {
+  position: absolute;
+  top: 13vh;
+  left: 6vw;
+  right: 6vw;
+  z-index: 6;
+  pointer-events: none; /* the cards below stay clickable through the dead space */
 }
 
 .title {
@@ -54,8 +66,12 @@
   left: 0;
   height: 100%;
   display: flex;
+  /* Cards sit in the lower band of the stage, clear of the pinned title above:
+     flex-end drops them to the bottom, the padding lifts them off the wayfinding
+     bar. A 48vh card with this padding lands its top around 42vh, below the
+     title+intro block, which ends near 33vh. */
   align-items: flex-end;
-  padding-bottom: 15vh;
+  padding-bottom: 10vh;
   will-change: transform;
   /* macOS reads a two-finger horizontal swipe as Back. use-gallery calls
      preventDefault on the gestures it claims; this stops the ones it does not
@@ -67,7 +83,7 @@
   position: absolute;
   left: 6vw;
   right: 6vw;
-  bottom: 6vh;
+  bottom: 4vh;
   z-index: 5;
   display: flex;
   align-items: center;

@@ -1,4 +1,3 @@
-import { siteContent } from "@/lib/site-content";
 import { WorkGallery } from "@/components/work/work-gallery";
 import styles from "@/components/work/work.module.css";
 
@@ -9,13 +8,10 @@ import styles from "@/components/work/work.module.css";
  */
 export function Work() {
   return (
+    /* The title (h2#work-title) is pinned inside the gallery's own stage now, so
+       aria-labelledby still resolves. Task 9 makes this the hybrid, at which
+       point the index view supplies its own #work-title when the gallery is off. */
     <section className={styles.work} id="work" aria-labelledby="work-title">
-      <div className={styles.head}>
-        <h2 className={styles.title} id="work-title">
-          {siteContent.titles.work}
-        </h2>
-        <p className={styles.intro}>{siteContent.work.intro}</p>
-      </div>
       <WorkGallery />
     </section>
   );

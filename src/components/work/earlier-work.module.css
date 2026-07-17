@@ -3,7 +3,7 @@
 .panel {
   flex: 0 0 auto;
   width: min(80vw, 1040px);
-  height: 56vh;
+  height: 48vh;
   margin-right: 6vw;
   display: flex;
   flex-direction: column;

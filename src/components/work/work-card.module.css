@@ -4,7 +4,7 @@
 .card {
   flex: 0 0 auto;
   width: min(66vw, 820px);
-  height: 56vh;
+  height: 48vh;
   margin-right: 5vw;
   display: grid;
   grid-template-columns: 1.05fr 0.85fr;

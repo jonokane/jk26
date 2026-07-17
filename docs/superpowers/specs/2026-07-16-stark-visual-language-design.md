@@ -279,16 +279,23 @@ Sticky `100vh` stage; vertical scroll translates `#wtrack` in X. One card per pu
 
 **Every count here is derived from the content, never written down.** The prototype's nine panels were eight studies plus the earlier panel; today four studies are published and the rest are `draft: true` until their copy is written, so it renders five. That number changes as studies land and no code may change with it — see gap 1 (wrapper height) and gap 4 (card numbers) below, which are both this same fault in the prototype.
 
+The gallery is a **horizontal teleprompter** — the About section's mechanic turned on its side, so the two read as siblings. The "Selected work." title pins top-left inside the sticky stage exactly as "Who I am." does, which is what signals the handoff from vertical scrolling to horizontal. The active card holds at a focus position, then the next eases into it — the same focus-and-dwell About uses on statements.
+
 ```js
-travel = max(0, track.scrollWidth - innerWidth + innerWidth * 0.06)   // trailing gutter = 6vw inset
-lp     = clamp(-wrapRect.top / (wrapH - vh), 0, 1)                    // linear, no easing
-track.transform = translateX(-lp * travel)
+lp    = clamp(-wrapRect.top / (wrapH - vh), 0, 1)          // 0..1 across the pin
+idx   = dwelledIndex(lp, panelCount, DWELL)                // fractional panel index, plateau at each integer
+x     = focusX * innerWidth - lerp(cardCentres, idx)       // centre the active card at focusX
+track.transform = translateX(x)
 progress.width  = lp * 100 + '%'
 ```
 
-Active index is the card nearest viewport horizontal centre (not derived from `lp`); cards within `0.55 × innerWidth` of centre sit at opacity 1, else 0.42, `transition: opacity 0.5s ease`.
+**Dwell is the fix for "the first study is easy to scroll past," and it is a tunable, not a constant.** A linear scroll→pan map gives every card the same constant velocity, so the most recent and most important study slides by no more stickily than any other. `dwelledIndex` instead holds each card at the focus position for a stretch of scroll, then eases (smoothstep) to the next — so you cannot cross a card without scrolling *through* its dwell. `DWELL ∈ [0,1]` spans continuous-skim (`0`, a gentle per-card ease) to one-at-a-time snap (`1`); it lives in the config for Jono to dial by feel. There is **no "linear, no easing"** rule — that was an early mistake; motion on this site is eased by default.
 
-Wayfinding: locked title, live `01 / NN` counter (`NN` = panel count, off the data — `01 / 05` today), progress bar pinned bottom.
+`cardCentres` are measured once per layout (track-local, cached), not per frame — which also retires the prototype's per-frame `getBoundingClientRect`. `travel` for the wrapper height is `lastCentre − firstCentre`, still derived from measured content, never authored.
+
+Active index is `round(idx)`; because each card is genuinely centred at focus, the counter agrees with the eye by construction. Cards within `focalBand × innerWidth` of the focus sit at opacity 1, else `0.42`, `transition: opacity 0.5s ease`.
+
+Wayfinding: the pinned title, a live `01 / NN` counter (`NN` = panel count, off the data — `01 / 05` today), progress bar pinned bottom.
 
 ### Horizontal input pans it too
 
