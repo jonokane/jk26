@@ -1,5 +1,6 @@
 /* The case study as a centred reading column (spec §10, prototype `.dwrap`).
-   Cold Noon tokens were removed; the prose is restyled to the prototype's `.dbody`
+   `--card-border` (border-top) and `--text-glow` (heading shadow) were removed
+   with the Cold Noon palette; the prose is restyled to the prototype's `.dbody`
    on stark tokens. */
 .article {
   width: 100%;

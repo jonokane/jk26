@@ -20,8 +20,11 @@ describe("case-study CSS uses only live stark tokens", () => {
   for (const file of FILES) {
     it(`${file} references no dead Cold Noon token`, () => {
       const css = readFileSync(join(__dirname, file), "utf8");
+      // Strip comments first: a dead token may still be *named* in a migration
+      // note explaining what was removed, but must never be *used* in a declaration.
+      const scannable = css.replace(/\/\*[\s\S]*?\*\//g, "");
       for (const token of DEAD) {
-        expect(css.includes(token)).toBe(false);
+        expect(scannable.includes(token)).toBe(false);
       }
     });
   }
