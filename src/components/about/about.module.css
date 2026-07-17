@@ -65,14 +65,18 @@
   word-spacing: 0.058em;
 }
 
-/* A word declares no display of its own, and that is load-bearing: a span is
-   inline already, and it must stay inline. An ancestor's underline is not
-   drawn through an ATOMIC inline-level box, so `display: inline-block` here
-   left a link underlined only in the spaces between its words — the spaces
-   being the one thing inside the <a> that was still ordinary inline text.
-   The inline-block was vestigial: it undid the blockification that
-   .statement's old flex row forced on every child, and .statement has been
-   normal inline flow since real spaces replaced the column-gap. */
+/* inline-block so use-reserved-widths can pin a width on it — a width does not
+   apply to an inline box, and without the pin the statement re-wraps as the
+   teleprompter lerps its weights (a heavier glyph is a wider glyph).
+   This has a price, paid at .link below: an underline is not drawn through an
+   ATOMIC inline-level box, so an <a> around these words cannot underline them
+   itself. Do not add `display` here without reading that rule.
+   Not `block`, which would make the clipboard serialiser break the line after
+   every word. */
+.word {
+  display: inline-block;
+}
+
 .word[data-word="italic"] {
   font-style: italic;
 }
@@ -170,6 +174,26 @@
   transition: text-decoration-color 0.3s ease;
 }
 
-.link:hover {
+/* The words draw their own half of that underline. The rule above only reaches
+   the spaces between them: .word is an atomic inline-level box (it has to be,
+   to carry a reserved width) and a decoration is not drawn through one, which
+   left the link reading "Hit_me_up".
+   The colour must be named here, not inherited. `inherit` looks correct and is
+   a trap: text-decoration-color's initial value is `currentColor`, which
+   computes to ITSELF and only resolves at use — so inheriting it hands the word
+   the keyword, which re-resolves against the word's own animated colour. The
+   line under the words came out dim grey while the line under the spaces was
+   accent. Measured, not guessed.
+   Thickness can inherit, because `from-font` computes to a real value.
+   text-underline-offset inherits on its own, so both halves share a baseline. */
+.link .word {
+  text-decoration-line: underline;
+  text-decoration-color: var(--about);
+  text-decoration-thickness: inherit;
+  transition: text-decoration-color 0.3s ease;
+}
+
+.link:hover,
+.link:hover .word {
   text-decoration-color: var(--ink);
 }

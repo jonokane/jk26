@@ -5,6 +5,7 @@ import { aboutPage } from "@/components/about/about-data";
 import type { Word } from "@/components/about/statement-tokens";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
+import { useReservedWidths } from "@/components/about/use-reserved-widths";
 import { useTeleprompter } from "@/components/about/use-teleprompter";
 import styles from "@/components/about/about.module.css";
 
@@ -98,6 +99,11 @@ export function About() {
   const [activeStatement, setActiveStatement] = useState(0);
   const onActiveStatement = useCallback((i: number) => setActiveStatement(i), []);
 
+  /* Before the teleprompter animates anything: the weights it lerps change the
+     words' widths, so their boxes are pinned to the focused width first and the
+     statement can never re-wrap under the animation. Inert under reduced
+     motion, where no weight moves and there is nothing to pin. */
+  useReservedWidths(columnRef, !reduced);
   useTeleprompter({ wrapRef, columnRef, active: !reduced, onActiveStatement });
 
   return (
