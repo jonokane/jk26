@@ -605,6 +605,10 @@ In `src/lib/site-content.ts`, replace the whole `work: { … }` block with:
     indexLabel: "Index",
     /** The card's call to action. The arrow is CSS content, not copy. */
     viewLabel: "View case study",
+    /** Prefixes a filter pill's accessible name, so a screen reader hears
+     *  "Sector: Music" rather than a bare "Music" with no idea what it filters.
+     *  The visible pill shows the value alone. */
+    filterPillPrefix: ": ",
     /** Sits in a card's image slot until a real `cover` is set in frontmatter. */
     shotPending: "Case study imagery in progress",
     /** Between the active card's number and the total: "01 / 05". */
@@ -692,7 +696,9 @@ describe("WorkCard", () => {
   });
 
   /* The whole card is the link. A card with a link INSIDE it would give the
-     visitor a small target inside a large clickable-looking area. */
+     visitor a small target inside a large clickable-looking area.
+     next/link renders an <a>, so this assertion holds either way — what it
+     pins is that there is exactly ONE, and where it points. */
   it("is one link to the study, not a card containing a link", () => {
     const { container } = render(<WorkCard study={study()} number={1} />);
     const links = container.querySelectorAll("a");
@@ -908,6 +914,7 @@ Create `src/components/work/work-card.module.css`. Values are §9's, verbatim:
 Create `src/components/work/work-card.tsx`:
 
 ```tsx
+import Link from "next/link";
 import type { CaseStudy } from "#site/content";
 import { formatStudyNumber } from "@/components/work/work-lists";
 import { siteContent } from "@/lib/site-content";
@@ -925,7 +932,11 @@ import styles from "@/components/work/work-card.module.css";
  */
 export function WorkCard({ study, number }: { study: CaseStudy; number: number }) {
   return (
-    <a
+    /* next/link, not <a href>: §10's slide-up modal is an intercepting route,
+       and Next only intercepts a client-side Link navigation — a raw anchor does
+       a full page load and forecloses it. The codebase already uses Link in
+       site-header, case-study-next and /work/[slug]. */
+    <Link
       href={study.url}
       className={styles.card}
       data-work-card
@@ -957,7 +968,7 @@ export function WorkCard({ study, number }: { study: CaseStudy; number: number }
           <span className={styles.shotCaption}>{siteContent.work.shotPending}</span>
         )}
       </div>
-    </a>
+    </Link>
   );
 }
 ```
@@ -1769,28 +1780,46 @@ describe("WorkIndex", () => {
 
   /* Facets are derived from frontmatter (spec §9), so a new study changes the
      bar with no code edit. */
-  it("offers a filter option for every distinct facet value in the data", () => {
+  it("offers a filter pill for every distinct facet value in the data", () => {
     render(<WorkIndex />);
-    expect(screen.getByRole("option", { name: "Music" })).toBeTruthy();
-    expect(screen.getByRole("option", { name: "Automotive" })).toBeTruthy();
-    expect(screen.getByRole("option", { name: "Front-end" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Sector: Music" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Sector: Automotive" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Discipline: Front-end" })).toBeTruthy();
   });
 
-  it("filters the rows when a sector is chosen", () => {
+  /* The pill is a toggle, so it must SAY it is one. aria-pressed is the whole
+     difference between "a button called Music" and "a filter that is on". */
+  it("reports each pill's pressed state", () => {
+    render(<WorkIndex />);
+    const music = screen.getByRole("button", { name: "Sector: Music" });
+    expect(music.getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(music);
+    expect(music.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("filters the rows when a sector pill is pressed", () => {
     const { container } = render(<WorkIndex />);
-    fireEvent.change(screen.getByLabelText(siteContent.work.filters.sector), {
-      target: { value: "Music" },
-    });
+    fireEvent.click(screen.getByRole("button", { name: "Sector: Music" }));
     const rows = container.querySelectorAll("[data-work-row]");
     expect(rows).toHaveLength(1);
     expect(rows[0].textContent).toContain("Alpha");
   });
 
+  /* Clicking the pressed pill again clears it — the same gesture that set it.
+     Without this the only way out is the clear button, which is a dead end for
+     anyone who does not notice it. */
+  it("clears a facet when its pressed pill is clicked again", () => {
+    const { container } = render(<WorkIndex />);
+    const music = screen.getByRole("button", { name: "Sector: Music" });
+    fireEvent.click(music);
+    fireEvent.click(music);
+    expect(container.querySelectorAll("[data-work-row]")).toHaveLength(2);
+    expect(music.getAttribute("aria-pressed")).toBe("false");
+  });
+
   it("restores every row when the filter is cleared", () => {
     const { container } = render(<WorkIndex />);
-    fireEvent.change(screen.getByLabelText(siteContent.work.filters.sector), {
-      target: { value: "Music" },
-    });
+    fireEvent.click(screen.getByRole("button", { name: "Sector: Music" }));
     fireEvent.click(screen.getByRole("button", { name: siteContent.work.filters.clear }));
     expect(container.querySelectorAll("[data-work-row]")).toHaveLength(2);
   });
@@ -1830,10 +1859,18 @@ Append to `src/components/work/work.module.css`. Values are §9's, verbatim:
 
 .filters {
   display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
   padding: 8px 0 24px;
+}
+
+/* One facet: its label, then its pills. */
+.facet {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .filterLabel {
@@ -1841,19 +1878,40 @@ Append to `src/components/work/work.module.css`. Values are §9's, verbatim:
   font-size: 11px;
   letter-spacing: 0.06em;
   color: var(--mute);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin-right: 4px;
 }
 
-.filterSelect {
+/* Deliberately the card's tag pill, at the same radius and weight. The filter
+   bar is speced in §9 but appears in NO prototype, so it has no design of its
+   own to follow — borrowing the one pill already on screen is what keeps it from
+   becoming a fifth invented thing. Jono chose this over native <select>s. */
+.pill {
   font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--ink);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--mute);
   background: transparent;
   border: 1px solid var(--hairline);
   border-radius: 100px;
-  padding: 6px 12px;
+  padding: 4px 11px;
+  cursor: pointer;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+
+.pill:hover {
+  color: var(--work);
+  border-color: var(--work);
+}
+
+/* The pressed state has to survive a colour-blind read and a greyscale print,
+   so it is not carried by hue alone: the fill inverts. */
+.pill[aria-pressed="true"] {
+  color: var(--canvas);
+  background: var(--work);
+  border-color: var(--work);
 }
 
 .clear {
@@ -1958,6 +2016,7 @@ Create `src/components/work/work-index.tsx`:
 ```tsx
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { publishedWork } from "@/components/work/work-data";
 import {
@@ -1966,10 +2025,58 @@ import {
   facetValues,
   isFilterActive,
 } from "@/components/work/work-filters";
-import type { WorkFilter } from "@/components/work/work-filters";
+import type { Facet, WorkFilter } from "@/components/work/work-filters";
 import { formatStudyNumber } from "@/components/work/work-lists";
 import { siteContent } from "@/lib/site-content";
 import styles from "@/components/work/work.module.css";
+
+/**
+ * One facet's row of pills. Jono chose these over native <select>s; the filter
+ * bar is speced in §9 but exists in no prototype, so it borrows the card's tag
+ * pill rather than inventing a fifth thing.
+ *
+ * Buttons with `aria-pressed`, not links and not a listbox: each pill is an
+ * independent on/off, which is exactly what aria-pressed describes. Clicking a
+ * pressed pill clears it — the same gesture that set it, so the clear button is
+ * a convenience and never the only way out.
+ */
+function FacetRow({
+  facet,
+  label,
+  values,
+  chosen,
+  onChoose,
+}: {
+  facet: Facet;
+  label: string;
+  values: string[];
+  chosen: string | null;
+  onChoose: (value: string | null) => void;
+}) {
+  return (
+    <div className={styles.facet}>
+      <span className={styles.filterLabel}>{label}</span>
+      {values.map((value) => {
+        const pressed = chosen === value;
+        return (
+          <button
+            key={`${facet}-${value}`}
+            type="button"
+            className={styles.pill}
+            aria-pressed={pressed}
+            /* The pill shows the bare value; the accessible name carries the
+               facet too, or a screen reader hears "Music" with no idea what it
+               filters. */
+            aria-label={`${label}${siteContent.work.filterPillPrefix}${value}`}
+            onClick={() => onChoose(pressed ? null : value)}
+          >
+            {value}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 /**
  * The vertical index (spec §9): every study as a row, filterable by Sector and
@@ -1992,38 +2099,20 @@ export function WorkIndex() {
   return (
     <div className={styles.index}>
       <div className={styles.filters} role="group" aria-label={siteContent.work.filters.region}>
-        <label className={styles.filterLabel}>
-          {siteContent.work.filters.sector}
-          <select
-            className={styles.filterSelect}
-            value={filter.sector ?? ""}
-            onChange={(e) => setFilter((f) => ({ ...f, sector: e.target.value || null }))}
-          >
-            <option value="">{siteContent.work.filters.all}</option>
-            {sectors.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className={styles.filterLabel}>
-          {siteContent.work.filters.discipline}
-          <select
-            className={styles.filterSelect}
-            value={filter.discipline ?? ""}
-            onChange={(e) => setFilter((f) => ({ ...f, discipline: e.target.value || null }))}
-          >
-            <option value="">{siteContent.work.filters.all}</option>
-            {disciplines.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
-        </label>
-
+        <FacetRow
+          facet="sector"
+          label={siteContent.work.filters.sector}
+          values={sectors}
+          chosen={filter.sector}
+          onChoose={(value) => setFilter((f) => ({ ...f, sector: value }))}
+        />
+        <FacetRow
+          facet="discipline"
+          label={siteContent.work.filters.discipline}
+          values={disciplines}
+          chosen={filter.discipline}
+          onChoose={(value) => setFilter((f) => ({ ...f, discipline: value }))}
+        />
         {isFilterActive(filter) && (
           <button type="button" className={styles.clear} onClick={() => setFilter(NO_FILTER)}>
             {siteContent.work.filters.clear}
@@ -2034,13 +2123,13 @@ export function WorkIndex() {
       <ol className={styles.rows}>
         {shown.map((study) => (
           <li key={study.slug} className={styles.row} data-work-row>
-            <a href={study.url} className={styles.rowLink}>
+            <Link href={study.url} className={styles.rowLink}>
               <span className={styles.rowNum}>
                 {formatStudyNumber(publishedWork.indexOf(study) + 1)}
               </span>
               <span className={styles.rowTitle}>{study.title}</span>
               <span className={styles.rowMeta}>{study.year}</span>
-            </a>
+            </Link>
             {/* Decoration, not copy: it must never reach the clipboard or a
                 screen reader (spec §15). */}
             <span className={styles.rowArrow} aria-hidden="true">
@@ -2395,6 +2484,8 @@ Report to the controller: what you measured, what you saw in the screenshots, an
 | Gap 4: card numbers derived from data | 4, 7, 10 |
 | Gap 5: card copy from MDX only, no duplication | 4 (reads `study.*` only) |
 | Index: rows, Sector + Discipline filters from frontmatter | 2, 8 |
+| Filter bar has NO prototype — pills chosen by Jono over native selects | 8 |
+| Cards and rows are `next/link`, so §10 can intercept them later | 4, 8 |
 | Index: grid `64px 1fr auto`, hover choreography | 8 |
 
 **Gap found and closed during review:** §9 says "Draft impact renders italic." Draft studies are excluded from `publishedWork` by `selectPublishedWork`, so **no draft study can ever reach a card** — the rule is unreachable and `.wimpact.draft` would be dead CSS. Task 4 therefore omits it deliberately. This is recorded here rather than silently dropped; if Jono wants drafts visible-but-marked, that is a change to `selectPublishedWork` and a separate decision.
