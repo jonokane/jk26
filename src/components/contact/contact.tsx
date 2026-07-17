@@ -18,9 +18,11 @@ const MAX_LENGTHS: Record<FieldName, number> = {
 };
 
 /**
- * The contact form (spec §10): a frosted slab with three labeled fields, a
- * honeypot + time-to-submit spam gate, and idle/sending/success/error states
- * announced to assistive tech. Every visible string, validation copy included,
+ * The contact form (spec §12): the stark two-column form — sticky title, mono
+ * labels, transparent bottom-border fields — over a honeypot + time-to-submit
+ * spam gate and idle/sending/success/error states announced to assistive tech.
+ * The presentation is §12; the logic here is unchanged and must stay so ("keep
+ * our logic; restyle only"). Every visible string, validation copy included,
  * comes from `siteContent` (spec §15).
  */
 
