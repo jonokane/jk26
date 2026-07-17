@@ -72,6 +72,12 @@ export const siteContent = {
     viewLabel: "View case study",
     /** Sits in a card's image slot until a real `cover` is set in frontmatter. */
     shotPending: "Case study imagery in progress",
+    // The detail surface's wide image slot caption (spec §10, the prototype's
+    // ".dshot" — "selected screens / artifacts").
+    detailShotCaption: "Selected screens / artifacts",
+    // The modal's close pill. The "✕" is decoration, added in CSS, so the
+    // accessible name stays the plain word (spec §15).
+    detailCloseLabel: "Close",
     /** Between the active card's number and the total: "01 / 05". */
     counterSeparator: " / ",
     /** The gallery's own landmark name. */
