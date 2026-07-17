@@ -1,6 +1,5 @@
 /* The case-study head (spec §10), stark tokens. Single column — the prototype's
-   `.dwrap` head — replacing the parked two-column grid that styled its eyebrow
-   and impact against removed `--sub` and its title against `--text-glow`. */
+   `.dwrap` head — replacing the parked two-column grid. */
 .intro {
   display: block;
 }
