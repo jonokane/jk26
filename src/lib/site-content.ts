@@ -1,8 +1,9 @@
 /**
  * All site copy lives here, never in JSX (spec §15).
  *
- * Locked copy (Jono's own words, do not rewrite): `kicker`, `tagline`, `beats`.
- * Drafted copy awaiting his edit: `about.lede`, `work.intro`, `contact.*`.
+ * Locked copy (Jono's own words, do not rewrite): `kicker`, `tagline`.
+ * Drafted copy awaiting his edit: `work.intro`, `contact.*`.
+ * The About lede and statements live in content/site/about.mdx, not here.
  * House style: no em-dashes anywhere in visitor-facing copy.
  */
 export const siteContent = {
@@ -22,6 +23,8 @@ export const siteContent = {
     home: "Jono Kane — home",
     allWork: "← All work",
     scrollCue: "scroll",
+    /** The teleprompter's right rail of dots (spec §8). */
+    aboutRail: "Jump to a statement",
     /** The theme control names the mode it switches TO, not the current one. */
     theme: {
       toLight: "Light",
@@ -34,32 +37,9 @@ export const siteContent = {
     work: "Selected Work",
     contact: "Contact",
   },
-  /** The four intro beats that collect into the About wall (spec §7). Locked copy. */
-  beats: [
-    {
-      title: "What I do",
-      statement:
-        "I help teams build products people love, spanning design, product management, strategy, and hands-on building to turn concept and vision into shipped products.",
-    },
-    {
-      title: "Track record",
-      statement:
-        "For two decades I have solved challenging product and UX problems at Yahoo!, Amazon, Meta, and smaller startups, and now as founder of Collaya.",
-    },
-    {
-      title: "How I work",
-      statement:
-        "I care about people and real user needs, and I balance that with the metrics that grow a business.",
-    },
-    {
-      title: "Available now",
-      statement:
-        "Available now for fractional work, around 20+ hours a week, mostly with early-stage teams in music, creative, AI, IoT, and automotive. Remote-first, open to LA or SF hybrid for the right opportunity.",
-    },
-  ],
-  /** About section: the lede above the wall, and the CTAs below it (spec §7). */
+  /** About section CTAs, below the teleprompter (spec §7). The title, lede, and
+   *  statements live in content/site/about.mdx. */
   about: {
-    lede: "Twenty years shipping products at Yahoo!, Amazon, and Meta, and now as founder of Collaya. Equal parts designer, design manager, and product strategist, with enough front-end fluency to build what I draw.",
     /** Caption under the tray of pocketed beats, while the reader is still reading. */
     trayHint: "Collected ↓",
     ctas: {
