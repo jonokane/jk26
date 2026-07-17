@@ -31,10 +31,10 @@ export const siteContent = {
       toDark: "Dark",
     },
   },
-  /** Section heading titles (nav labels differ deliberately: "Work" vs "Selected Work"). */
+  /** Section heading titles (nav labels differ deliberately: "Work" vs "Selected work."). */
   titles: {
     about: "About",
-    work: "Selected Work",
+    work: "Selected work.",
     contact: "Contact",
   },
   /** About section CTAs, below the teleprompter (spec §7). The title and
@@ -57,7 +57,7 @@ export const siteContent = {
   work: {
     intro:
       "Each study is the whole story: what it was, what made it hard, what I did, and what happened.",
-    earlierTitle: "Selected earlier work",
+    earlierTitle: "Selected earlier work.",
     nextLabel: "Next",
     /** The shelf (spec §8): every word and separator it prints. */
     shelf: {
