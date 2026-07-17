@@ -72,41 +72,40 @@ describe("dwelledIndex", () => {
     expect(dwelledIndex(1, 5, 0.5)).toBe(4);
   });
 
-  /* At the midpoint of an odd panel count the middle card is exactly centred —
-     smoothstep is symmetric about the segment midpoint. */
-  it("passes through the middle card at half progress", () => {
-    expect(dwelledIndex(0.5, 5, 0.5)).toBeCloseTo(2, 5);
+  /* THE EQUAL-CELL FIX. Every card gets a whole cell of width 1/N — including
+     the first. With 5 panels the cell is 0.2, and card 0 holds (index 0) from
+     progress 0 through 0.5 dwell × 0.2 cell = 0.1, then eases away. It no longer
+     gets a half-width band, which is what made the most recent study too quick. */
+  it("gives the first card a full hold from the very start", () => {
+    expect(dwelledIndex(0, 5, 0.5)).toBe(0);
+    expect(dwelledIndex(0.05, 5, 0.5)).toBe(0); // still held, mid-hold
+    expect(dwelledIndex(0.1, 5, 0.5)).toBeCloseTo(0, 5); // hold ends here
+    expect(dwelledIndex(0.15, 5, 0.5)).toBeGreaterThan(0); // now easing to card 1
   });
 
-  /* THE DWELL. With a hold, a card holds at its integer index across a band of
-     progress rather than only touching it at a point. Just before and after the
-     boundary into card 1 (progress 0.25 of 5 panels), the index stays pinned at
-     1 — you cannot be "between" cards there, which is what stops a card being
-     scrolled past. */
-  it("holds a card across a band of scroll, not just a point", () => {
-    // segment 0->1 spans progress [0, 0.25]; a 0.5 dwell holds the outer quarter
-    // of each segment, so from progress ~0.219 (s = 0.875) onward it reads 1.
-    expect(dwelledIndex(0.23, 5, 0.5)).toBeCloseTo(1, 5);
-    expect(dwelledIndex(0.25, 5, 0.5)).toBeCloseTo(1, 5);
-    expect(dwelledIndex(0.27, 5, 0.5)).toBeCloseTo(1, 5);
+  /* The last card holds through the entire final cell — there is no card after
+     it to ease toward, so it stays put from the start of its cell to progress 1. */
+  it("holds the last card across its whole final cell", () => {
+    // 5 panels: card 4's cell is [0.8, 1]. It is centred throughout.
+    expect(dwelledIndex(0.8, 5, 0.5)).toBe(4);
+    expect(dwelledIndex(0.9, 5, 0.5)).toBe(4);
+    expect(dwelledIndex(1, 5, 0.5)).toBe(4);
   });
 
-  /* dwell 0 is a smooth per-card ease, never a plateau: at s = 0.5 within a
-     segment it sits exactly between the two cards. It is NOT linear (smoothstep),
-     because motion on this site is eased — but it has no hold. */
-  it("has no plateau at dwell 0, but still eases", () => {
-    // 2 panels, one segment [0,1]. At progress 0.25, s = 0.25.
-    const eased = dwelledIndex(0.25, 2, 0);
-    expect(eased).toBeCloseTo(0.25 * 0.25 * (3 - 2 * 0.25), 5); // smoothstep(0,1,0.25)
-    expect(eased).not.toBeCloseTo(0.25, 3); // and not the linear value
+  /* Within an interior cell the card holds for `dwell` of the cell, then eases.
+     Card 1's cell is [0.2, 0.4]; at 0.5 dwell it holds until 0.2 + 0.1 = 0.3. */
+  it("holds an interior card for the dwell fraction, then eases", () => {
+    expect(dwelledIndex(0.25, 5, 0.5)).toBe(1); // within the hold
+    expect(dwelledIndex(0.3, 5, 0.5)).toBeCloseTo(1, 5); // hold ends
+    expect(dwelledIndex(0.35, 5, 0.5)).toBeGreaterThan(1); // easing to card 2
   });
 
-  /* dwell 1 is a hard snap: the index steps from one card to the next at the
-     segment midpoint, holding entirely otherwise. The degenerate smoothstep
-     guard makes this a step rather than a 0/0. */
+  /* dwell 1 is a hard snap: the card holds its whole cell, then steps at the
+     boundary. The degenerate smoothstep guard makes the transition a step. */
   it("snaps at dwell 1", () => {
-    expect(dwelledIndex(0.2, 2, 1)).toBe(0); // s = 0.2 < 0.5 -> hold card 0
-    expect(dwelledIndex(0.8, 2, 1)).toBe(1); // s = 0.8 > 0.5 -> hold card 1
+    // 2 panels, cells [0,0.5] and [0.5,1]. Card 0 holds its whole first cell.
+    expect(dwelledIndex(0.4, 2, 1)).toBe(0);
+    expect(dwelledIndex(0.6, 2, 1)).toBe(1);
   });
 
   it("is 0 for a single panel", () => {
@@ -165,32 +164,33 @@ describe("cardOpacityFor", () => {
 });
 
 describe("cardStrokeProgress", () => {
-  /* Each card's stroke runs 0→1 across its own active band, and — the point of
-     it — completes exactly as the card hands off to the next, so the ring closes
-     just as the card leaves the focus. With 5 panels the segment is 0.25 and the
-     handoff out of card 1 is at progress 0.375. */
-  it("runs 0 to 1 across the card's active band and closes at the handoff", () => {
-    expect(cardStrokeProgress(0.125, 5, 1)).toBeCloseTo(0, 5); // band start (handoff in)
-    expect(cardStrokeProgress(0.25, 5, 1)).toBeCloseTo(0.5, 5); // card 1 centred
-    expect(cardStrokeProgress(0.375, 5, 1)).toBeCloseTo(1, 5); // band end (handoff out)
+  /* The stroke is empty until the card's cell begins, then traces across part of
+     its hold and closes with hold to spare. With 5 panels (cell 0.2), dwell 0.9,
+     strokeSpan 0.6: card 1's cell starts at 0.2, and the ring closes at
+     0.2 + 0.6 × 0.9 × 0.2 = 0.308 — well before the hold ends at 0.38. */
+  it("traces across part of the hold and closes early", () => {
+    expect(cardStrokeProgress(0.2, 5, 1)).toBeCloseTo(0, 5); // cell start, empty
+    expect(cardStrokeProgress(0.254, 5, 1)).toBeCloseTo(0.5, 2); // halfway
+    expect(cardStrokeProgress(0.308, 5, 1)).toBeCloseTo(1, 2); // closed
   });
 
-  /* The first card has no incoming band, so its stroke starts drawing from
-     progress 0 rather than from a negative phantom band before it. */
-  it("starts the first card's stroke at 0 progress, not before", () => {
-    expect(cardStrokeProgress(0, 5, 0)).toBeCloseTo(0, 5);
-    expect(cardStrokeProgress(0.125, 5, 0)).toBeCloseTo(1, 5); // full at its handoff
+  /* THE BEAT. Once closed, the ring stays full through the rest of the hold —
+     the card sits complete-and-still before it leaves, rather than being swept
+     off the instant the ring shuts. */
+  it("stays full after closing, through the beat", () => {
+    expect(cardStrokeProgress(0.34, 5, 1)).toBe(1); // past close, still held
+    expect(cardStrokeProgress(0.37, 5, 1)).toBe(1);
   });
 
-  /* The last card's band is clamped to the end, so its stroke completes exactly
-     at progress 1 and never demands scroll that does not exist. */
-  it("completes the last card's stroke at the very end", () => {
-    expect(cardStrokeProgress(0.875, 5, 4)).toBeCloseTo(0, 5);
-    expect(cardStrokeProgress(1, 5, 4)).toBeCloseTo(1, 5);
+  /* The first card's ring starts at progress 0 (its cell begins there), so the
+     stroke is empty at rest and begins tracing the moment you scroll. */
+  it("starts the first card's ring empty at rest", () => {
+    expect(cardStrokeProgress(0, 5, 0)).toBe(0);
+    expect(cardStrokeProgress(0.108, 5, 0)).toBeCloseTo(1, 2); // closed within its hold
   });
 
-  /* Before a card is anywhere near the focus its stroke is empty, not partway. */
-  it("is 0 for a card whose band the scroll has not reached", () => {
+  /* Before a card's cell is reached its ring is empty, not partway. */
+  it("is empty for a card the scroll has not reached", () => {
     expect(cardStrokeProgress(0, 5, 3)).toBe(0);
   });
 

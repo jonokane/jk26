@@ -65,29 +65,35 @@ export function linearProgress(
 }
 
 /**
- * Linear scroll progress → a fractional panel index in `[0, panelCount − 1]`,
- * with a smoothstep plateau at each whole card (spec §9). This is the whole of
- * the dwell: a linear map gives every card the same constant velocity, so the
- * most recent study slides past no more stickily than any other. Here each card
- * HOLDS at its integer index for a stretch, then eases to the next, so a card
- * cannot be crossed without scrolling through its dwell.
+ * Linear scroll progress → a fractional panel index in `[0, panelCount − 1]`
+ * (spec §9). This is the whole of the dwell: a linear map gives every card the
+ * same constant velocity, so the most recent study slides past no more stickily
+ * than any other. Here each card HOLDS at its integer index for a stretch, then
+ * eases to the next, so a card cannot be crossed without scrolling through it.
  *
- * `WORK.dwell` sets how much of a card's band is hold versus ease: 0 is a smooth
- * continuous skim (a gentle per-card ease, never linear — motion here is always
- * eased), 1 is a one-at-a-time snap. The hold is split evenly across the two
- * ends of a segment, so the outgoing hold of card k and the incoming hold of
- * card k+1 meet as a single plateau centred on the integer between them.
+ * The scroll is divided into `panelCount` equal CELLS, one per card, NOT
+ * `panelCount − 1` segments between cards. That equality is the point: a
+ * segment model gave the first and last cards half-width bands — the most
+ * recent study got the LEAST focus and was the easiest to miss. A cell model
+ * holds card 0 at the very start and card `N−1` through the very end for the
+ * same span as everyone in between.
+ *
+ * Within a card's cell it holds (index stays put) for `WORK.dwell` of the cell,
+ * then smoothsteps to the next over the remainder. The last cell only holds —
+ * there is no card after it to ease toward. `dwell` 0 is a continuous eased
+ * skim; toward 1, a long hold with a quick handoff.
  */
 export function dwelledIndex(progress: number, panelCount: number, dwell: number): number {
   if (panelCount <= 1) return 0;
   const p = Math.min(1, Math.max(0, progress));
-  const scaled = p * (panelCount - 1);
-  /* The segment this progress falls in, k → k+1. Clamped to the last real
-     segment so `p === 1` reads as "end of the last segment", not a phantom one. */
-  const k = Math.min(Math.floor(scaled), panelCount - 2);
-  const s = scaled - k; // position within the segment, [0, 1]
-  const half = Math.min(1, Math.max(0, dwell)) / 2;
-  return k + smoothstep(half, 1 - half, s);
+  const scaled = p * panelCount; // [0, panelCount], one unit per cell
+  const k = Math.min(Math.floor(scaled), panelCount - 1); // the cell we are in
+  if (k >= panelCount - 1) return panelCount - 1; // last cell: hold, nothing to ease to
+  const s = scaled - k; // position within the cell, [0, 1]
+  const hold = Math.min(1, Math.max(0, dwell));
+  /* Held (0) through the first `hold` of the cell, then eases to the next card
+     across the remainder. */
+  return k + smoothstep(hold, 1, s);
 }
 
 /**
@@ -135,15 +141,15 @@ export function cardOpacityFor(distanceFromFocus: number, viewportWidth: number)
 /**
  * How far the focused card's perimeter stroke has traced, 0→1, for the card at
  * `index` (spec §9). The stroke is the visible answer to "the card is holding
- * still, am I still scrolling?" — it advances with the LINEAR scroll across the
- * card's active band, so it keeps moving through the dwell hold while the card
- * itself sits at the focus, and completes exactly as the card hands off to the
- * next.
+ * still, am I still scrolling?" — it advances with the LINEAR scroll while the
+ * card sits at the focus.
  *
- * `index`'s band is the stretch of progress over which it is the nearest card:
- * the segment midpoints on either side, `(index ± 0.5) / (panelCount − 1)`,
- * clamped so the first and last cards' bands stop at the ends rather than run
- * past them. A lone card owns the whole scroll.
+ * It traces across the card's own hold: empty until the card's cell begins
+ * (`index / panelCount`), then filling over `strokeSpan` of that hold, so it
+ * CLOSES BEFORE the hold ends. The gap between the ring closing and the card
+ * leaving is the beat — the card sits complete and still for a moment, inviting
+ * the click, rather than being swept off the instant the ring shuts. A lone card
+ * traces across the whole scroll.
  */
 export function cardStrokeProgress(
   progress: number,
@@ -152,11 +158,14 @@ export function cardStrokeProgress(
 ): number {
   const p = Math.min(1, Math.max(0, progress));
   if (panelCount <= 1) return p;
-  const segment = 1 / (panelCount - 1);
-  const bandStart = Math.max(0, (index - 0.5) * segment);
-  const bandEnd = Math.min(1, (index + 0.5) * segment);
-  if (bandEnd <= bandStart) return 0;
-  return Math.min(1, Math.max(0, (p - bandStart) / (bandEnd - bandStart)));
+  const cell = 1 / panelCount;
+  const holdStart = index * cell;
+  /* The ring closes after `strokeSpan` of the hold, which is `WORK.dwell` of the
+     cell — leaving (1 − strokeSpan) of the hold as the beat before the card
+     leaves. */
+  const traceEnd = holdStart + WORK.strokeSpan * WORK.dwell * cell;
+  if (traceEnd <= holdStart) return p >= holdStart ? 1 : 0;
+  return Math.min(1, Math.max(0, (p - holdStart) / (traceEnd - holdStart)));
 }
 
 /**

@@ -9,14 +9,23 @@
  */
 export const WORK = {
   /**
-   * How much of each card's scroll band is spent HOLDING it at the focus, versus
-   * easing to the next. The fix for "the most recent study is easy to scroll
-   * past": at 0 the pan is a smooth continuous skim and every card slides by at
-   * the same speed; toward 1 each card holds at the focus and then snaps, so you
-   * cannot cross a card without scrolling through its dwell. This is the dial
-   * Jono tunes by feel — 0.5 is a deliberate hold that still flows.
+   * How much of each card's scroll CELL is spent holding it dead-centre, versus
+   * easing on to the next. Every card — first and last included — gets an equal
+   * cell, so the most recent study dwells exactly as long as the rest (it used
+   * to get a half-width band and so the least focus of all, which is why it was
+   * the easiest to miss). At 0 the pan is a continuous skim; toward 1 each card
+   * holds, then snaps. Jono's dial — 0.9 is a long hold with a quick handoff.
    */
-  dwell: 0.5,
+  dwell: 0.9,
+
+  /**
+   * What fraction of a card's HOLD the perimeter stroke takes to close. Below 1
+   * the ring finishes with hold to spare, so the card sits complete-and-still
+   * for a beat before it leaves — the "let me look at it" moment the stroke
+   * completing is meant to reward. 1 would close the ring exactly as the card
+   * departs, which reads as being rushed off. Lower = longer beat.
+   */
+  strokeSpan: 0.6,
 
   /**
    * Where the active card centres, as a fraction of viewport width. 0.5 is dead

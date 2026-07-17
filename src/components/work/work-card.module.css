@@ -7,6 +7,10 @@
   width: min(66vw, 820px);
   height: 56vh;
   margin-right: 5vw;
+  /* Breathing room between the content and the perimeter stroke: the trace fills
+     the card's outer box, so this padding is the gap the ring holds off the text
+     and the image. */
+  padding: clamp(28px, 4vh, 48px) clamp(32px, 3vw, 52px);
   display: grid;
   grid-template-columns: 1.05fr 0.85fr;
   gap: 3vw;
