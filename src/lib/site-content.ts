@@ -100,7 +100,7 @@ export const siteContent = {
       view: "View the work",
     },
   },
-  /** Contact section (spec §10). */
+  /** Contact section (spec §12). */
   contact: {
     lede: "Tell me what you are building. I read everything that comes through here.",
     fields: {
@@ -108,6 +108,15 @@ export const siteContent = {
       email: "Email",
       message: "What are you building?",
     },
+    /** The footer's links, in order. Each `key` indexes `links` below for its
+     *  href; `resume` is hidden while that href is empty — the same rule the
+     *  About CTA follows. The email renders as a mailto. Read.cv (the prototype's
+     *  third link) is dropped: sunset in 2024 and not in `links`. */
+    footerLinks: [
+      { label: "LinkedIn", key: "linkedin" },
+      { label: "Collaya", key: "collaya" },
+      { label: "Résumé", key: "resume" },
+    ],
     submit: "Start a conversation",
     sending: "Sending",
     success: "Thanks, I will get back to you soon.",
