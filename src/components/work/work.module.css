@@ -67,11 +67,12 @@
   align-items: flex-end;
   padding-bottom: 14vh;
   will-change: transform;
-  /* macOS reads a two-finger horizontal swipe as Back. use-gallery calls
-     preventDefault on the gestures it claims; this stops the ones it does not
-     from navigating the visitor off the site. */
-  overscroll-behavior-x: contain;
 }
+/* No `overscroll-behavior-x` here: it only binds on a scroll container, and this
+   track is an absolutely-positioned flex row that scrolls nothing (the stage is
+   `overflow: clip`, also not a scroll container). The macOS Back-gesture is
+   stopped by the real guard — use-gallery's preventDefault on the horizontal
+   wheel — not by CSS. */
 
 .wayfinding {
   position: absolute;
@@ -313,6 +314,12 @@
   color: var(--work);
   font-size: clamp(1.5rem, 3vw, 2.4rem);
   padding-right: 8px;
+}
+
+/* The glyph is CSS content, not a text node — decoration must not be selectable
+   or reach the clipboard (spec §15). */
+.rowArrow::after {
+  content: "→";
 }
 
 .row:hover .rowArrow {

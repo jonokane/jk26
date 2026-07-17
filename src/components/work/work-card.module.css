@@ -24,6 +24,13 @@
   margin-left: 6vw;
 }
 
+/* A clear focus ring for keyboard users — use-gallery scrolls a focused card to
+   the focus, so this ring always lands on-screen (WCAG 2.4.7). */
+.card:focus-visible {
+  outline: 2px solid var(--work);
+  outline-offset: 6px;
+}
+
 /* The focus stroke. Covers the whole card box; the rect traces its perimeter.
    Behind the content (z-index 0) so text stays crisp over it, and never a click
    target. `overflow: visible` lets the 2px stroke straddle the very edge instead

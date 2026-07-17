@@ -207,6 +207,36 @@ export function useGallery({
       else window.scrollBy(0, delta);
     };
 
+    /**
+     * Keyboard focus must reveal its card (WCAG 2.4.7). Every card link is in
+     * the tab order at all times, but the pan is a `translateX` transform, not
+     * scroll, and no ancestor is a horizontal scroll container — so the browser
+     * cannot bring a focused off-screen card into view on its own, and a keyboard
+     * user would land on invisible focus (the Phase 3 About bug, one axis over).
+     *
+     * So when focus enters a panel, drive the page scroll that centres it — the
+     * same scroll a pointer pan would — and the card glides to the focus with its
+     * ring where the eye is. `focusin` (not `focus`) because it bubbles up from
+     * the link to this track listener. The toggle sits outside the track, so
+     * focusing it never scrolls.
+     */
+    const onFocusIn = (event: FocusEvent) => {
+      if (travel <= 0) return;
+      const panel = (event.target as Element | null)?.closest<HTMLElement>(PANEL_SELECTOR);
+      if (!panel) return;
+      const index = cards.indexOf(panel);
+      if (index < 0) return;
+      const budget = wrap.offsetHeight - window.innerHeight;
+      if (budget <= 0) return;
+      /* The middle of this panel's dwell hold, so it lands centred rather than
+         caught mid-transition. */
+      const targetProgress = Math.min(1, (index + WORK.dwell / 2) / centres.length);
+      const targetY = wrap.getBoundingClientRect().top + window.scrollY + targetProgress * budget;
+      const focusLenis = getLenis();
+      if (focusLenis) focusLenis.scrollTo(targetY);
+      else window.scrollTo({ top: targetY });
+    };
+
     const lenis = getLenis();
     lenis?.on("scroll", update);
     /* A fallback for the window before Lenis mounts, and for a scroll it did not
@@ -215,6 +245,9 @@ export function useGallery({
     /* passive: false — a passive listener cannot preventDefault, and without
        preventDefault this feature navigates people off the site. */
     window.addEventListener("wheel", onWheel, { passive: false });
+    /* On the track, so it catches focus bubbling up from any card or panel link
+       and scrolls it into the focus. */
+    track.addEventListener("focusin", onFocusIn);
 
     /* The track's width changes with the viewport (the card is `min(66vw,
        820px)`), and with the fonts, which land after first paint. Observing the
@@ -232,6 +265,7 @@ export function useGallery({
       window.removeEventListener("scroll", update);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("resize", measure);
+      track.removeEventListener("focusin", onFocusIn);
       observer.disconnect();
       /* Leave nothing behind: the index view and the reduced-motion path both
          render into this same DOM, and a stale inline height or transform would

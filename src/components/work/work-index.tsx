@@ -138,11 +138,10 @@ export function WorkIndex({ toggle }: { toggle?: ReactNode }) {
               <span className={styles.rowTitle}>{study.title}</span>
               <span className={styles.rowMeta}>{study.year}</span>
             </Link>
-            {/* Decoration, not copy: it must never reach the clipboard or a
-                screen reader (spec §15). */}
-            <span className={styles.rowArrow} aria-hidden="true">
-              →
-            </span>
+            {/* Decoration, not copy: the arrow is CSS `content` (see .rowArrow),
+                not a text node, so it reaches neither the clipboard nor a screen
+                reader (spec §15) — the same treatment as the card's arrow. */}
+            <span className={styles.rowArrow} aria-hidden="true" />
           </li>
         ))}
       </ol>
