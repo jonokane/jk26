@@ -113,6 +113,38 @@
   background: var(--work);
 }
 
+/* The view toggle. Lives in the section, not the nav (spec §9): global chrome
+   stays global, view state stays local. Named for the view it switches TO. */
+.toggle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--work);
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 100px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.toggle:hover {
+  background: var(--row-hover);
+  border-color: var(--work);
+}
+
+/* In the gallery the toggle pins top-right inside the sticky stage — opposite
+   the pinned title, aligned to it — so it stays reachable through the whole
+   horizontal scroll. */
+.toggleSlot {
+  position: absolute;
+  top: 13vh;
+  right: 6vw;
+  z-index: 7;
+}
+
 /* The index (spec §9): a vertical, filterable alternative to the gallery
    above, and its automatic fallback under ~900px and reduced motion (Task 9).
    Note: this replaces an older, unused `.index`/`.row`/`.num`/`.rowTitle`/
@@ -121,7 +153,25 @@
    identifier, so leaving them would have merged their declarations into the
    rules below by name collision. */
 .index {
-  padding: 0 6vw 10vh;
+  padding: 16vh 6vw 10vh;
+}
+
+/* The index's header: its own copy of the section title (the gallery's pinned
+   one is not rendered in this view), with the toggle opposite it. */
+.indexHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 6vh;
+}
+
+.indexTitle {
+  font-size: clamp(2.6rem, 7vw, 6.5rem);
+  font-variation-settings: "wght" 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--work);
 }
 
 .filters {

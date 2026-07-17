@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { EarlierWork } from "@/components/work/earlier-work";
 import { useGallery } from "@/components/work/use-gallery";
 import { WorkCard } from "@/components/work/work-card";
@@ -20,7 +21,7 @@ import styles from "@/components/work/work.module.css";
  * its counter read `cards.length`, so the two could disagree; here both come off
  * `publishedWork`, and drafting a study changes them together.
  */
-export function WorkGallery() {
+export function WorkGallery({ toggle }: { toggle?: ReactNode }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLElement>(null);
@@ -53,6 +54,10 @@ export function WorkGallery() {
             {siteContent.titles.work}
           </h2>
         </div>
+
+        {/* Pinned top-right, opposite the title, so it stays reachable through
+            the whole gallery scroll. Null under reduced motion / narrow. */}
+        {toggle ? <div className={styles.toggleSlot}>{toggle}</div> : null}
 
         <div ref={trackRef} className={styles.track}>
           {publishedWork.map((study, i) => (

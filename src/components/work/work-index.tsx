@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { publishedWork } from "@/components/work/work-data";
 import {
   NO_FILTER,
@@ -73,7 +74,7 @@ function FacetRow({
  * filtered list: the number is the study's identity and it must read the same
  * here, on a card, and on /work/[slug].
  */
-export function WorkIndex() {
+export function WorkIndex({ toggle }: { toggle?: ReactNode }) {
   const [filter, setFilter] = useState<WorkFilter>(NO_FILTER);
 
   const sectors = useMemo(() => facetValues(publishedWork, "sector"), []);
@@ -82,6 +83,16 @@ export function WorkIndex() {
 
   return (
     <div className={styles.index}>
+      {/* The index owns #work-title when it is the shown view — under reduced
+          motion or on a narrow viewport the gallery (which normally pins the
+          title) is not rendered at all, so aria-labelledby must resolve here. */}
+      <div className={styles.indexHead}>
+        <h2 className={styles.indexTitle} id="work-title">
+          {siteContent.titles.work}
+        </h2>
+        {toggle}
+      </div>
+
       <div className={styles.filters} role="group" aria-label={siteContent.work.filters.region}>
         <FacetRow
           facet="sector"

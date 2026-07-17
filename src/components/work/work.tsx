@@ -1,18 +1,57 @@
+"use client";
+
+import { useState } from "react";
 import { WorkGallery } from "@/components/work/work-gallery";
+import { WorkIndex } from "@/components/work/work-index";
+import { useReducedMotionPref } from "@/lib/use-reduced-motion";
+import { useNarrowViewport } from "@/lib/use-narrow-viewport";
+import { siteContent } from "@/lib/site-content";
 import styles from "@/components/work/work.module.css";
 
+type View = "gallery" | "index";
+
 /**
- * The Work section (spec §9). Task 7 lands the horizontal gallery; Task 9 makes
- * this the hybrid — this gallery plus a filterable vertical index, and the
- * toggle between them.
+ * Work (spec §9): two views over one dataset.
+ *
+ * The gallery is the default and the index is the escape hatch the parked Cold
+ * Noon shelf never had. If the gallery ever stops earning its place on the
+ * pixels, the index is already built and this default is a one-word change.
+ *
+ * The index is also the automatic view when the gallery cannot serve: under
+ * reduced motion (the gallery IS the motion) and on a narrow viewport (its
+ * vertical-to-horizontal pan is a scroll trap on a phone). In both, offering a
+ * toggle back into the gallery would offer what the context has ruled out — so
+ * there is no toggle then, and the index is simply the section.
+ *
+ * The toggle is owned here and handed to whichever view renders, so the two
+ * views place it consistently — top-right, opposite the section title — while
+ * this component stays the single source of which view is showing.
  */
 export function Work() {
+  const reduced = useReducedMotionPref();
+  const narrow = useNarrowViewport();
+  const [view, setView] = useState<View>("gallery");
+
+  const forced = reduced || narrow;
+  const showing: View = forced ? "index" : view;
+
+  const toggle = forced ? null : (
+    /* Names the view it switches TO, never the one you are in — the same rule
+       the theme control follows. */
+    <button
+      type="button"
+      className={styles.toggle}
+      onClick={() => setView(showing === "gallery" ? "index" : "gallery")}
+    >
+      {showing === "gallery" ? siteContent.work.indexLabel : siteContent.work.galleryLabel}
+    </button>
+  );
+
   return (
-    /* The title (h2#work-title) is pinned inside the gallery's own stage now, so
-       aria-labelledby still resolves. Task 9 makes this the hybrid, at which
-       point the index view supplies its own #work-title when the gallery is off. */
+    /* Each view renders its own #work-title (the gallery pins it, the index
+       heads with it), so aria-labelledby always resolves to the visible one. */
     <section className={styles.work} id="work" aria-labelledby="work-title">
-      <WorkGallery />
+      {showing === "gallery" ? <WorkGallery toggle={toggle} /> : <WorkIndex toggle={toggle} />}
     </section>
   );
 }
