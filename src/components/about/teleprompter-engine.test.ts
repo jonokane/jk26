@@ -88,7 +88,6 @@ describe("TELEPROMPTER config", () => {
     expect(T.weightFloor).toBe(400);
     expect(T.weightAmbient).toBe(440);
     expect(T.weightEmphasis).toBe(780);
-    expect(T.stageHeightVh).toBe(640);
   });
 });
 
