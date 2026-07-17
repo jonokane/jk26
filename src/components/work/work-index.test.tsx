@@ -109,3 +109,33 @@ describe("WorkIndex", () => {
     expect(screen.queryByText("01")).toBeNull();
   });
 });
+
+describe("filtering down to nothing", () => {
+  /* The two facets AND, so they can narrow to zero — and with the real content
+     4 of 20 two-facet combinations do. Before this the rows simply vanished and
+     the index read as broken rather than as empty. */
+  it("says so, rather than rendering a blank list", () => {
+    const { container } = render(<WorkIndex />);
+    fireEvent.click(screen.getByRole("button", { name: "Sector: Music" }));
+    fireEvent.click(screen.getByRole("button", { name: "Discipline: Front-end" }));
+    expect(container.querySelectorAll("[data-work-row]")).toHaveLength(0);
+    expect(screen.getByText(siteContent.work.filters.empty)).toBeTruthy();
+  });
+
+  /* Announced, not just drawn: a screen reader user who presses a pill and gets
+     silence has no way to know why the list emptied. */
+  it("announces the empty result", () => {
+    render(<WorkIndex />);
+    fireEvent.click(screen.getByRole("button", { name: "Sector: Music" }));
+    fireEvent.click(screen.getByRole("button", { name: "Discipline: Front-end" }));
+    expect(screen.getByRole("status").textContent).toBe(siteContent.work.filters.empty);
+  });
+
+  it("shows nothing of the sort while rows remain", () => {
+    render(<WorkIndex />);
+    expect(screen.queryByText(siteContent.work.filters.empty)).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Sector: Music" }));
+    expect(screen.queryByText(siteContent.work.filters.empty)).toBeNull();
+  });
+});
+

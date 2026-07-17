@@ -2,7 +2,7 @@
  * All site copy lives here, never in JSX (spec §15).
  *
  * Locked copy (Jono's own words, do not rewrite): `kicker`, `tagline`.
- * Drafted copy awaiting his edit: `work.intro`, `contact.*`.
+ * Drafted copy awaiting his edit: `work.intro`, `work.filters.empty`, `contact.*`.
  * The About statements live in content/site/about.mdx, not here.
  * House style: no em-dashes anywhere in visitor-facing copy.
  */
@@ -80,6 +80,11 @@ export const siteContent = {
       sector: "Sector",
       discipline: "Discipline",
       clear: "Clear filters",
+      /** Shown when the two facets AND down to nothing. Not a rare edge: with
+       *  the studies published today, 4 of the 20 two-facet combinations match
+       *  no study, so one filter click in five lands here. Without it the rows
+       *  simply vanish and the index reads as broken. Drafted — Jono's to edit. */
+      empty: "No studies match those filters.",
       /** The filter bar's landmark name. */
       region: "Filter the work",
       /** Joins a filter pill's facet to its value in the ACCESSIBLE name only:

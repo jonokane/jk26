@@ -104,6 +104,19 @@ export function WorkIndex() {
         )}
       </div>
 
+      {/* The two facets AND (see work-filters), so they can narrow to nothing —
+          and not rarely: with the studies published today, 4 of the 20 two-facet
+          combinations match no study. Without this the rows just vanish and the
+          index reads as broken rather than as empty. `role="status"` so the
+          result is announced: a screen reader user pressing a pill otherwise
+          gets silence and no way to know why. The clear control is already on
+          screen beside it, since isFilterActive is necessarily true here. */}
+      {shown.length === 0 && (
+        <p className={styles.empty} role="status">
+          {siteContent.work.filters.empty}
+        </p>
+      )}
+
       <ol className={styles.rows}>
         {shown.map((study) => (
           <li key={study.slug} className={styles.row} data-work-row>
