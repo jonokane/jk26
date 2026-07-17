@@ -48,7 +48,13 @@ export default async function CaseStudyPage({
             <Link> navigation to "/work" drops the fragment the redirect adds,
             landing the visitor at the top of the home page instead of #work */}
         <div className="px-[7vw] pt-32">
-          <Link href="/#work" className="font-mono text-sm text-sub transition-colors hover:text-ink">
+          {/* text-mute, not text-sub. `--sub` was a Cold Noon token and did not
+              survive the v3 palette, so `text-sub` had been compiling to NOTHING
+              — verified in the built CSS, where .text-ink emits one rule and
+              .text-sub emits zero. Tailwind does not warn about a utility whose
+              token is gone; it just silently emits no rule, so the link sat at
+              inherited ink and its hover was a no-op. */}
+          <Link href="/#work" className="font-mono text-sm text-mute transition-colors hover:text-ink">
             {siteContent.labels.allWork}
           </Link>
         </div>
