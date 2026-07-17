@@ -1,33 +1,49 @@
 ---
 title: "Collaya"
-summary: "An artist-first music-tech platform and audio plugin, built on frontier AI models, taken from a blank page to a shipped product."
+summary: "An artist-first music-tech platform and audio plugin, built on frontier AI models and designed to live inside the DAW a musician already works in. Taken from a blank page to a shipped product."
 year: 2024
 client: Collaya
-role: Cofounder & CEO
+role: Founder & CEO
 sector: [Music Tech, AI, Creative Tech]
-discipline: [Product Design, Product Strategy / Leadership, Full-stack Product]
+discipline: [Product Design, Product Strategy / Leadership, Product Management, Full-stack Product]
 platform: [Web, Desktop]
 timeframe: 2024 to present
 view: https://collaya.com
-impact: "Founded and shipped an artist-first music AI platform, defining the product vision, design language, and go-to-market from a blank page."
+impact: "Shipped a professional audio plugin that earns its place in a working session in Logic, Ableton and Bitwig, designing and building every layer from real-time DSP to cloud."
 order: 1
 featured: true
 ---
 
 ## Overview
 
-Collaya is an artist-first music-tech platform and audio plugin. Built on frontier AI models, it works with a musician's own audio and MIDI to generate new ideas and act as a virtual co-producer: an intentionally consent-based approach to music AI.
+Collaya is an artist-first music-tech platform and audio plugin. It generates new ideas from a musician's own audio and MIDI rather than from other people's records, and acts as a virtual co-producer: a deliberately consent-based stance on music AI, taken at a moment when most of the industry was moving the other way.
 
-_The full case study is being written._
+Collaya began as a web app. It became a plugin once the honest answer to "where does this belong?" turned out to be "inside the session, where the work actually happens." That decision made everything harder and made the product real. I founded the company, set the direction, and designed and built the plugin, the marketing site, the APIs behind them, and all the connective tissue in between.
 
 ## The challenge
 
-_Being written._ The short version: establishing a distinctive product in a niche, underserved category, and taking a consent-based stance on music AI at a moment when the industry was doing the opposite.
+Collaya is a guest in someone else's app.
+
+It loads inside Logic, Ableton or Bitwig: hosts I don't control, can't patch, and can't ask to behave differently. On the other side is a professional in flow, carrying a decade or more of muscle memory and no interest whatsoever in learning my software. Their tolerance for friction isn't low. It's zero.
+
+An unexpected system dialog. A keystroke that stops doing what it has always done. A chord diagram that's subtly wrong. None of those read as a rough edge. They read as _this thing is broken_, and the session never gets interrupted for it again.
+
+This is the tax every plugin developer pays, and the bar is set by companies who have been paying it for twenty years. Collaya loads into the same rack as tools from FabFilter, Native Instruments and U-He, and nobody grades a newcomer on a curve. Almost every hard problem I've solved here comes out of that one constraint.
 
 ## What I did
 
-_Being written._ The short version: defined the product vision, design language, and go-to-market from a blank page; designed and prototyped the complete product experience, from MIDI and audio idea generation through the co-producer interactions; and built and shipped production features across the stack as a technical generalist.
+**The dialog I didn't cause.** macOS 15 began throwing a system permission prompt at users, and attributing it to _Logic Pro_ rather than to Collaya. Ten hours to find: the plugin read a small settings file in a shared container, and macOS judges that read against whichever app performs it. The break came from noticing that Collaya's own Listener plugin touched the same container over a socket and never triggered it. The trigger was the file read, not the container. Storage now routes through the companion app, which holds that permission legitimately. Users see nothing at all. That was the entire goal.
+
+**The spacebar.** Producers hit space to play back the track they're working on. Collaya's embedded web view swallowed it, and the standard hook for intercepting a keystroke isn't even called for a bare space in Logic or Ableton, so the obvious fix doesn't exist. It took native first-responder management: the web view holds the keyboard only while a text field is focused, and otherwise space passes straight through to the host. Tab turned out to be genuinely unforwardable, since macOS hands it to the focused window and there is no appeal. So I documented the limit rather than ship a fix that half-worked.
+
+**The chords.** Language models name chords reliably and _fret_ them unreliably; one labelled "A" came back spelling a B minor. A guitarist catches that instantly, and it costs you every subsequent benefit of the doubt. So the model's frets never reach the player: the server rewrites each shape against a canonical chord database before it renders. The diagram shows the chord's name, not the model's guess.
+
+**The leverage.** Collaya is four codebases in four languages: a real-time C++/JUCE audio plugin, a Swift macOS companion app, a Python API, and a React interface. The team has changed shape more than once since 2024. Today I work across all four myself, with a second pair of eyes on QA. That's only possible with heavy AI leverage, and it only stays shippable because of what surrounds it: unit tests on the correctness-critical DSP, adversarial code review, a security smoke script gating every release. The chord-correction layer is that same instinct aimed at the models themselves. Speed is cheap to buy now. Knowing what to check is the part that isn't.
 
 ## Outcome
 
-_Being written._
+Collaya launched publicly in May 2026 and is live with paying users: an AU/VST3 plugin that installs into any modern Mac DAW, a macOS companion app, and the cloud platform behind them, all shipping continuously.
+
+Growth is slow and deliberate, and I'd rather say so plainly than dress up a number. The lesson is the one the engineering kept teaching: musicians are understandably conservative about what they let into a session, and every bit of trust this product earns has to be earned inside their environment, on their terms. That makes for a slow way into the category. It's also the only durable one.
+
+What travels: knowing where a model can be trusted and where it can't, and being willing to build the unglamorous thing that covers the difference.
