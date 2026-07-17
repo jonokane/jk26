@@ -1,48 +1,51 @@
-/* src/components/work/case-study-article.module.css — one case study, full
-   vertical read (spec §8). The head lives in case-study-intro.module.css and
-   the teaser in case-study-next.module.css: both are shared with the shelf, so
-   this file holds only what is particular to the *document* form of a study.
-   Colors come only from scene tokens (spec §15). */
+/* The case study as a centred reading column (spec §10, prototype `.dwrap`).
+   `--card-border` (border-top) and `--text-glow` (heading shadow) were removed
+   with the Cold Noon palette; the prose is restyled to the prototype's `.dbody`
+   on stark tokens. */
 .article {
-  padding: 4rem 7vw;
-  border-top: 1px solid var(--card-border);
-}
-
-.article:first-of-type {
-  border-top: none;
-  padding-top: 0;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10vh 6vw 16vh;
 }
 
 .body {
-  max-width: 68ch;
-  margin-top: 3rem;
+  margin-top: 7vh;
+  max-width: 62ch;
 }
 
-.body :where(p) {
-  margin: 0 0 1.25rem;
-  color: var(--ink);
-  font-size: 1.05rem;
-  line-height: 1.75;
+/* The MDX `##` headings compile to a tag one level below the title (see
+   CaseStudyArticle) and are wrapped in autolink anchors (rehypeAutolinkHeadings).
+   Style them as the prototype's section labels: mono, uppercase, accent. */
+.body :where(h2, h3, h4, h5, h6) {
+  margin: 5vh 0 14px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--work);
 }
 
-.body :where(p:last-child) {
-  margin-bottom: 0;
-}
-
-.body :where(h2, h3, h4, h5) {
-  margin: 2.25rem 0 0.85rem;
-  font-size: 1.35rem;
-  color: var(--ink);
-  text-shadow: 0 2px 26px var(--text-glow);
-}
-
-.body :where(h2 a, h3 a, h4 a, h5 a) {
+.body :where(h2, h3, h4, h5, h6) a {
   color: inherit;
   text-decoration: none;
 }
 
-.body :where(ul, ol) {
-  margin: 0 0 1.25rem 1.25rem;
+.body :where(p, li) {
+  font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+  line-height: 1.6;
   color: var(--ink);
-  line-height: 1.7;
+}
+
+.body :where(p) {
+  margin-top: 14px;
+}
+
+.body :where(ul, ol) {
+  margin: 14px 0 14px 1.2em;
+}
+
+.body :where(a) {
+  color: var(--work);
+  text-underline-offset: 3px;
 }

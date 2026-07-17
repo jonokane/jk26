@@ -1,21 +1,21 @@
+import type { CaseStudy } from "#site/content";
+import { siteContent } from "@/lib/site-content";
 import styles from "@/components/work/case-study-cover.module.css";
 
 /**
- * Cover placeholder (spec §8): every case study currently has no real cover
- * art, so this scene-gradient block stands in for it everywhere a case study
- * renders. Purely decorative — the study's title and impact carry the
- * meaning, so this is hidden from assistive tech.
- *
- * `className` lets the surface it lands on size it (a shelf panel's cover
- * takes a slice of the viewport; a document's keeps its aspect ratio) without
- * anyone re-declaring what the material is.
+ * The case study's wide image slot (spec §10, the prototype's `.dshot`): a full-
+ * width band at the foot of the article. Hatched placeholder + a mono caption
+ * until `cover` is set in frontmatter, at which point a real screen drops in with
+ * no code change — the same treatment the gallery card's shot uses.
  */
-export function CaseStudyCover({ className }: { className?: string }) {
+export function CaseStudyCover({ study }: { study: CaseStudy }) {
   return (
-    <div
-      className={className ? `${styles.cover} ${className}` : styles.cover}
-      data-case-study-panel="cover"
-      aria-hidden="true"
-    />
+    <div className={styles.shot} data-case-study-panel="cover">
+      {study.cover ? (
+        <img src={study.cover} alt={study.title} className={styles.cover} />
+      ) : (
+        <span className={styles.caption}>{siteContent.work.detailShotCaption}</span>
+      )}
+    </div>
   );
 }

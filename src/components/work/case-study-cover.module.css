@@ -1,10 +1,33 @@
-/* src/components/work/case-study-cover.module.css — scene-gradient cover
-   placeholder (spec §8): no real art exists yet, so the "art" is built from
-   the live sky tokens rather than a hardcoded image or color. */
+/* The detail image slot (spec §10, prototype `.dshot`): a wide band, hatched in
+   stark greys until a real cover lands. Replaces the parked 4:3 card, which drew
+   on removed `--card-border`, `--elev`, and the Cold Noon `--sky-*` gradient. */
+.shot {
+  position: relative;
+  margin-top: 6vh;
+  height: 46vh;
+  border: 1px solid var(--hairline);
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--row-hover) 0 12px,
+    var(--canvas) 12px 24px
+  );
+  display: flex;
+  align-items: flex-end;
+  padding: 18px;
+  overflow: hidden;
+}
+
+.caption {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+}
+
 .cover {
-  aspect-ratio: 4 / 3;
-  border-radius: 18px;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 12px 40px var(--elev);
-  background: linear-gradient(135deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-hor) 100%);
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
