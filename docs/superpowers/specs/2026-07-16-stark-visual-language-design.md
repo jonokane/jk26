@@ -252,9 +252,12 @@ export const TELEPROMPTER = {
   weightFloor: 400,
   weightAmbient: 440,
   weightEmphasis: 780,
-  dotRest: 6, dotActive: 9, // px
 } as const;
 ```
+
+The rail's dot sizes are deliberately **not** here. They were, and it was a lie: nothing in the hook reads them, because the dots are sized entirely by `about.module.css`. A config entry that tunes nothing is worse than no entry — it invites an edit that changes the file and nothing on screen, and a test asserting the dead copy stays green while it does. **This config holds a number only if JavaScript reads it.** Everything else belongs where the thing that consumes it lives.
+
+The weights are the one unavoidable duplication: the hook lerps them, and the reduced-motion CSS needs them too, having no JavaScript to ask. Duplication there is fine; *silent* drift is not, so a unit test reads the stylesheet and fails the build when the two disagree.
 
 The focus/blur/opacity/weight math itself is a pure function over this config and a distance — unit-tested, no DOM. The hook does measurement and writes styles; it holds no numbers.
 
