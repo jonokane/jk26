@@ -31,11 +31,15 @@ export const siteContent = {
       toDark: "Dark",
     },
   },
-  /** Section heading titles (nav labels differ deliberately: "Work" vs "Selected work."). */
+  /** Section heading titles, all sentence case with a full stop, per the
+   *  prototype. Nav labels deliberately differ from them: "Work" vs
+   *  "Selected work.", "Contact" vs "Let's talk."
+   *  `about` is currently read by nothing — the About h2 renders its own title
+   *  from content/site/about.mdx. */
   titles: {
     about: "About",
     work: "Selected work.",
-    contact: "Contact",
+    contact: "Let's talk.",
   },
   /** About section CTAs, below the teleprompter (spec §7). The title and
    *  statements live in content/site/about.mdx. */
