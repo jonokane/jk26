@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { CaseStudyArticle } from "@/components/work/case-study-article";
+import { CaseStudyModal } from "@/components/work/case-study-modal";
 import { nextStudy } from "@/components/work/work-lists";
 import { publishedWork } from "@/components/work/work-data";
 
@@ -22,12 +23,12 @@ export default async function InterceptedCaseStudy({
   const next = nextStudy(publishedWork, slug);
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 90, overflowY: "auto", background: "var(--canvas)" }}>
+    <CaseStudyModal label={study.title}>
       <CaseStudyArticle
         study={study}
         headingLevel={1}
         next={next ? { title: next.title, url: next.url } : undefined}
       />
-    </div>
+    </CaseStudyModal>
   );
 }

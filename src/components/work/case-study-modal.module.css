@@ -1,0 +1,57 @@
+/* The slide-up sheet (spec §10, prototype `#detail`). Opaque canvas — it covers
+   the page, no scrim. `data-lenis-prevent` (on the JSX) lets it scroll while
+   Lenis is stopped; overscroll-behavior stops any chain to the frozen page. */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: var(--canvas);
+  transform: translateY(100%);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet[data-open="true"] {
+  transform: translateY(0);
+}
+
+/* Pill close, top-right. Fixed inside the transformed sheet resolves against the
+   sheet's box (a transform is a containing block for fixed descendants), so it
+   slides in with the sheet and then holds while the content scrolls. */
+.close {
+  position: fixed;
+  top: 24px;
+  right: 6vw;
+  z-index: 95;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: 100px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* The ✕ is decoration, not the accessible name (spec §15) — the label stays the
+   plain word. */
+.close::after {
+  content: " ✕";
+}
+
+.close:hover {
+  color: var(--work);
+  border-color: var(--work);
+}
+
+/* Reduced motion (spec §11): no slide. The sheet is simply present when open. */
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    transition: none;
+  }
+}
