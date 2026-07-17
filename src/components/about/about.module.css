@@ -65,21 +65,18 @@
   word-spacing: 0.058em;
 }
 
-/* The spans carry no whitespace between them — column-gap above does the
-   spacing, so a word never separates from its punctuation. */
-.word {
-  /* inline-block, not block: a block-level box makes the clipboard
-     serialiser break the line after every word. */
-  display: inline-block;
-}
-
+/* A word declares no display of its own, and that is load-bearing: a span is
+   inline already, and it must stay inline. An ancestor's underline is not
+   drawn through an ATOMIC inline-level box, so `display: inline-block` here
+   left a link underlined only in the spaces between its words — the spaces
+   being the one thing inside the <a> that was still ordinary inline text.
+   The inline-block was vestigial: it undid the blockification that
+   .statement's old flex row forced on every child, and .statement has been
+   normal inline flow since real spaces replaced the column-gap. */
 .word[data-word="italic"] {
   font-style: italic;
 }
 
-/* A real space character between words, for the accessibility tree only.
-   Absolutely positioned so it never becomes a flex item: it takes no part in
-   the row's layout and cannot double the column-gap it sits inside. */
 .rail {
   position: absolute;
   right: 6vw;
@@ -155,9 +152,18 @@
 
 /* A link inside a statement. It must not fight the teleprompter: the words
    inside keep their own animated colour and weight, so the link is marked by
-   an underline alone, not by a colour of its own. */
+   an underline alone and never by a colour of its own.
+   `color` looks like it breaks that rule and does not. Every glyph in the <a>
+   sits in a .word span the hook paints, so the only text the <a> holds
+   directly is the spaces — invisible. Its colour therefore paints exactly one
+   thing: the underline. The accent is what makes that underline match the
+   ambient words above it, and it CANNOT be set from .word, because a
+   propagated decoration is painted in the colour of the box that declared it,
+   not of the descendant it passes through.
+   Out of focus the whole statement fades and blurs as one, so the underline
+   goes with it. */
 .link {
-  color: inherit;
+  color: var(--about);
   text-decoration: underline;
   text-underline-offset: 0.14em;
   text-decoration-thickness: from-font;
@@ -165,5 +171,5 @@
 }
 
 .link:hover {
-  text-decoration-color: var(--about);
+  text-decoration-color: var(--ink);
 }
