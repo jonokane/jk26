@@ -21,12 +21,17 @@
   z-index: 5;
   /* A full-bleed frosted band: it breaks out of the section's 6vw gutter with a
      negative inline margin so the glass spans edge to edge — no mid-content box
-     edges — while the padding re-insets the text back to the 6vw line. */
+     edges — while the padding re-insets the text back to the 6vw line. The extra
+     bottom padding plus a mask that fades the last 28px of the band to
+     transparent soften the hard bottom edge into the content below it — the fade
+     sits entirely below the text, so the type stays crisp. */
   margin-inline: -6vw;
-  padding: 6px 6vw;
+  padding: 6px 6vw 28px;
   background: var(--nav-glass);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
   font-size: clamp(2.6rem, 7vw, 6.5rem);
   font-variation-settings: "wght" 700;
   letter-spacing: -0.02em;

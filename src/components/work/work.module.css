@@ -346,3 +346,66 @@
   padding: 40px 8px;
   color: var(--mute);
 }
+
+/* The earlier-work section in the index: a compact list under the case-study
+   rows, deliberately smaller so the hierarchy reads (selected work first, earlier
+   work after). */
+.earlier {
+  margin-top: 9vh;
+}
+
+.earlierHeading {
+  font-size: clamp(1.3rem, 2.4vw, 2rem);
+  font-variation-settings: "wght" 640;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin-bottom: 3vh;
+}
+
+.earlierRows {
+  border-top: 1px solid var(--hairline);
+  list-style: none;
+}
+
+.earlierRow {
+  padding: 16px 8px;
+  border-bottom: 1px solid var(--hairline);
+  transition:
+    padding-left 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    background 0.4s ease;
+}
+
+.earlierRow:hover {
+  padding-left: 24px;
+  background: var(--row-hover);
+}
+
+.earlierRowTitle {
+  font-size: 1.2rem;
+  font-variation-settings: "wght" 520;
+  color: var(--ink);
+}
+
+.earlierRowLink {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.4s ease;
+}
+
+.earlierRow:hover .earlierRowTitle {
+  color: var(--work);
+}
+
+.earlierRowMeta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--work);
+  margin-top: 5px;
+}
+
+/* Separator is CSS, not a text node (spec §15) — the same as the gallery panel. */
+.earlierRowMeta span + span::before {
+  content: " · ";
+  color: var(--mute);
+}

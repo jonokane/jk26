@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { publishedWork } from "@/components/work/work-data";
+import { publishedWork, sortedEarlierWork } from "@/components/work/work-data";
+import { attributeParts } from "@/components/work/earlier-work";
+import { isViewUrl } from "@/components/work/url-label";
 import {
   NO_FILTER,
   applyFilter,
@@ -145,6 +147,41 @@ export function WorkIndex({ toggle }: { toggle?: ReactNode }) {
           </li>
         ))}
       </ol>
+
+      {/* The earlier work — the gallery's last panel, brought into the index as a
+          separate, smaller list so the index does not lose it. Not part of the
+          filtered set above (it is a distinct "and older work" section), so it is
+          always shown. The title is the link when the project has a live URL. */}
+      <section className={styles.earlier} aria-labelledby="index-earlier-title">
+        <h3 id="index-earlier-title" className={styles.earlierHeading}>
+          {siteContent.work.earlierTitle}
+        </h3>
+        <ul className={styles.earlierRows}>
+          {sortedEarlierWork.map((entry) => (
+            <li key={entry.title} className={styles.earlierRow} data-work-earlier-row>
+              <h4 className={styles.earlierRowTitle}>
+                {isViewUrl(entry.view) ? (
+                  <a
+                    href={entry.view}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.earlierRowLink}
+                  >
+                    {entry.title}
+                  </a>
+                ) : (
+                  entry.title
+                )}
+              </h4>
+              <p className={styles.earlierRowMeta}>
+                {attributeParts(entry).map((part, i) => (
+                  <span key={i}>{part}</span>
+                ))}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }

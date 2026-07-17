@@ -9,7 +9,7 @@ import styles from "@/components/work/earlier-work.module.css";
    the whole panel has to clear both the pinned title and the counter inside one
    pinned viewport, which a two-line meta breaks on a laptop-height window. Role
    and platform are dropped as the most redundant with discipline. */
-function attributeParts(entry: EarlierProject): string[] {
+export function attributeParts(entry: EarlierProject): string[] {
   return [entry.sector.join(", "), entry.discipline.join(", "), entry.timeframe];
 }
 

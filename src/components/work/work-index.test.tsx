@@ -19,6 +19,16 @@ vi.mock("@/components/work/work-data", () => ({
     study("Alpha", ["Music"], ["Product Design"]),
     study("Beta", ["Automotive"], ["Front-end"]),
   ],
+  /* The index now renders the earlier-work list below the case studies. */
+  sortedEarlierWork: [
+    {
+      title: "Cinematiq",
+      sector: ["Creative Tech"],
+      discipline: ["Product Design"],
+      timeframe: "2015",
+      view: "https://cinematiq.com",
+    },
+  ],
 }));
 
 const { WorkIndex } = await import("@/components/work/work-index");
@@ -136,6 +146,39 @@ describe("filtering down to nothing", () => {
     expect(screen.queryByText(siteContent.work.filters.empty)).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Sector: Music" }));
     expect(screen.queryByText(siteContent.work.filters.empty)).toBeNull();
+  });
+});
+
+/* The earlier-work list is a distinct section under the case studies — the
+   index would otherwise lose the seven earlier projects the gallery's last
+   panel carries. */
+describe("the earlier-work section", () => {
+  it("renders every earlier project as its own row", () => {
+    const { container } = render(<WorkIndex />);
+    const rows = container.querySelectorAll("[data-work-earlier-row]");
+    expect(rows).toHaveLength(1);
+    expect(rows[0].textContent).toContain("Cinematiq");
+  });
+
+  it("titles the section from site content", () => {
+    render(<WorkIndex />);
+    expect(screen.getByText(siteContent.work.earlierTitle)).toBeTruthy();
+  });
+
+  it("links a project's title when its view is a URL", () => {
+    const { container } = render(<WorkIndex />);
+    const link = container.querySelector("[data-work-earlier-row] a");
+    expect(link?.getAttribute("href")).toBe("https://cinematiq.com");
+  });
+
+  /* A filter narrows the case-study rows only — the earlier list is not part of
+     the filtered set and must stay put when a facet hides every study. */
+  it("stays when a filter empties the studies", () => {
+    const { container } = render(<WorkIndex />);
+    fireEvent.click(screen.getByRole("button", { name: "Sector: Music" }));
+    fireEvent.click(screen.getByRole("button", { name: "Discipline: Front-end" }));
+    expect(container.querySelectorAll("[data-work-row]")).toHaveLength(0);
+    expect(container.querySelectorAll("[data-work-earlier-row]")).toHaveLength(1);
   });
 });
 

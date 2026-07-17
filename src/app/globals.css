@@ -67,8 +67,8 @@
   /* On the pure-black canvas a dark shadow cannot register (nothing is darker
      than #000), so the elevation inverts: a light-grey GLOW lifts the surface
      off the page instead of a shadow pressing it down. Same layered shape, a
-     lighter hue — bright enough to read on black, low enough not to bloom. */
-  --shadow-color: 0deg 0% 62%;
+     lighter hue — bright enough to read as a glow on black. */
+  --shadow-color: 0deg 0% 82%;
 }
 
 /* Layered elevation (Josh Comeau's method: many low-opacity layers read softer
