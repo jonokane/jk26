@@ -14,6 +14,14 @@ export type WordRole = "ambient" | "emphasis" | "italic";
 export interface Word {
   text: string;
   role: WordRole;
+  /**
+   * Set on every word of a markdown link's text. Consecutive words sharing an
+   * href render as ONE `<a>`, so "Hit me up" is one link and not three.
+   *
+   * A link is orthogonal to the role: `[Hit me up](#contact)` is ambient and
+   * linked; `[**Hit me up**](#contact)` is emphasis and linked.
+   */
+  href?: string;
 }
 
 /** One paragraph, as the words the teleprompter animates. */
@@ -26,6 +34,24 @@ export type Statement = Word[];
  * each side that then merges into neighbouring words as a literal asterisk.
  */
 const EMPHASIS = /(\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*)/g;
+
+/**
+ * `[text](href)`. Split first, so emphasis is then parsed *within* the link's
+ * text and `[**Hit me up**](#contact)` composes.
+ *
+ * `split()` with two capture groups interleaves them, so the parts cycle
+ * plain / link-text / href.
+ */
+const LINK = /\[([^\]\n]+)\]\(([^)\s]+)\)/g;
+
+/**
+ * An HTML comment. Velite hands us the raw markdown, which the statements
+ * never run through an MDX compiler — so without this a commented-out
+ * paragraph renders as body text, `<!--` and all, and adds phantom dots to the
+ * rail. Stripped before the paragraph split so a commented block disappears
+ * entirely rather than becoming a statement.
+ */
+const HTML_COMMENT = /<!--[\s\S]*?-->/g;
 
 /** A stray frontmatter block. Velite strips it, but a silent extra statement
  *  would be worse than a loud one if that ever changes. */
@@ -130,37 +156,49 @@ function attachEdgePunctuation(chunks: Word[][]): Statement {
  * paragraph, each a flat run of role-tagged words.
  *
  * Punctuation stays attached to its word — see `attachEdgePunctuation` for
- * the merge direction — because the rendered spans sit in a flex row with a
- * `column-gap` and carry no whitespace between them, so a comma split from
- * its word would float on its own (the prototype writes `>love,` for the
- * same reason).
+ * the merge direction — so a comma never separates from the word it belongs
+ * to, whatever the layout does with the gaps.
  *
- * This is a regex-based matcher, not CommonMark, and knowingly does not
- * handle every edge a full parser would:
- * - two stray single `*` in one paragraph parse as an italic pair (e.g.
- *   `"20%* to $5M*"` reads the `*`s as opening/closing an italic run, not as
- *   two literal asterisks).
- * - `**bold**text` with no space does not merge into one word — the boundary
- *   between the emphasis run and the trailing text is a token break, so
- *   "bold" and "text" render as two separate words (mid-word bolding is
- *   unsupported).
- * - markdown links and inline code are not recognised at all; they pass
- *   through literally (brackets, parens, backticks and all) and fragment on
- *   their own internal whitespace.
- * None of these are silent corruption the way the punctuation-direction and
- * `***` bugs were — they're inputs this matcher was never asked to parse —
- * but whoever writes About copy should avoid them.
+ * Supported: `**bold**`, `*italic*`, `***both***`, `[text](href)`, and HTML
+ * comments (stripped). The statements never pass through an MDX compiler —
+ * the teleprompter needs per-word data, not compiled JSX — so this small
+ * matcher is the whole of the syntax available in About copy.
+ *
+ * It is regex-based, not CommonMark, and knowingly does not handle:
+ * - two stray single `*` in one paragraph, which parse as an italic pair
+ *   (e.g. `"20%* to $5M*"` reads the `*`s as opening/closing a run).
+ * - `**bold**text` with no space, which does not merge into one word
+ *   (mid-word bolding is unsupported).
+ * - inline code, images, reference links, or nested links.
+ * These are inputs this matcher was never asked to parse, not silent
+ * corruption the way the punctuation-direction and `***` bugs were — but an
+ * unsupported construct WILL render literally, so it is visible immediately.
  */
 export function tokeniseStatements(markdown: string): Statement[] {
   return markdown
     .replace(FRONTMATTER, "")
+    .replace(HTML_COMMENT, "")
     .split(/\r?\n\s*\r?\n/)
     .map((para) => para.trim())
     .filter(Boolean)
     .map((para) => {
-      /* split() with a capturing group interleaves the delimiters, so odd
-         indices are the emphasis runs and even indices the plain text. */
-      const chunks = para.split(EMPHASIS).filter(Boolean).map(classifyChunk);
+      const chunks: Word[][] = [];
+      /* split() with two capture groups interleaves them, so the parts cycle
+         plain / link-text / href. Links are split FIRST so that emphasis is
+         then parsed within the link's own text. */
+      const parts = para.split(LINK);
+      parts.forEach((part, i) => {
+        const kind = i % 3;
+        if (kind === 2 || !part) return; // 2 is the href, consumed with its text
+        const href = kind === 1 ? parts[i + 1] : undefined;
+        part
+          .split(EMPHASIS)
+          .filter(Boolean)
+          .forEach((chunk) => {
+            const words = classifyChunk(chunk);
+            chunks.push(href ? words.map((w) => ({ ...w, href })) : words);
+          });
+      });
       return attachEdgePunctuation(chunks);
     })
     .filter((s) => s.length > 0);

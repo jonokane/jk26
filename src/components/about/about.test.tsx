@@ -54,27 +54,24 @@ describe("About", () => {
      whitespace between them (spec §5). If the spans were joined by text
      nodes the spacing would double. But the statement must still read as
      one sentence to a screen reader. */
-  /* This asserts the ACCESSIBLE NAME, not textContent. An earlier version
-     checked textContent and passed while the accessibility outcome was
-     unchanged: a visually-hidden space between the word spans puts spaces in
-     textContent, but Chrome's accessibility tree contained ZERO whitespace
-     nodes — verified against the real tree via CDP. textContent is not what a
-     screen reader reads, so a test on it proves nothing about this. */
-  it("names each statement as one accessible sentence", () => {
-    render(<About />);
-    for (const statement of fixture.statements) {
-      const sentence = statement.map((w) => w.text).join(" ");
-      expect(screen.getByLabelText(sentence)).toBeTruthy();
-    }
+  /* The words are separated by REAL spaces in normal inline flow, so the
+     rendered text already IS the sentence — no aria-label, and nothing
+     aria-hidden. An earlier version needed both because the words had no
+     whitespace between them at all; real spaces made that workaround
+     redundant, and it had been blocking links (an aria-hidden fragment cannot
+     contain a reachable <a>). */
+  it("renders each statement as its sentence, with real spaces", () => {
+    const { container } = render(<About />);
+    const first = container.querySelector("[data-statement]");
+    const sentence = fixture.statements[0].map((w) => w.text).join(" ");
+    expect(first?.textContent).toBe(sentence);
   });
 
-  /* The fragments must not reach assistive tech at all — otherwise the reader
-     gets the sentence once from the label and again as loose words. */
-  it("hides the per-word fragments from assistive tech", () => {
+  it("does not hide the words from assistive tech", () => {
     const { container } = render(<About />);
-    const words = container.querySelectorAll("[data-word]");
-    expect(words.length).toBeGreaterThan(0);
-    for (const w of words) expect(w.getAttribute("aria-hidden")).toBe("true");
+    for (const w of container.querySelectorAll("[data-word]")) {
+      expect(w.getAttribute("aria-hidden")).toBeNull();
+    }
   });
 
   it("keeps the landmark named", () => {
@@ -93,3 +90,37 @@ describe("About", () => {
     expect(container.querySelector("section")?.getAttribute("data-static")).toBe("");
   });
 });
+
+describe("links in a statement", () => {
+  it("renders one <a> for the whole link text, not one per word", async () => {
+    vi.resetModules();
+    vi.doMock("@/components/about/about-data", () => ({
+      aboutPage: {
+        title: "Who I am.",
+        lede: "",
+        statements: [
+          [
+            { text: "Say", role: "ambient" },
+            { text: "hi", role: "ambient" },
+            { text: "Hit", role: "ambient", href: "#contact" },
+            { text: "me", role: "ambient", href: "#contact" },
+            { text: "up", role: "ambient", href: "#contact" },
+            { text: "today.", role: "ambient" },
+          ],
+        ],
+      },
+    }));
+    const { About: Linked } = await import("@/components/about/about");
+    const { container } = render(<Linked />);
+
+    const links = container.querySelectorAll("a");
+    expect(links).toHaveLength(1);
+    expect(links[0].getAttribute("href")).toBe("#contact");
+    /* the link's words still animate individually inside it */
+    expect(links[0].querySelectorAll("[data-word]")).toHaveLength(3);
+    expect(links[0].textContent).toBe("Hit me up");
+    /* and the sentence still reads whole */
+    expect(container.querySelector("[data-statement]")?.textContent).toBe("Say hi Hit me up today.");
+  });
+});
+

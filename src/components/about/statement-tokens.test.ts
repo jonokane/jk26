@@ -123,3 +123,61 @@ describe("the About copy's emphasis marks match the prototype", () => {
     expect(w?.role).toBe("ambient");
   });
 });
+
+describe("links", () => {
+  it("tags every word of a link with its href, keeping the ambient role", () => {
+    const out = tokeniseStatements("Say hi via [Hit me up](#contact) today.")[0];
+    expect(out.map((w) => [w.text, w.role, w.href ?? null])).toEqual([
+      ["Say", "ambient", null],
+      ["hi", "ambient", null],
+      ["via", "ambient", null],
+      ["Hit", "ambient", "#contact"],
+      ["me", "ambient", "#contact"],
+      ["up", "ambient", "#contact"],
+      ["today.", "ambient", null],
+    ]);
+  });
+
+  /* A link is orthogonal to the role, so emphasis inside one composes. */
+  it("keeps emphasis inside a link", () => {
+    const out = tokeniseStatements("[**Hit me up**](#contact)")[0];
+    expect(out.every((w) => w.href === "#contact")).toBe(true);
+    expect(out.every((w) => w.role === "emphasis")).toBe(true);
+  });
+
+  it("leaves no bracket or paren in the rendered text", () => {
+    for (const w of tokeniseStatements("a [link here](#x) and [another](https://e.com) b")[0]) {
+      expect(w.text).not.toMatch(/[[\]()]/);
+    }
+  });
+
+  it("carries an absolute href through unchanged", () => {
+    const out = tokeniseStatements("see [Collaya](https://collaya.com) now")[0];
+    expect(out.find((w) => w.text === "Collaya")?.href).toBe("https://collaya.com");
+  });
+
+  it("attaches punctuation after a link to the link's last word", () => {
+    const out = tokeniseStatements("ask [me](#contact), please")[0];
+    const me = out.find((w) => w.text.startsWith("me"));
+    expect(me?.text).toBe("me,");
+    expect(me?.href).toBe("#contact");
+  });
+});
+
+describe("html comments", () => {
+  /* The statements never pass through an MDX compiler, so without stripping
+     these a commented-out paragraph renders as body text — `<!--` and all —
+     and adds phantom dots to the rail. */
+  it("drops a commented-out paragraph entirely", () => {
+    const out = tokeniseStatements("Real one.\n\n<!-- Hidden one.\n\nAlso hidden. -->\n\nSecond real.");
+    expect(out).toHaveLength(2);
+    expect(out.map((s) => s.map((w) => w.text).join(" "))).toEqual(["Real one.", "Second real."]);
+  });
+
+  it("leaves no comment marker in the text", () => {
+    for (const st of tokeniseStatements("a <!-- x --> b")) {
+      for (const w of st) expect(w.text).not.toMatch(/<!--|-->/);
+    }
+  });
+});
+

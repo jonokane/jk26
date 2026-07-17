@@ -152,3 +152,18 @@
     color: var(--ink) !important;
   }
 }
+
+/* A link inside a statement. It must not fight the teleprompter: the words
+   inside keep their own animated colour and weight, so the link is marked by
+   an underline alone, not by a colour of its own. */
+.link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+  text-decoration-thickness: from-font;
+  transition: text-decoration-color 0.3s ease;
+}
+
+.link:hover {
+  text-decoration-color: var(--about);
+}

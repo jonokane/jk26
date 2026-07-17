@@ -89,6 +89,9 @@ const statements = () =>
           s.object({
             text: s.string(),
             role: s.enum(["ambient", "emphasis", "italic"]),
+            /* Set on every word of a [text](href) link. Consecutive words
+               sharing an href render as one <a>. */
+            href: s.string().optional(),
           }),
         ),
       )
