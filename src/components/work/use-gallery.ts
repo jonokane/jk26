@@ -14,6 +14,31 @@ import {
 } from "@/components/work/gallery-engine";
 
 /**
+ * A wheel event's horizontal delta, in PIXELS whatever unit it arrived in.
+ *
+ * `deltaX` is only pixels when `deltaMode` says so. It is also emitted in LINES
+ * (mode 1 — Firefox's mouse wheel, and its shift+wheel) and pages (mode 2), so a
+ * raw `deltaX` of 3 can mean "three lines", not three pixels. Unnormalised, a
+ * line-mode notch was measured travelling 1px where its pixel-mode equivalent
+ * travelled 98 — and because the handler calls `preventDefault` first, the
+ * browser's own scrolling is suppressed too. The gesture is not merely wrong, it
+ * is dead, which spec §9 names as worse than never claiming it.
+ *
+ * The constants are Lenis's own (`LINE_HEIGHT = 100 / 6`), not a guess: it
+ * normalises every wheel event it handles this way, so matching it keeps a pan
+ * and a scroll feeling like the same hand.
+ */
+const LINE_HEIGHT = 100 / 6;
+
+function pixelsFrom(event: WheelEvent): number {
+  if (event.deltaMode === 1) return event.deltaX * LINE_HEIGHT;
+  /* Mode 2 is pages. The page, for a horizontal delta, is a viewport WIDTH —
+     Lenis uses the size of the axis being scrolled, and this axis is X. */
+  if (event.deltaMode === 2) return event.deltaX * window.innerWidth;
+  return event.deltaX;
+}
+
+/**
  * Drives the Work gallery (spec §9): measures the track, sizes the wrapper from
  * what it measured, and translates the track in X from vertical scroll.
  *
@@ -116,7 +141,8 @@ export function useGallery({
       if (travel <= 0) return;
       /* Only a gesture that is meaningfully horizontal. A diagonal trackpad
          swipe carries both deltas, and claiming those would fight the vertical
-         scroll the visitor actually asked for. */
+         scroll the visitor actually asked for. Both deltas share the event's
+         deltaMode, so comparing them raw is sound. */
       if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
 
       const rect = wrap.getBoundingClientRect();
@@ -125,7 +151,7 @@ export function useGallery({
 
       event.preventDefault();
       const delta = scrollDeltaForPan(
-        event.deltaX,
+        pixelsFrom(event),
         wrap.offsetHeight,
         window.innerHeight,
         travel,
