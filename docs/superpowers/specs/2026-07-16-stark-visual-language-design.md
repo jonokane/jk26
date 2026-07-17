@@ -356,7 +356,7 @@ Reveal: one-shot IntersectionObserver at threshold 0.2, `unobserve` on fire, `op
 
 ## 12. Contact
 
-`min-height:100vh`, `6vw` gutter. Sticky `h2` "Let's talk." at `top:84px` in `--contact`. Lead `max-width:34ch`. Form: 2-col grid, `gap: 26px 40px`, `max-width:900px`; full-width fields span both columns. Inputs transparent, bottom-border only (`#d0d0d0` → `--contact` on focus), mono uppercase labels. Button: solid `--contact`, white, radius 2px, wght 560, `16px 40px`, hover `translateY(-2px)`. Footer: mono email + LinkedIn / Read.cv / Résumé, underline-on-hover in `--contact`.
+`min-height:100vh`, `6vw` gutter. Sticky `h2` "Let's talk." at `top:84px` in `--contact`. Lead `max-width:34ch`. Form: 2-col grid, `gap: 26px 40px`, `max-width:900px`; full-width fields span both columns. Inputs transparent, bottom-border only (`#d0d0d0` → `--contact` on focus), mono uppercase labels. Button: solid `--contact`, white, radius 2px, wght 560, `16px 40px`, hover `translateY(-2px)`. Footer: mono email + **LinkedIn / Collaya / Résumé**, underline-on-hover in `--contact`. (The prototype said "Read.cv"; that service was sunset in 2024 and is not in the content — the real set is LinkedIn, Collaya, and Résumé, matching the About CTAs. Résumé stays hidden until `links.resume` has a URL, the same rule the About pill follows.)
 
 **Take the prototype's styling, keep our logic.** The prototype's form has no `name` attributes, no `required`, no submit handler, and `onsubmit="return false"` — it is a visual mock. The repo already has a working Resend route with tests and custom validation copy. Restyle; do not re-plumb.
 
