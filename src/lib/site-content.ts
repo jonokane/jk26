@@ -2,7 +2,7 @@
  * All site copy lives here, never in JSX (spec §15).
  *
  * Locked copy (Jono's own words, do not rewrite): `kicker`, `tagline`.
- * Drafted copy awaiting his edit: `work.intro`, `work.filters.empty`, `contact.*`.
+ * Drafted copy awaiting his edit: `work.filters.empty`, `contact.*`.
  * The About statements live in content/site/about.mdx, not here.
  * House style: no em-dashes anywhere in visitor-facing copy.
  */
@@ -60,8 +60,6 @@ export const siteContent = {
   },
   /** Work section (spec §9). Two views over one dataset. */
   work: {
-    intro:
-      "Each study is the whole story: what it was, what made it hard, what I did, and what happened.",
     earlierTitle: "Selected earlier work.",
     nextLabel: "Next",
     /** The view toggle. Each names the view it switches TO, like the theme

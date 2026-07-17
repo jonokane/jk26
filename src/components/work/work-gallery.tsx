@@ -46,13 +46,12 @@ export function WorkGallery() {
     >
       <div className={styles.stage}>
         {/* Pinned top-left inside the stage, so it stays put while the cards pan
-            beneath it — the horizontal echo of About's "Who I am." The intro
-            rides with it. */}
+            beneath it — the horizontal echo of About's "Who I am." Title alone,
+            like About: no standfirst under it. */}
         <div className={styles.pinnedHead}>
           <h2 className={styles.title} id="work-title">
             {siteContent.titles.work}
           </h2>
-          <p className={styles.intro}>{siteContent.work.intro}</p>
         </div>
 
         <div ref={trackRef} className={styles.track}>
