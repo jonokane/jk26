@@ -6,9 +6,8 @@ import type { Statement } from "@/components/about/statement-tokens";
    git-ignored, and vitest aliases only `@` — importing #site/content here
    would make `pnpm test` fail on a clean checkout until someone ran
    `pnpm build`. work-data.ts exists for exactly this reason. */
-const fixture: { title: string; lede: string; statements: Statement[] } = {
+const fixture: { title: string; statements: Statement[] } = {
   title: "Who I am.",
-  lede: "A short lede.",
   statements: [
     [
       { text: "I", role: "ambient" },
@@ -97,7 +96,6 @@ describe("links in a statement", () => {
     vi.doMock("@/components/about/about-data", () => ({
       aboutPage: {
         title: "Who I am.",
-        lede: "",
         statements: [
           [
             { text: "Say", role: "ambient" },

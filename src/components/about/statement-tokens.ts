@@ -89,6 +89,20 @@ function classifyChunk(chunk: string): Word[] {
 }
 
 /**
+ * One run of `para.split(EMPHASIS)`, with the whitespace evidence its words no
+ * longer carry. `wordsFrom` splits on `/\s+/`, which throws away whether a
+ * token touched the chunk's edge or was separated from it by a space — and that
+ * is exactly what decides where stray punctuation belongs.
+ */
+interface Chunk {
+  words: Word[];
+  /** The chunk's first character is not whitespace. */
+  startsTight: boolean;
+  /** The chunk's last character is not whitespace. */
+  endsTight: boolean;
+}
+
+/**
  * Fold a lone punctuation token back onto the word it actually belongs to.
  *
  * `para.split(EMPHASIS)` breaks the paragraph at emphasis boundaries, so a
@@ -96,36 +110,44 @@ function classifyChunk(chunk: string): Word[] {
  * followed by `"Meta"` (emphasis) followed by `"), briefly"` (plain) each
  * split on whitespace, and the lone `"("` / `"),"` tokens that fall out
  * belong to "Meta", not to whichever word happens to sit next to them in flat
- * text order. The direction is positional, not character-based:
+ * text order:
  *
- * - pure punctuation at the END of a chunk, with a chunk following it,
- *   *opened* (the `(` in `role (**Meta**)`) — merge it FORWARD onto the next
- *   chunk's first word, taking that word's role, since the mark is visually
- *   part of the run it introduces.
- * - pure punctuation at the START of a chunk, with a previous word already
- *   emitted, *closed* — merge it BACKWARD onto that previous word, keeping
- *   its role.
+ * - pure punctuation at the END of a chunk *opened* (the `(` in
+ *   `role (**Meta**)`) — merge it FORWARD onto the next chunk's first word,
+ *   taking that word's role, since the mark introduces the run.
+ * - pure punctuation at the START of a chunk *closed* — merge it BACKWARD
+ *   onto the previous word, keeping that word's role.
  *
- * This handles `(`/`)`/`[`/`]` and straight quotes without a character
- * allowlist: a straight `"` is ambiguous by character (it could open or
- * close) but never by position.
+ * ADJACENCY, not position, is the test. Position alone said the `—` in
+ * `**shipped products** — with` was "closing" and glued it on as
+ * `products—`; the mark is a word of its own there, and the only thing that
+ * distinguishes it from the `)` in `(**Meta**),` is the space beside it. So a
+ * merge happens only where the mark actually touches the text it would join.
+ *
+ * This still needs no character allowlist, which is the point: a straight `"`
+ * is ambiguous by character — it could open or close — but never by adjacency.
  *
  * Pure, returns fresh `Word` objects; `chunks` and its contents are not
  * mutated.
  */
-function attachEdgePunctuation(chunks: Word[][]): Statement {
+function attachEdgePunctuation(chunks: Chunk[]): Statement {
   const out: Word[] = [];
   let forwardCarry = "";
 
-  chunks.forEach((chunkWords, i) => {
-    const local = chunkWords.map((w) => ({ ...w }));
+  chunks.forEach((chunk, i) => {
+    const local = chunk.words.map((w) => ({ ...w }));
 
     if (forwardCarry && local.length > 0) {
       local[0] = { ...local[0], text: forwardCarry + local[0].text };
       forwardCarry = "";
     }
 
-    if (local.length > 0 && out.length > 0 && PURE_PUNCTUATION.test(local[0].text)) {
+    if (
+      chunk.startsTight &&
+      local.length > 0 &&
+      out.length > 0 &&
+      PURE_PUNCTUATION.test(local[0].text)
+    ) {
       out[out.length - 1] = {
         ...out[out.length - 1],
         text: out[out.length - 1].text + local[0].text,
@@ -133,8 +155,14 @@ function attachEdgePunctuation(chunks: Word[][]): Statement {
       local.shift();
     }
 
-    const hasNextChunk = i < chunks.length - 1;
-    if (hasNextChunk && local.length > 0 && PURE_PUNCTUATION.test(local[local.length - 1].text)) {
+    /* Carry only onto a chunk whose own text touches the mark — `role (` into
+       `**Meta**` does, `products **—** ` into ` with` would not. */
+    if (
+      chunk.endsTight &&
+      chunks[i + 1]?.startsTight &&
+      local.length > 0 &&
+      PURE_PUNCTUATION.test(local[local.length - 1].text)
+    ) {
       forwardCarry = local.pop()!.text;
     }
 
@@ -182,7 +210,7 @@ export function tokeniseStatements(markdown: string): Statement[] {
     .map((para) => para.trim())
     .filter(Boolean)
     .map((para) => {
-      const chunks: Word[][] = [];
+      const chunks: Chunk[] = [];
       /* split() with two capture groups interleaves them, so the parts cycle
          plain / link-text / href. Links are split FIRST so that emphasis is
          then parsed within the link's own text. */
@@ -196,7 +224,14 @@ export function tokeniseStatements(markdown: string): Statement[] {
           .filter(Boolean)
           .forEach((chunk) => {
             const words = classifyChunk(chunk);
-            chunks.push(href ? words.map((w) => ({ ...w, href })) : words);
+            chunks.push({
+              words: href ? words.map((w) => ({ ...w, href })) : words,
+              /* Measured on the RAW chunk, markers and all: `**Meta**` starts
+                 tight because `*` is not whitespace, which is the correct
+                 reading — the marker is markup between two touching things. */
+              startsTight: /^\S/.test(chunk),
+              endsTight: /\S$/.test(chunk),
+            });
           });
       });
       return attachEdgePunctuation(chunks);

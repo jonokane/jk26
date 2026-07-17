@@ -181,3 +181,34 @@ describe("html comments", () => {
   });
 });
 
+describe("punctuation adjacency", () => {
+  /* Position alone read the dash as "closing" and glued it to the word:
+     `**shipped products** — with` came out as `products—`. Only the space
+     beside it tells it apart from the `)` in `(**Meta**),`. */
+  it("leaves a spaced em-dash as its own word after an emphasis run", () => {
+    const out = tokeniseStatements("into **shipped products** — with enough fluency.");
+    expect(out[0].map((w) => w.text)).toEqual([
+      "into", "shipped", "products", "—", "with", "enough", "fluency.",
+    ]);
+  });
+
+  it("still merges punctuation that actually touches the word", () => {
+    expect(tokeniseStatements("a past role (**Meta**), briefly")[0].map((w) => w.text)).toEqual([
+      "a", "past", "role", "(Meta),", "briefly",
+    ]);
+  });
+
+  it("keeps a spaced dash out of the word at the start of a statement", () => {
+    expect(tokeniseStatements("**Available now** — for fractional work")[0].map((w) => w.text)).toEqual([
+      "Available", "now", "—", "for", "fractional", "work",
+    ]);
+  });
+
+  /* The dash is a word, so it takes the ambient role and animates with the
+     rest — it must not inherit the emphasis it follows. */
+  it("gives a freestanding dash the ambient role", () => {
+    const dash = tokeniseStatements("**bold** — plain")[0].find((w) => w.text === "—");
+    expect(dash?.role).toBe("ambient");
+  });
+});
+

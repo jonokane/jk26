@@ -125,14 +125,15 @@ export function About() {
 
           {/* Statements only. The prototype's #about-col holds four .ablocks
               and nothing else, and the handoff README says "a column of
-              statement blocks" — there is no lede here.
+              statement blocks".
 
-              An earlier version rendered siteContent.about.lede at the top of
-              this column, carried over from the parked design's About. It was
-              not a [data-statement], so the hook never touched it: no blur, no
-              fade, no focus falloff. It scrolled under "Who I am." at full
-              contrast and collided with it. Anything inside this column must be
-              a statement, or the focal zone does not apply to it. */}
+              This is a rule, not a preference: anything in this column that is
+              not a [data-statement] is invisible to the hook, and so gets no
+              blur, no fade and no focus falloff. An earlier version rendered a
+              lede paragraph here, carried over from the parked design's About;
+              it scrolled under "Who I am." at full contrast and collided with
+              it. The lede has since been cut entirely — its copy said what
+              statements 1 and 2 already say. */}
           <div ref={columnRef} className={styles.column}>
             {aboutPage.statements.map((statement, i) => (
               <Statement key={i} words={statement} />

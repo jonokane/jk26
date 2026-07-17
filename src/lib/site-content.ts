@@ -3,7 +3,7 @@
  *
  * Locked copy (Jono's own words, do not rewrite): `kicker`, `tagline`.
  * Drafted copy awaiting his edit: `work.intro`, `contact.*`.
- * The About lede and statements live in content/site/about.mdx, not here.
+ * The About statements live in content/site/about.mdx, not here.
  * House style: no em-dashes anywhere in visitor-facing copy.
  */
 export const siteContent = {
@@ -37,7 +37,7 @@ export const siteContent = {
     work: "Selected Work",
     contact: "Contact",
   },
-  /** About section CTAs, below the teleprompter (spec §7). The title, lede, and
+  /** About section CTAs, below the teleprompter (spec §7). The title and
    *  statements live in content/site/about.mdx. */
   about: {
     /** Caption under the tray of pocketed beats, while the reader is still reading. */

@@ -9,7 +9,6 @@ import type { Statement } from "@/components/about/statement-tokens";
  */
 export interface AboutPage {
   title: string;
-  lede: string;
   statements: Statement[];
 }
 

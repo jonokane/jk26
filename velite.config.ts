@@ -120,7 +120,6 @@ const site = defineCollection({
   pattern: "site/**/*.mdx",
   schema: s.object({
     title: s.string(),
-    lede: s.string(),
     statements: statements(),
   }),
 });
