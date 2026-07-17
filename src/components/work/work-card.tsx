@@ -1,0 +1,57 @@
+import Link from "next/link";
+import type { CaseStudy } from "#site/content";
+import { formatStudyNumber } from "@/components/work/work-lists";
+import { siteContent } from "@/lib/site-content";
+import styles from "@/components/work/work-card.module.css";
+
+/**
+ * One study, as a gallery card (spec §9).
+ *
+ * Dumb on purpose: it is handed its number rather than deriving one, because
+ * the number is a property of the whole published list and must be identical
+ * here, in the index, and on /work/[slug]. `work-lists.ts` owns that.
+ *
+ * The card IS the link — a link nested inside a card would give a small target
+ * inside a large clickable-looking area.
+ */
+export function WorkCard({ study, number }: { study: CaseStudy; number: number }) {
+  return (
+    /* next/link, not <a href>: §10's slide-up modal is an intercepting route,
+       and Next only intercepts a client-side Link navigation — a raw anchor does
+       a full page load and forecloses it. The codebase already uses Link in
+       site-header, case-study-next and /work/[slug]. */
+    <Link
+      href={study.url}
+      className={styles.card}
+      data-work-card
+      data-slug={study.slug}
+      style={{ opacity: 1 }}
+    >
+      <div className={styles.text}>
+        <div className={styles.top}>
+          <span className={styles.num}>{formatStudyNumber(number)}</span>
+          <span className={styles.year}>{study.year}</span>
+        </div>
+        <h3 className={styles.title}>{study.title}</h3>
+        <p className={styles.impact}>{study.impact}</p>
+        {study.tags.length > 0 && (
+          <ul className={styles.tags} data-tags>
+            {study.tags.map((tag) => (
+              <li key={tag} className={styles.tag}>
+                {tag}
+              </li>
+            ))}
+          </ul>
+        )}
+        <span className={styles.view}>{siteContent.work.viewLabel}</span>
+      </div>
+      <div className={styles.shot}>
+        {study.cover ? (
+          <img src={study.cover} alt={study.title} className={styles.cover} />
+        ) : (
+          <span className={styles.shotCaption}>{siteContent.work.shotPending}</span>
+        )}
+      </div>
+    </Link>
+  );
+}
