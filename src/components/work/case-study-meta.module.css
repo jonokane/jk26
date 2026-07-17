@@ -1,15 +1,39 @@
-/* src/components/work/case-study-meta.module.css — the meta pill slab. */
+/* The attribute grid (spec §10): a bordered dt/dd table — the prototype's
+   `.dattr` — not the parked Cold Noon pills-in-a-slab, whose `.slab`/`.pill`
+   carried removed tokens. Stark tokens throughout. */
 .meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin: 0;
+  margin-top: 6vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 22px 30px;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  padding: 28px 0;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mute);
 }
 
 .value {
+  margin-top: 6px;
+  font-size: 0.98rem;
+  line-height: 1.4;
   color: var(--ink);
 }
 
+/* The "View the work" value is an external link when `view` is a URL. */
 .link {
-  text-underline-offset: 3px;
+  color: var(--work);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.link:hover {
+  border-color: var(--work);
 }
