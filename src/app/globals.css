@@ -65,10 +65,11 @@
   --nav-edge:  rgba(255, 255, 255, 0.08);
 
   /* On the pure-black canvas a dark shadow cannot register (nothing is darker
-     than #000), so the elevation inverts: a light-grey GLOW lifts the surface
-     off the page instead of a shadow pressing it down. Same layered shape, a
-     lighter hue — bright enough to read as a glow on black. */
-  --shadow-color: 0deg 0% 82%;
+     than #000), so the elevation inverts: a grey GLOW lifts the surface off the
+     page instead of a shadow pressing it down. Same layered shape, a lighter
+     hue — but kept DIM: a bright glow (this was 82%) reads as tacky neon on
+     black, so it sits just high enough to lift the surface, no more. */
+  --shadow-color: 0deg 0% 30%;
 }
 
 /* Layered elevation (Josh Comeau's method: many low-opacity layers read softer
