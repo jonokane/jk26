@@ -7,6 +7,12 @@
   width: min(66vw, 820px);
   height: 56vh;
   margin-right: 5vw;
+  /* A faint surface so the layered shadow has something to lift off the page.
+     --row-hover is near-canvas in both themes (a hair off-white in light, a hair
+     off-black in dark), so on dark the lift comes from the surface itself, where
+     the shadow cannot register. */
+  background: var(--row-hover);
+  box-shadow: var(--shadow-elevation-high);
   /* Breathing room between the content and the perimeter stroke: the trace fills
      the card's outer box, so this padding is the gap the ring holds off the text
      and the image. */

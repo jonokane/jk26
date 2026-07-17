@@ -9,16 +9,22 @@
   flex-direction: column;
 }
 
-/* Sticky, so the section name holds while the form scrolls under it. Its own
-   canvas background covers the fields as they pass; `top` clears the nav pill
-   via its live measured height. z-index below the nav (10) but above the form. */
+/* Sticky, so the section name holds while the form scrolls under it. Frosted
+   glass rather than an opaque fill — the fields blur softly under it instead of
+   being hard-clipped by a solid rectangle (the same treatment the nav uses).
+   `top` clears the nav pill via its live measured height. z-index below the
+   nav (10) but above the form. -webkit-backdrop-filter BEFORE the standard one:
+   Turbopack silently drops the standard property when it is authored first. */
 .title {
   position: sticky;
   top: var(--header-h, 84px);
   z-index: 5;
   align-self: flex-start;
-  background: var(--canvas);
-  padding: 6px 0;
+  background: var(--nav-glass);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  padding: 6px 14px;
+  margin-left: -14px;
   font-size: clamp(2.6rem, 7vw, 6.5rem);
   font-variation-settings: "wght" 700;
   letter-spacing: -0.02em;
@@ -62,17 +68,23 @@
   color: var(--mute);
 }
 
+/* Subtle raised input boxes rather than the bare bottom-border underline, so the
+   layered shadow has a surface to lift — the field pops off the page (Jono's
+   ask). --row-hover is the near-canvas surface; the box lifts on focus. */
 .input,
 .textarea {
   font: inherit;
   font-size: 1.1rem;
   color: var(--ink);
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--hairline);
-  padding: 10px 2px;
+  background: var(--row-hover);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  padding: 14px 16px;
   outline: none;
-  transition: border-color 0.3s ease;
+  box-shadow: var(--shadow-elevation-low);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .textarea {
@@ -82,6 +94,7 @@
 .input:focus,
 .textarea:focus {
   border-color: var(--contact);
+  box-shadow: var(--shadow-elevation-medium);
 }
 
 /* No error hue in the token set — an invalid field is marked by a heavier,
@@ -89,8 +102,8 @@
    invalid can coexist: the field is simply accented while it needs attention. */
 .input[aria-invalid="true"],
 .textarea[aria-invalid="true"] {
-  border-bottom-width: 2px;
-  border-bottom-color: var(--contact);
+  border-color: var(--contact);
+  border-width: 2px;
 }
 
 .fieldError {
@@ -127,14 +140,17 @@
   border-radius: 2px;
   padding: 16px 40px;
   cursor: pointer;
+  box-shadow: var(--shadow-elevation-medium);
   transition:
     transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.3s ease,
     opacity 0.3s ease;
 }
 
 .submit:hover {
   transform: translateY(-2px);
   opacity: 0.92;
+  box-shadow: var(--shadow-elevation-high);
 }
 
 .submit:disabled {

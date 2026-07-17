@@ -62,10 +62,12 @@ export const siteContent = {
   work: {
     earlierTitle: "Selected earlier work.",
     nextLabel: "Next",
-    /** The view toggle. Each names the view it switches TO, like the theme
-     *  control — never the view you are already in. */
+    /** The view toggle — a two-segment control showing both views, the active
+     *  one selected. */
     galleryLabel: "Gallery",
     indexLabel: "Index",
+    /** The segmented control's group name, for assistive tech. */
+    viewToggleLabel: "Choose a view",
     /** The card's call to action. The arrow beside it is CSS content, not copy. */
     viewLabel: "View case study",
     /** Sits in a card's image slot until a real `cover` is set in frontmatter. */

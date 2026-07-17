@@ -36,15 +36,28 @@ export function Work() {
   const showing: View = forced ? "index" : view;
 
   const toggle = forced ? null : (
-    /* Names the view it switches TO, never the one you are in — the same rule
-       the theme control follows. */
-    <button
-      type="button"
-      className={styles.toggle}
-      onClick={() => setView(showing === "gallery" ? "index" : "gallery")}
-    >
-      {showing === "gallery" ? siteContent.work.indexLabel : siteContent.work.galleryLabel}
-    </button>
+    /* A two-segment control: both views shown, the active one selected — so the
+       alternative is visible, not hidden behind a label naming the other view.
+       aria-pressed marks the active segment, the same treatment the filter pills
+       use. */
+    <div className={styles.viewToggle} role="group" aria-label={siteContent.work.viewToggleLabel}>
+      <button
+        type="button"
+        className={styles.viewSegment}
+        aria-pressed={showing === "gallery"}
+        onClick={() => setView("gallery")}
+      >
+        {siteContent.work.galleryLabel}
+      </button>
+      <button
+        type="button"
+        className={styles.viewSegment}
+        aria-pressed={showing === "index"}
+        onClick={() => setView("index")}
+      >
+        {siteContent.work.indexLabel}
+      </button>
+    </div>
   );
 
   return (

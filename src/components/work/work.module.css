@@ -114,26 +114,41 @@
   background: var(--work);
 }
 
-/* The view toggle. Lives in the section, not the nav (spec §9): global chrome
-   stays global, view state stays local. Named for the view it switches TO. */
-.toggle {
+/* The view toggle — a segmented control. Lives in the section, not the nav
+   (spec §9): global chrome stays global, view state stays local. Both segments
+   show; the active one is filled. */
+.viewToggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--hairline);
+  border-radius: 100px;
+}
+
+.viewSegment {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.06em;
-  color: var(--work);
+  color: var(--mute);
   background: none;
-  border: 1px solid var(--hairline);
+  border: none;
   border-radius: 100px;
-  padding: 6px 14px;
+  padding: 6px 16px;
   cursor: pointer;
   transition:
-    background 0.3s ease,
-    border-color 0.3s ease;
+    color 0.3s ease,
+    background 0.3s ease;
 }
 
-.toggle:hover {
-  background: var(--row-hover);
-  border-color: var(--work);
+/* The active view, filled in the section accent — inverts its fill rather than
+   only shifting hue, so the selection survives a colour-blind read. */
+.viewSegment[aria-pressed="true"] {
+  color: var(--canvas);
+  background: var(--work);
+}
+
+.viewSegment[aria-pressed="false"]:hover {
+  color: var(--work);
 }
 
 /* In the gallery the toggle pins top-right inside the sticky stage — opposite
