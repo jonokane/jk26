@@ -19,12 +19,14 @@
   position: sticky;
   top: var(--header-h, 84px);
   z-index: 5;
-  align-self: flex-start;
+  /* A full-bleed frosted band: it breaks out of the section's 6vw gutter with a
+     negative inline margin so the glass spans edge to edge — no mid-content box
+     edges — while the padding re-insets the text back to the 6vw line. */
+  margin-inline: -6vw;
+  padding: 6px 6vw;
   background: var(--nav-glass);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   backdrop-filter: blur(16px) saturate(1.4);
-  padding: 6px 14px;
-  margin-left: -14px;
   font-size: clamp(2.6rem, 7vw, 6.5rem);
   font-variation-settings: "wght" 700;
   letter-spacing: -0.02em;
