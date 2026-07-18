@@ -79,7 +79,28 @@ export function Hero() {
   useEffect(() => {
     const el = flowRef.current;
     if (!el) return;
-    const measure = () => setWordmarkWidth(el.offsetWidth);
+    /* The wordmark's gradient is ONE cohesive sweep across the whole word, not a
+       per-letter cycle (hero.module.css). Each letter clips its own glyphs but
+       shows its SLICE of a word-wide gradient, which needs the word's width and
+       each letter's offset measured here: --wm-w (the width) and the drift sway
+       endpoints go on the wordmark; --wm-x (the offset) goes on each letter.
+       Applied to both the anchor and the fly (both carry the gradient). */
+    const setSlices = (wm: HTMLElement | null) => {
+      if (!wm) return;
+      const w = wm.offsetWidth;
+      if (!w) return;
+      wm.style.setProperty("--wm-w", `${w}px`);
+      wm.style.setProperty("--wm-drift-a", `${(-0.18 * w).toFixed(1)}px`);
+      wm.style.setProperty("--wm-drift-b", `${(0.32 * w).toFixed(1)}px`);
+      for (const letter of Array.from(wm.children)) {
+        (letter as HTMLElement).style.setProperty("--wm-x", `${(letter as HTMLElement).offsetLeft}px`);
+      }
+    };
+    const measure = () => {
+      setWordmarkWidth(el.offsetWidth);
+      setSlices(el);
+      setSlices(liveRef.current);
+    };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(el);

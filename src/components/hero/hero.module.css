@@ -18,8 +18,11 @@
 .wordmark {
   display: flex;
   /* Shrink-wrap the glyphs instead of stretching to the column, so its measured
-     width (hero.tsx) is the NAME's width — what the tagline locks to below. */
+     width (hero.tsx) is the NAME's width — what the tagline locks to below.
+     `position: relative` also makes each letter's offsetLeft measure relative to
+     the wordmark (hero.tsx reads it to slice the shared gradient — see below). */
   align-self: flex-start;
+  position: relative;
   margin: 0.2em 0 0.26em 0;
   font-family: var(--font-wordmark);
   font-size: clamp(3rem, 9vw, 8rem);
@@ -28,6 +31,9 @@
   letter-spacing: 0.14em;
   line-height: 0.9;
   color: var(--ink);
+  /* The cohesive gradient drifts as ONE word (not each letter cycling its own):
+     the animation pans --hero-drift, which every letter reads (see @supports). */
+  animation: heroDrift 10s ease-in-out infinite;
 }
 
 .tagline {
@@ -64,39 +70,45 @@
       var(--work) 40%,
       var(--contact) 74%,
       var(--about) 100%);
-    background-size: 280% 100%;
+    /* ONE cohesive gradient across the whole word. Each letter clips its own
+       glyphs (a container-level clip breaks while the letters are transformed
+       during the build-in — see the note above), but shows only its SLICE of a
+       word-wide gradient: hero.tsx sets --wm-w (the word's width) on the wordmark
+       and --wm-x (each letter's left offset) on the letter, so every letter
+       samples the same gradient at its own position and they read as one sweep.
+       Before those measure, --wm-w falls back to the letter's own box (each shows
+       the full gradient) — the old per-letter look, for the ~1 frame until the
+       effect runs. --hero-drift pans the whole word together; the gradient tiles
+       (default repeat) and returns to --about at 100%, so the pan never seams. */
+    background-size: var(--wm-w, 100%) 100%;
+    background-position: calc(var(--wm-x, 0px) * -1 + var(--hero-drift, 0px)) center;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    animation: drift 9s ease-in-out infinite;
   }
 }
 
-/* Negative delays offset each letter into the SAME 9s loop, so colour travels
-   through the word instead of eight letters pulsing in unison. */
-.letter:nth-child(1) { animation-delay: 0s; }
-.letter:nth-child(2) { animation-delay: -0.6s; }
-.letter:nth-child(3) { animation-delay: -1.2s; }
-.letter:nth-child(4) { animation-delay: -1.8s; }
-.letter:nth-child(5) { animation-delay: -2.4s; }
-.letter:nth-child(6) { animation-delay: -3s; }
-.letter:nth-child(7) { animation-delay: -3.6s; }
-.letter:nth-child(8) { animation-delay: -4.2s; }
+/* A registered custom property so it can be ANIMATED as a length. The wordmark's
+   heroDrift animation sways it between the two endpoints hero.tsx computes from
+   the word width (--wm-drift-a / -b); every letter inherits it and adds it to its
+   slice offset, so the colour travels through the word as one. Without @property
+   support it stays at 0 — a static cohesive gradient, which is still correct. */
+@property --hero-drift {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
 
-/* The gradient returns to --about at 100% so the 280% pan is seamless. */
-@keyframes drift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes heroDrift {
+  0%, 100% { --hero-drift: var(--wm-drift-a, 0px); }
+  50% { --hero-drift: var(--wm-drift-b, 0px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .letter {
+  /* No drift: the wordmark rests as a static cohesive gradient (--hero-drift 0). */
+  .wordmark {
     animation: none;
-    /* Rest at a mid-phase fill rather than the 0% edge, so the word still
-       reads as multi-hue rather than flat green. */
-    background-position: 50% 50%;
   }
 }
 

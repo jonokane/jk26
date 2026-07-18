@@ -62,7 +62,9 @@ describe("living gradient", () => {
     expect(css).toMatch(
       /linear-gradient\(\s*92deg,\s*var\(--about\)\s*0%,\s*var\(--work\)\s*40%,\s*var\(--contact\)\s*74%,\s*var\(--about\)\s*100%\s*\)/,
     );
-    expect(css).toContain("background-size: 280% 100%");
+    /* The gradient spans the whole word (--wm-w), sliced per letter — not 280%
+       of each letter's own box, which is what made each letter its own gradient. */
+    expect(css).toContain("background-size: var(--wm-w, 100%) 100%");
   });
 
   /* Load-bearing, not style. Authored standard-first, Turbopack drops the
@@ -84,31 +86,31 @@ describe("living gradient", () => {
     expect(webkit).toBeLessThan(standard);
   });
 
-  it("phase-shifts each letter with its own bound negative delay", () => {
-    const delays: Array<[number, string]> = [
-      [1, "0s"],
-      [2, "-0.6s"],
-      [3, "-1.2s"],
-      [4, "-1.8s"],
-      [5, "-2.4s"],
-      [6, "-3s"],
-      [7, "-3.6s"],
-      [8, "-4.2s"],
-    ];
-    for (const [n, delay] of delays) {
-      const selector = `.letter:nth-child(${n})`;
-      const start = css.indexOf(selector);
-      expect(start).toBeGreaterThan(-1);
-      const open = css.indexOf("{", start);
-      const close = css.indexOf("}", open);
-      const body = css.slice(open, close);
-      expect(body).toContain(`animation-delay: ${delay};`);
-    }
+  /* The gradient is ONE cohesive sweep across the word: each letter clips its
+     own glyphs but samples the word-wide gradient at its own offset (--wm-x of
+     --wm-w), rather than each painting the full gradient in its own box. */
+  it("slices one word-wide gradient across the letters", () => {
+    const start = css.indexOf(".letter", css.indexOf("@supports"));
+    expect(start).toBeGreaterThan(-1);
+    const open = css.indexOf("{", start);
+    const close = css.indexOf("}", open);
+    const body = css.slice(open, close);
+    expect(body).toContain("background-size: var(--wm-w");
+    expect(body).toContain("var(--wm-x");
+  });
+
+  /* The whole word drifts as one — the animation lives on the wordmark and pans
+     the shared --hero-drift, not a per-letter delay cycle. */
+  it("drifts the wordmark as a whole, via the shared --hero-drift", () => {
+    const wm = css.slice(css.indexOf(".wordmark {"), css.indexOf("}", css.indexOf(".wordmark {")));
+    expect(wm).toContain("animation: heroDrift");
+    expect(css).toContain("@property --hero-drift");
   });
 
   /* An infinite colour animation must respect prefers-reduced-motion
-     (spec §6, bug 3 — the prototype never gates drift). */
-  it("gates drift behind prefers-reduced-motion, on .letter", () => {
+     (spec §6, bug 3 — the prototype never gates drift). The drift now lives on
+     the wordmark, so that is where reduced motion must switch it off. */
+  it("gates the wordmark drift behind prefers-reduced-motion", () => {
     const start = css.indexOf("@media (prefers-reduced-motion: reduce)");
     expect(start).toBeGreaterThan(-1);
     /* the media block's own body, not "everything after it" */
@@ -119,7 +121,7 @@ describe("living gradient", () => {
       else if (css[i] === "}") { depth--; if (depth === 0) { end = i; break; } }
     }
     const block = css.slice(open, end);
-    expect(block).toContain(".letter");
+    expect(block).toContain(".wordmark");
     expect(block).toMatch(/animation:\s*none/);
   });
 });
