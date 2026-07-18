@@ -1,0 +1,47 @@
+/* Decorative layers behind the hero content (spec §Architecture). The canvases
+   overscan the hero (PERF.overscan per side) so the heavy blur bleeds off-frame
+   and never shows a hard edge; overflow is clipped by the hero. */
+.atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Fade in on mount so the field doesn't pop during the wordmark build-in. */
+  opacity: 0;
+  transition: opacity var(--atmo-fade, 1200ms) ease;
+}
+.atmosphere[data-ready="true"] {
+  opacity: 1;
+}
+
+.canvas {
+  position: absolute;
+  inset: -12%;
+  width: 124%;
+  height: 124%;
+  display: block;
+  will-change: filter, transform;
+}
+
+/* The reading lane: a soft clearing in the canvas colour behind the type, its own
+   blur feathering the edges so it melts into the field. JS sets its background
+   (theme ground + strength) and geometry. */
+.lane {
+  position: absolute;
+  inset: -6%;
+  filter: blur(26px);
+  pointer-events: none;
+}
+
+/* Closes the seam to the section below — the field fades to canvas before the fold. */
+.fade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 60%, var(--canvas) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere { transition: none; }
+}
