@@ -79,9 +79,22 @@ function FacetRow({
 export function WorkIndex({ toggle }: { toggle?: ReactNode }) {
   const [filter, setFilter] = useState<WorkFilter>(NO_FILTER);
 
-  const sectors = useMemo(() => facetValues(publishedWork, "sector"), []);
-  const disciplines = useMemo(() => facetValues(publishedWork, "discipline"), []);
+  /* Facets are drawn from BOTH the case studies and the earlier work, so a value
+     that only an earlier project carries still gets a pill — and the filter it
+     sets then has something to match. */
+  const sectors = useMemo(
+    () => facetValues([...publishedWork, ...sortedEarlierWork], "sector"),
+    [],
+  );
+  const disciplines = useMemo(
+    () => facetValues([...publishedWork, ...sortedEarlierWork], "discipline"),
+    [],
+  );
   const shown = useMemo(() => applyFilter(publishedWork, filter), [filter]);
+  /* The earlier work is filtered by the same facets — the index used to leave it
+     unfiltered, so a sector filter that emptied the case studies still showed
+     every earlier project (Jono's catch). */
+  const shownEarlier = useMemo(() => applyFilter(sortedEarlierWork, filter), [filter]);
 
   return (
     <div className={styles.index}>
@@ -117,14 +130,14 @@ export function WorkIndex({ toggle }: { toggle?: ReactNode }) {
         )}
       </div>
 
-      {/* The two facets AND (see work-filters), so they can narrow to nothing —
-          and not rarely: with the studies published today, 4 of the 20 two-facet
-          combinations match no study. Without this the rows just vanish and the
-          index reads as broken rather than as empty. `role="status"` so the
-          result is announced: a screen reader user pressing a pill otherwise
-          gets silence and no way to know why. The clear control is already on
-          screen beside it, since isFilterActive is necessarily true here. */}
-      {shown.length === 0 && (
+      {/* The two facets AND (see work-filters), so they can narrow to nothing.
+          The empty message shows only when NEITHER the case studies NOR the
+          earlier work match — otherwise there are still results to read below,
+          just not case studies. `role="status"` so the result is announced: a
+          screen reader user pressing a pill otherwise gets silence and no way to
+          know why. The clear control is already on screen beside it, since
+          isFilterActive is necessarily true here. */}
+      {shown.length === 0 && shownEarlier.length === 0 && (
         <p className={styles.empty} role="status">
           {siteContent.work.filters.empty}
         </p>
@@ -149,39 +162,42 @@ export function WorkIndex({ toggle }: { toggle?: ReactNode }) {
       </ol>
 
       {/* The earlier work — the gallery's last panel, brought into the index as a
-          separate, smaller list so the index does not lose it. Not part of the
-          filtered set above (it is a distinct "and older work" section), so it is
-          always shown. The title is the link when the project has a live URL. */}
-      <section className={styles.earlier} aria-labelledby="index-earlier-title">
-        <h3 id="index-earlier-title" className={styles.earlierHeading}>
-          {siteContent.work.earlierTitle}
-        </h3>
-        <ul className={styles.earlierRows}>
-          {sortedEarlierWork.map((entry) => (
-            <li key={entry.title} className={styles.earlierRow} data-work-earlier-row>
-              <h4 className={styles.earlierRowTitle}>
-                {isViewUrl(entry.view) ? (
-                  <a
-                    href={entry.view}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.earlierRowLink}
-                  >
-                    {entry.title}
-                  </a>
-                ) : (
-                  entry.title
-                )}
-              </h4>
-              <p className={styles.earlierRowMeta}>
-                {attributeParts(entry).map((part, i) => (
-                  <span key={i}>{part}</span>
-                ))}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
+          separate, smaller list so the index does not lose it. Filtered by the
+          same facets (shownEarlier); hidden entirely when a filter leaves none of
+          it, rather than showing an empty heading. The title is the link when the
+          project has a live URL. */}
+      {shownEarlier.length > 0 && (
+        <section className={styles.earlier} aria-labelledby="index-earlier-title">
+          <h3 id="index-earlier-title" className={styles.earlierHeading}>
+            {siteContent.work.earlierTitle}
+          </h3>
+          <ul className={styles.earlierRows}>
+            {shownEarlier.map((entry) => (
+              <li key={entry.title} className={styles.earlierRow} data-work-earlier-row>
+                <h4 className={styles.earlierRowTitle}>
+                  {isViewUrl(entry.view) ? (
+                    <a
+                      href={entry.view}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={styles.earlierRowLink}
+                    >
+                      {entry.title}
+                    </a>
+                  ) : (
+                    entry.title
+                  )}
+                </h4>
+                <p className={styles.earlierRowMeta}>
+                  {attributeParts(entry).map((part, i) => (
+                    <span key={i}>{part}</span>
+                  ))}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

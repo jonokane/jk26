@@ -171,14 +171,29 @@ describe("the earlier-work section", () => {
     expect(link?.getAttribute("href")).toBe("https://cinematiq.com");
   });
 
-  /* A filter narrows the case-study rows only — the earlier list is not part of
-     the filtered set and must stay put when a facet hides every study. */
-  it("stays when a filter empties the studies", () => {
+  /* The earlier work is filtered by the same facets as the case studies. */
+  it("filters the earlier work by the same facets", () => {
     const { container } = render(<WorkIndex />);
-    fireEvent.click(screen.getByRole("button", { name: "Sector: Music" }));
-    fireEvent.click(screen.getByRole("button", { name: "Discipline: Front-end" }));
+    /* Creative Tech is Cinematiq's sector; no case study in the fixture has it,
+       so this pill exists only because the earlier work does. */
+    fireEvent.click(screen.getByRole("button", { name: "Sector: Creative Tech" }));
     expect(container.querySelectorAll("[data-work-row]")).toHaveLength(0);
     expect(container.querySelectorAll("[data-work-earlier-row]")).toHaveLength(1);
+    /* There is still a result (the earlier project), so no empty message. */
+    expect(screen.queryByText(siteContent.work.filters.empty)).toBeNull();
+  });
+
+  it("hides the earlier section when the filter excludes every earlier project", () => {
+    const { container } = render(<WorkIndex />);
+    /* Music matches a case study (Alpha) but not Cinematiq (Creative Tech). */
+    fireEvent.click(screen.getByRole("button", { name: "Sector: Music" }));
+    expect(container.querySelectorAll("[data-work-earlier-row]")).toHaveLength(0);
+    expect(screen.queryByText(siteContent.work.earlierTitle)).toBeNull();
+  });
+
+  it("draws a filter pill from a facet only the earlier work carries", () => {
+    render(<WorkIndex />);
+    expect(screen.getByRole("button", { name: "Sector: Creative Tech" })).toBeTruthy();
   });
 });
 
