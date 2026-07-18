@@ -3,6 +3,8 @@ import { SiteHeader } from "@/components/site-header";
 import { About } from "@/components/about/about";
 import { Work } from "@/components/work/work";
 import { Contact } from "@/components/contact/contact";
+import { SiteFooter } from "@/components/site-footer";
+import { ScrollButton } from "@/components/scroll-button";
 import { HashScroll } from "@/components/hash-scroll";
 
 export default function Home() {
@@ -15,6 +17,8 @@ export default function Home() {
         <Work />
         <Contact />
       </main>
+      <SiteFooter />
+      <ScrollButton />
       <HashScroll />
     </>
   );

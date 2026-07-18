@@ -227,13 +227,10 @@ describe("reduced-motion first-paint guard", () => {
     const ruleBody = mediaBlock.slice(ruleOpen, ruleClose);
 
     /* The from-states this guard must cover: the letters, the eyebrow/tagline
-       /scroll cue gated by data-built, and the tagline/scroll cue's second
-       gate on data-run-done. */
+       gated by data-built, and the tagline's second gate on data-run-done. */
     expect(ruleSelectorList).toContain('.hero[data-built="false"] .kicker');
     expect(ruleSelectorList).toContain('.hero[data-built="false"] .tagline');
-    expect(ruleSelectorList).toContain('.hero[data-built="false"] .scrollCue');
     expect(ruleSelectorList).toContain('.hero[data-run-done="false"] .tagline');
-    expect(ruleSelectorList).toContain('.hero[data-run-done="false"] .scrollCue');
 
     expect(ruleBody).toMatch(/(?<![\w-])opacity:\s*1\s*;/);
     expect(ruleBody).toMatch(/(?<![\w-])transform:\s*none\s*;/);

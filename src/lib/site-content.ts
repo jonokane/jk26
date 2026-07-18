@@ -9,9 +9,12 @@
 export const siteContent = {
   kicker: "Product Design Leader & Strategist",
   tagline:
-    "I shape strategy, build teams, lead design, and code the front end that brings it to life.",
+    "I shape strategy, build teams, lead design, and bring digital products to life.",
   /** The hero wordmark and the nav brand render this. */
   wordmark: "JONOKANE",
+  /** The site sign-off footer, at the very bottom of the one-pager. Jono's words. */
+  footer:
+    "Made with a smile by Jono in LA ©2026 (unless otherwise noted). Thanks for stopping by. Have a rad day!",
   nav: [
     { label: "About", target: "about" },
     { label: "Work", target: "work" },
@@ -22,7 +25,10 @@ export const siteContent = {
     backToTop: "Back to top",
     home: "Jono Kane — home",
     allWork: "← All work",
-    scrollCue: "scroll",
+    /** The floating scroll aid: nudges down the page, and flips to "Top" (a
+     *  scroll-to-top) once the reader reaches the very bottom. */
+    scroll: "Scroll",
+    top: "Top",
     /* No aboutRail label. The teleprompter's rail of dots (spec §8) is a
        decorative progress indicator with nothing to activate, so it is
        aria-hidden and has no accessible name to write. */
@@ -140,7 +146,7 @@ export const siteContent = {
   },
   /** Outbound links used by the About CTAs (spec §7) and contact fallback. */
   links: {
-    email: "jono@collaya.com",
+    email: "contact@jonokane.com",
     linkedin: "https://linkedin.com/in/jonokane",
     collaya: "https://collaya.com",
     /** No public résumé URL yet. The Résumé pill stays hidden while this is empty. */

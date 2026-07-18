@@ -51,6 +51,28 @@ export function SiteHeader() {
     return () => root.classList.remove("header-on");
   }, [isHome, reducedMotion]);
 
+  /* Hover-reveal (Jono's ask): before the wordmark has morphed into the nav,
+     sweeping the cursor to the very top edge slides the pill down anyway — a
+     logo-less About / Work / Contact / theme bar, since the wordmark is still on
+     the hero and the slot stays empty (slotVisible is false here). Scoped to the
+     hero region: past ~0.85vh the morph owns `header-on` and this stands aside,
+     so the two never fight over it. The reveal zone has hysteresis so a cursor
+     hovering the nav itself doesn't flicker it. */
+  useEffect(() => {
+    if (!isHome || reducedMotion) return;
+    const root = document.documentElement;
+    const REVEAL_ZONE = 80;
+    const HIDE_ZONE = 140;
+    const inHeroRegion = () => window.scrollY < window.innerHeight * 0.85;
+    const onMove = (e: PointerEvent) => {
+      if (!inHeroRegion()) return;
+      if (e.clientY <= REVEAL_ZONE) root.classList.add("header-on");
+      else if (e.clientY > HIDE_ZONE) root.classList.remove("header-on");
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [isHome, reducedMotion]);
+
   /* On `/` with motion, the flying live wordmark is what you see land here. */
   const slotVisible = !isHome || reducedMotion;
 

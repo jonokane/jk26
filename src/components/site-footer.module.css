@@ -1,0 +1,16 @@
+.footer {
+  padding: 8vh 6vw 6vh;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  justify-content: center;
+}
+
+.line {
+  max-width: 60ch;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+  color: var(--mute);
+}

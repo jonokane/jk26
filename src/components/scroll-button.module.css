@@ -1,0 +1,74 @@
+/* The floating scroll aid. Fixed bottom-left, where the hero's "scroll" cue sat.
+   Card-style elevation so it reads as floating; a slow breathe so it invites a
+   click without shouting. Below the nav (z-40) and the modal (z-90). */
+.button {
+  position: fixed;
+  left: 6vw;
+  bottom: 6vh;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 18px 10px 13px;
+  border-radius: 100px;
+  border: 1px solid var(--hairline);
+  background: var(--canvas);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: var(--shadow-elevation-medium);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  /* Two animations on DIFFERENT properties so they never fight: `breathe` owns
+     transform, `floatIn` owns opacity. */
+  animation:
+    breathe 3.8s ease-in-out infinite,
+    floatIn 0.6s ease both;
+  transition:
+    box-shadow 0.4s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.button:hover {
+  box-shadow: var(--shadow-elevation-high);
+  border-color: var(--work);
+}
+
+.icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  color: var(--work);
+}
+
+.label {
+  line-height: 1;
+}
+
+/* A slow breathe — a gentle rise + swell, not a jump. */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.035);
+  }
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    animation: none;
+  }
+}

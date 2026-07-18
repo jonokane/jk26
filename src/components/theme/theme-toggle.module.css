@@ -1,8 +1,6 @@
 .toggle {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
   color: var(--mute);
   background: none;
   border: none;
@@ -15,9 +13,33 @@
   color: var(--ink);
 }
 
-/* The label CSS shows is the one that names the mode the click switches TO —
+.icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+/* The mode-name is the accessible name, not visible copy: the icon carries the
+   meaning on screen (spec §15). Off-screen but in the a11y tree. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The icon CSS shows is the one that names the mode the click switches TO —
    picked off :root[data-theme], which the pre-hydration script stamps before
-   first paint, so the resolved-dark visitor never sees "Dark" on a dark page. */
+   first paint, so the resolved-dark visitor never sees the moon on a dark page. */
+.whenLight {
+  display: inline-flex;
+}
+
 .whenDark {
   display: none;
 }
@@ -27,5 +49,5 @@
 }
 
 :root[data-theme="dark"] .whenDark {
-  display: inline;
+  display: inline-flex;
 }

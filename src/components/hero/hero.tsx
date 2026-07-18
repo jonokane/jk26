@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { HERO_BUILD } from "@/components/hero/hero-config";
@@ -25,6 +26,9 @@ export function Hero() {
   const reduced = useReducedMotionPref();
   const [built, setBuilt] = useState(false);
   const [runDone, setRunDone] = useState(false);
+  /* The wordmark's laid-out width, so the tagline can lock to it (see the effect
+     below). null until measured — the tagline falls back to its own max-width. */
+  const [wordmarkWidth, setWordmarkWidth] = useState<number | null>(null);
 
   useEffect(() => {
     if (reduced) {
@@ -65,6 +69,28 @@ export function Hero() {
   const flowRef = useRef<HTMLHeadingElement>(null);
   const liveRef = useRef<HTMLDivElement>(null);
 
+  /* Lock the tagline's width to the wordmark's, so the two read as one block and
+     the tagline never spills past the name (Jono's ask). `offsetWidth` is the
+     wordmark's LAID-OUT width — unaffected by the build-in's transforms, which
+     are visual only — so this is stable to measure whatever the animation state.
+     Re-measures on viewport resize and once the fonts load (both change the
+     wordmark's real width). The wordmark shrink-wraps its glyphs (align-self in
+     CSS), so this is the name's width, not the stretched column's. */
+  useEffect(() => {
+    const el = flowRef.current;
+    if (!el) return;
+    const measure = () => setWordmarkWidth(el.offsetWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    window.addEventListener("resize", measure);
+    void document.fonts?.ready.then(measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
   const letters = LETTERS.map((letter, i) => (
     <span
       key={i}
@@ -88,6 +114,11 @@ export function Hero() {
       id="welcome"
       data-built={built ? "true" : "false"}
       data-run-done={runDone ? "true" : "false"}
+      /* Published as a CSS var so the tagline's max-width reads it; live state,
+         so it stays inline (the type role stays in CSS). */
+      style={
+        wordmarkWidth ? ({ "--wordmark-w": `${wordmarkWidth}px` } as CSSProperties) : undefined
+      }
     >
       <p className={styles.kicker}>{siteContent.kicker}</p>
       {/* The anchor owns layout and the accessible name. opacity:0 — NOT
@@ -125,7 +156,6 @@ export function Hero() {
         </div>
       )}
       <p className={styles.tagline}>{siteContent.tagline}</p>
-      <p className={styles.scrollCue}>{siteContent.labels.scrollCue}</p>
     </section>
   );
 }
