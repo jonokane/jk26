@@ -6,6 +6,7 @@ import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { HERO_BUILD } from "@/components/hero/hero-config";
 import { useWordmarkMorph } from "@/components/hero/use-wordmark-morph";
+import { HeroAtmosphere } from "@/components/hero/hero-atmosphere";
 import styles from "@/components/hero/hero.module.css";
 
 const LETTERS = siteContent.wordmark.split("");
@@ -141,6 +142,7 @@ export function Hero() {
         wordmarkWidth ? ({ "--wordmark-w": `${wordmarkWidth}px` } as CSSProperties) : undefined
       }
     >
+      <HeroAtmosphere />
       <p className={styles.kicker}>{siteContent.kicker}</p>
       {/* The anchor owns layout and the accessible name. opacity:0 — NOT
           visibility:hidden — so it stays in the accessibility tree; the
