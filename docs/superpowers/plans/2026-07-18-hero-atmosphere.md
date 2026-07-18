@@ -151,9 +151,9 @@ describe("planeBlurs", () => {
     expect(far).toBe(20);
     expect(near).toBe(20);
   });
-  it("clamps near at zero for extreme variation", () => {
-    expect(planeBlurs(10, 1).near).toBe(0); // 10*(1-0.75) = 2.5 → still positive; check the max guard directly
-    expect(planeBlurs(2, 1).near).toBeGreaterThanOrEqual(0);
+  it("clamps near at zero when the spread would push it negative", () => {
+    expect(planeBlurs(10, 2).near).toBe(0); // 10*(1-1.5) = -5 → clamped to 0
+    expect(planeBlurs(20, 1).near).toBeGreaterThan(0); // 20*0.25 = 5, positive across the slider's own range
   });
 });
 
