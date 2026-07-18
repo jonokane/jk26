@@ -11,6 +11,17 @@ import styles from "@/components/hero/hero-atmosphere.module.css";
 
 type Rgb = [number, number, number];
 
+/* Reading-lane geometry, calibrated to reproduce the approved look at the 1440
+   design width while TRACKING the measured wordmark. The wordmark's font-size
+   clamps (caps at 8rem), so past ~1424px it stops growing — but a purely
+   viewport-relative ellipse keeps widening and drifts off the word. Deriving the
+   horizontal geometry from the measured word keeps the clearing sized to and
+   centred on the lockup at any width (spec §Reading-lane geometry). Horizontal
+   only: the lockup is flex-centred vertically, so the vertical ellipse stays a
+   stable 44% radius at 50% of the lane box. */
+const LANE_RX_FRAC = 1.15; // horizontal radius as a multiple of the word's width
+const LANE_CX_FRAC = 0.4; // centre-x as a fraction across the word from its left edge
+
 /**
  * The hero's ambient wash (spec 2026-07-18). Two blurred depth planes — a
  * drifting aurora haze (far) and flowing folds (near) — drawn from the live
@@ -118,13 +129,29 @@ export function HeroAtmosphere() {
       nearCtx.globalCompositeOperation = "source-over";
     };
 
+    /* The reading lane, centred on and sized to the real lockup. The wordmark
+       anchor is never transformed (only its letters and the kicker/tagline are —
+       hero.module.css), so its rect is stable to measure even mid build-in.
+       Measured against the lane element's own box, so the .lane inset never has
+       to be duplicated here. Falls back to the viewport-relative ellipse only if
+       the wordmark isn't measurable yet. */
+    const laneBackground = (gr: Rgb) => {
+      const wm = root.parentElement?.querySelector<HTMLElement>('[data-wordmark="anchor"]');
+      const laneR = laneEl.getBoundingClientRect();
+      if (wm && laneR.width > 0) {
+        const wmR = wm.getBoundingClientRect();
+        const cx = wmR.left - laneR.left + LANE_CX_FRAC * wmR.width;
+        const rx = LANE_RX_FRAC * wmR.width;
+        return `radial-gradient(ellipse ${rx.toFixed(1)}px 44% at ${cx.toFixed(1)}px 50%, rgba(${gr.join(",")},${ATMOSPHERE.lane}) 0%, rgba(${gr.join(",")},0) 66%)`;
+      }
+      return `radial-gradient(ellipse 56% 44% at 30% 50%, rgba(${gr.join(",")},${ATMOSPHERE.lane}) 0%, rgba(${gr.join(",")},0) 66%)`;
+    };
+
     const applyStyles = () => {
       const { far, near } = planeBlurs(ATMOSPHERE.blur, ATMOSPHERE.variation);
       farEl.style.filter = `blur(${far.toFixed(1)}px)`;
       nearEl.style.filter = `blur(${near.toFixed(1)}px)`;
-      const gr = ground();
-      laneEl.style.background =
-        `radial-gradient(ellipse 56% 44% at 30% 50%, rgba(${gr.join(",")},${ATMOSPHERE.lane}) 0%, rgba(${gr.join(",")},0) 66%)`;
+      laneEl.style.background = laneBackground(ground());
     };
 
     const measure = () => {
@@ -144,6 +171,9 @@ export function HeroAtmosphere() {
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(root);
+    /* The wordmark's width changes when the web font loads, but the hero keeps its
+       size, so the ResizeObserver won't fire — re-track the lane once fonts land. */
+    void document.fonts?.ready.then(applyStyles);
     const themeObserver = new MutationObserver(() => { applyStyles(); paint(6.5, cursor.x, cursor.y, cursor.k); });
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     // reveal after the first paint
