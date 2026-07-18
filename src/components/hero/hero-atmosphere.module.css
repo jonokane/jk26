@@ -17,9 +17,11 @@
 
 .canvas {
   position: absolute;
-  inset: -12%;
-  width: 124%;
-  height: 124%;
+  /* Overscan driven by PERF.overscan (set as --atmo-overscan on the root), so it
+     stays in lockstep with the backing-store math in measure(). Fallback 12%. */
+  inset: calc(-1 * var(--atmo-overscan, 12%));
+  width: calc(100% + 2 * var(--atmo-overscan, 12%));
+  height: calc(100% + 2 * var(--atmo-overscan, 12%));
   display: block;
   will-change: filter, transform;
 }

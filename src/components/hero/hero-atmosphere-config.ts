@@ -24,6 +24,9 @@ export const ATMOSPHERE = {
 export const PERF = {
   /** Backing-store scale vs CSS size; the heavy blur hides sub-native res. */
   renderScale: 0.65,
+  /** DPR ceiling for the backing store; the blur hides sub-native res, so retina
+      buys nothing but fill-rate. The spec's perf contract caps this at ~1.5. */
+  dprCap: 1.5,
   /** Draw cap — slow ambient drift needs no more. */
   fps: 30,
   /** Opacity fade-in on mount (ms), so it doesn't pop during the wordmark build. */

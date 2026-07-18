@@ -131,7 +131,7 @@ export function HeroAtmosphere() {
       const r = root.getBoundingClientRect();
       const os = 1 + PERF.overscan * 2;
       W = r.width * os; H = r.height * os; baseSize = Math.min(W, H);
-      const px = Math.min(2, window.devicePixelRatio || 1) * PERF.renderScale;
+      const px = Math.min(PERF.dprCap, window.devicePixelRatio || 1) * PERF.renderScale;
       for (const el of [farEl, nearEl]) {
         el.width = Math.round(W * px);
         el.height = Math.round(H * px);
@@ -218,7 +218,15 @@ export function HeroAtmosphere() {
       ref={rootRef}
       className={styles.atmosphere}
       aria-hidden="true"
-      style={{ "--atmo-fade": `${PERF.fadeInMs}ms` } as CSSProperties}
+      style={
+        {
+          "--atmo-fade": `${PERF.fadeInMs}ms`,
+          /* Single source for the overscan: the canvas CSS box (module) and the
+             backing-store math (measure()) both read this, so PERF.overscan is
+             the only place it's set — change one number, not two. */
+          "--atmo-overscan": `${PERF.overscan * 100}%`,
+        } as CSSProperties
+      }
     >
       <canvas ref={farRef} className={styles.canvas} />
       <canvas ref={nearRef} className={styles.canvas} />
