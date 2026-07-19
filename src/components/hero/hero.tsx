@@ -11,6 +11,10 @@ import styles from "@/components/hero/hero.module.css";
 
 const LETTERS = siteContent.wordmark.split("");
 
+/* Below this fitted size, one line would be too small to read (narrow viewports),
+   so the tagline wraps within the wordmark width instead. */
+const TAGLINE_MIN_PX = 16;
+
 /**
  * Welcome (spec §6). Letters resolve from oversized + blurred on a stagger;
  * the eyebrow leads; the tagline and scroll cue follow once the run completes.
@@ -69,6 +73,7 @@ export function Hero() {
 
   const flowRef = useRef<HTMLHeadingElement>(null);
   const liveRef = useRef<HTMLDivElement>(null);
+  const taglineRef = useRef<HTMLParagraphElement>(null);
 
   /* Lock the tagline's width to the wordmark's, so the two read as one block and
      the tagline never spills past the name (Jono's ask). `offsetWidth` is the
@@ -97,10 +102,39 @@ export function Hero() {
         (letter as HTMLElement).style.setProperty("--wm-x", `${(letter as HTMLElement).offsetLeft}px`);
       }
     };
+    /* Scale the tagline to sit on ONE line no wider than the wordmark (Jono's
+       ask): measure its natural single-line width at the responsive base size,
+       then shrink the font to fit. Below TAGLINE_MIN_PX one line would be too
+       small (narrow viewports), so it wraps within the wordmark width instead.
+       data-fit="line" is both the measuring state (nowrap, unbounded) and the
+       final one-line state; its absence is the wrapping fallback. */
+    const fitTagline = (w: number) => {
+      const tag = taglineRef.current;
+      if (!tag || !w) return;
+      tag.dataset.fit = "line";
+      tag.style.removeProperty("--tagline-size");
+      /* Shrink-wrap to the content to read the TRUE one-line width: scrollWidth on
+         a block <p> with visible overflow reports the container width, not the
+         text's, so the ratio would be wrong. max-content sizes to the unwrapped
+         line. */
+      tag.style.width = "max-content";
+      const base = parseFloat(getComputedStyle(tag).fontSize) || 0;
+      const natural = tag.getBoundingClientRect().width;
+      tag.style.removeProperty("width");
+      const fitted = natural ? base * (w / natural) : base;
+      if (fitted >= TAGLINE_MIN_PX) {
+        tag.style.setProperty("--tagline-size", `${Math.min(base, fitted).toFixed(2)}px`);
+      } else {
+        delete tag.dataset.fit;
+        tag.style.removeProperty("--tagline-size");
+      }
+    };
     const measure = () => {
-      setWordmarkWidth(el.offsetWidth);
+      const w = el.offsetWidth;
+      setWordmarkWidth(w);
       setSlices(el);
       setSlices(liveRef.current);
+      fitTagline(w);
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -178,7 +212,7 @@ export function Hero() {
           {letters}
         </div>
       )}
-      <p className={styles.tagline}>{siteContent.tagline}</p>
+      <p ref={taglineRef} className={styles.tagline}>{siteContent.tagline}</p>
     </section>
   );
 }

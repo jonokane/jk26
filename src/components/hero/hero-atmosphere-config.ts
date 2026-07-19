@@ -18,6 +18,10 @@ export const ATMOSPHERE = {
   cursor: 0.5,
   /** Aurora ↔ fold balance (0 = all aurora, 1 = all fold). */
   balance: 0.8,
+  /** Per-theme visibility, multiplied onto intensity. Light reads pale on white,
+      so it's lifted (>1); dark glows on black, so it's set back (<1). Tune by feel. */
+  lightGain: 1.45,
+  darkGain: 0.7,
 } as const;
 
 /** Performance + lifecycle constants — the perf contract lives here. */

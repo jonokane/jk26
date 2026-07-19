@@ -78,7 +78,8 @@ export function HeroAtmosphere() {
 
     // The far aurora plane: 6 drifting blobs + 2 denser cores.
     function drawAurora(ctx: CanvasRenderingContext2D, t: number, tri: Rgb[], dark: boolean) {
-      const peak = auroraPeak(ATMOSPHERE.intensity, ATMOSPHERE.balance, ATMOSPHERE.depth, dark);
+      const gain = dark ? ATMOSPHERE.darkGain : ATMOSPHERE.lightGain;
+      const peak = auroraPeak(ATMOSPHERE.intensity * gain, ATMOSPHERE.balance, ATMOSPHERE.depth, dark);
       for (let i = 0; i < 6; i++) {
         const c = tri[i % 3], ph = i * 1.7;
         const x = W * (0.5 + 0.42 * Math.sin(t * 0.05 + ph) * Math.cos(t * 0.028 + ph * 0.5));
@@ -95,7 +96,8 @@ export function HeroAtmosphere() {
     // The near folds plane: 4 flowing ribbons. `cursorX/cursorNormY/cursorK` drive
     // the push/pull; static frames pass cursorK: 0, so foldBulge is skipped.
     function drawFolds(ctx: CanvasRenderingContext2D, t: number, tri: Rgb[], dark: boolean, cursorX: number, cursorNormY: number, cursorK: number) {
-      const a = foldAlpha(ATMOSPHERE.intensity, ATMOSPHERE.balance, ATMOSPHERE.depth, dark);
+      const gain = dark ? ATMOSPHERE.darkGain : ATMOSPHERE.lightGain;
+      const a = foldAlpha(ATMOSPHERE.intensity * gain, ATMOSPHERE.balance, ATMOSPHERE.depth, dark);
       for (let L = 0; L < 4; L++) {
         const c = tri[L % 3];
         const baseY = H * (0.3 + 0.13 * L), amp = H * (0.05 + 0.02 * L), thick = H * (0.12 + 0.03 * L);
