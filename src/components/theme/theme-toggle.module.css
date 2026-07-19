@@ -4,7 +4,10 @@
   color: var(--mute);
   background: none;
   border: none;
-  padding: 0;
+  /* ≥44px touch target around the 18px icon; the negative margin keeps the
+     visual size and position unchanged (WCAG 2.5.8). */
+  padding: 13px;
+  margin: -13px;
   cursor: pointer;
   transition: color 0.5s ease;
 }

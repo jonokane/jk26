@@ -288,6 +288,11 @@ html.lenis body {
     color: var(--mute);
     text-underline-offset: 8px;
     transition: color 0.2s ease;
+    /* ≥44px touch target without moving the layout: the padding grows the
+       hit area, the equal negative margin pulls the box back to its visual
+       size (WCAG 2.5.8). */
+    padding: 12px 8px;
+    margin: -12px -8px;
   }
 
   .site-header nav a:hover {

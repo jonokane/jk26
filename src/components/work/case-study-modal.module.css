@@ -43,7 +43,7 @@
   background: var(--canvas);
   border: 1px solid var(--hairline);
   border-radius: 100px;
-  padding: 9px 18px;
+  padding: 13px 18px; /* ≥44px touch target (WCAG 2.5.8) */
   cursor: pointer;
   transition:
     color 0.3s ease,

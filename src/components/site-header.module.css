@@ -144,6 +144,24 @@
   border-color: var(--hairline);
 }
 
+/* Below ~30rem the wordmark + nav + toggle no longer share one row (the theme
+   toggle was clipping off the right edge, unreachable). Wrap the nav onto its
+   own centered line: the brand stays shrink-wrapped and centres on row 1 (so the
+   wordmark morph still measures and lands on it), the nav fills row 2 centred. */
+@media (max-width: 30rem) {
+  .top {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 14px;
+  }
+
+  .top :global(nav) {
+    flex-basis: 100%;
+    margin-left: 0;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 47.99rem) {
   .row {
     gap: 0.75rem;
