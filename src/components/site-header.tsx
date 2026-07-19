@@ -73,6 +73,30 @@ export function SiteHeader() {
     return () => window.removeEventListener("pointermove", onMove);
   }, [isHome, reducedMotion]);
 
+  /* One-time peek (Jono's ask): a few seconds after load, slide the pill down for
+     a beat and retract it, hinting that the nav is up there. Uses its own
+     `header-peek` class — never `header-on` — so retracting can't clobber a
+     reveal the hover or scroll owns by then. Skipped if the visitor has already
+     scrolled out of the hero (the nav is theirs to summon at that point), and
+     under reduced motion (where the pill is simply always present). */
+  useEffect(() => {
+    if (!isHome || reducedMotion) return;
+    const root = document.documentElement;
+    const PEEK_DELAY = 3000;
+    const PEEK_HOLD = 1800;
+    let retract: ReturnType<typeof setTimeout> | undefined;
+    const show = setTimeout(() => {
+      if (window.scrollY >= window.innerHeight * 0.85) return;
+      root.classList.add("header-peek");
+      retract = setTimeout(() => root.classList.remove("header-peek"), PEEK_HOLD);
+    }, PEEK_DELAY);
+    return () => {
+      clearTimeout(show);
+      if (retract) clearTimeout(retract);
+      root.classList.remove("header-peek");
+    };
+  }, [isHome, reducedMotion]);
+
   /* On `/` with motion, the flying live wordmark is what you see land here. */
   const slotVisible = !isHome || reducedMotion;
 

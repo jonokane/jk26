@@ -21,6 +21,7 @@
   --ink:       #0d0d0d;
   --mute:      #9a9a9a;
   --dim:       #bcbcbc; /* teleprompter resting word */
+  --tagline:   #4d616e; /* hero tagline — muted slate, a desaturated echo of --contact */
   --hairline:  #e6e6e6;
   --row-hover: #fafafa;
 
@@ -54,6 +55,7 @@
   --ink:       #f2f2f2;
   --mute:      #7d7d7d;
   --dim:       #3a3a3a;
+  --tagline:   #9aafba; /* hero tagline — light slate, the dark-mode counterpart */
   --hairline:  #1c1c1c;
   --row-hover: #0a0a0a;
 
@@ -244,7 +246,11 @@ html.lenis body {
       visibility 0s 0.45s;
   }
 
-  html.header-on .site-header {
+  /* header-peek is the timed one-time hint (site-header.tsx): same revealed
+     state as header-on, but a separate class so the peek never fights the
+     hover-reveal or the morph over who owns header-on. */
+  html.header-on .site-header,
+  html.header-peek .site-header {
     opacity: 1;
     transform: none;
     visibility: visible;
