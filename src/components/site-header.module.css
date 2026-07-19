@@ -41,6 +41,16 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: nowrap;
+  /* The morph scales the flying copy by the height ratio between this slot and
+     the hero anchor. The anchor is a block, so its measured height follows its
+     line-height (0.9, hero.module.css); an inline span reports the glyph extent
+     instead and ignores line-height, so the ratio came out ~1.22 too big and
+     the fly landed wider than the slot — visible as off-centre once the slot is
+     centred on mobile. inline-block + the matching 0.9 makes the slot measure on
+     the same basis as the anchor, so the fly lands the slot's exact size. */
+  display: inline-block;
+  line-height: 0.9;
+  vertical-align: middle;
 }
 
 /* The expanding row: a 0fr → 1fr grid, so it animates from nothing to exactly
