@@ -27,7 +27,7 @@ describe("type tokens", () => {
 });
 
 const TOKENS = [
-  "--canvas", "--ink", "--mute", "--dim", "--tagline",
+  "--canvas", "--ink", "--mute", "--dim", "--slate",
   "--hairline", "--row-hover", "--about", "--work", "--contact",
 ];
 

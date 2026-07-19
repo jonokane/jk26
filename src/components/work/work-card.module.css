@@ -133,7 +133,7 @@
   max-width: 30ch;
   font-size: clamp(1rem, 1.35vw, 1.22rem);
   line-height: 1.42;
-  color: var(--ink);
+  color: var(--slate);
 }
 
 .tags {
