@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { CaseStudy } from "#site/content";
 import { formatStudyNumber } from "@/components/work/work-lists";
@@ -66,7 +67,15 @@ export function WorkCard({ study, number }: { study: CaseStudy; number: number }
       </div>
       <div className={styles.shot}>
         {study.cover ? (
-          <img src={study.cover} alt={study.title} className={styles.cover} />
+          <Image
+            src={study.cover.src}
+            alt={study.title}
+            fill
+            sizes="(max-width: 900px) 90vw, 40vw"
+            placeholder="blur"
+            blurDataURL={study.cover.blurDataURL}
+            className={styles.cover}
+          />
         ) : (
           <span className={styles.shotCaption}>{siteContent.work.shotPending}</span>
         )}

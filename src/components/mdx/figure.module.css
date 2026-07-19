@@ -1,0 +1,22 @@
+/* Body image treatment for case-study prose (spec §14: materials live in CSS).
+   Stark and quiet — a hairline frame like the cover slots, a mono caption in the
+   same register as the shot captions. */
+.figure {
+  margin: 3rem 0;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--hairline);
+}
+
+.caption {
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  color: var(--mute);
+}

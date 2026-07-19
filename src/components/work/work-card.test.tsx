@@ -17,6 +17,15 @@ const study = (over: Partial<CaseStudy> = {}) =>
     ...over,
   }) as unknown as CaseStudy;
 
+/* velite's s.image() resolves `cover` to this object (src + blur + dimensions),
+   which the card feeds to next/image. */
+const cover = {
+  src: "/static/collaya-abc123.png",
+  blurDataURL: "data:image/webp;base64,UklGRgAAAABXRUJQ",
+  width: 1200,
+  height: 760,
+} as unknown as CaseStudy["cover"];
+
 describe("WorkCard", () => {
   it("renders the study's number, year, title and impact", () => {
     render(<WorkCard study={study()} number={3} />);
@@ -56,20 +65,19 @@ describe("WorkCard", () => {
   });
 
   it("renders the cover image, and drops the caption, when one is set", () => {
-    const { container } = render(
-      <WorkCard study={study({ cover: "/covers/collaya.png" })} number={1} />,
-    );
+    const { container } = render(<WorkCard study={study({ cover })} number={1} />);
     const img = container.querySelector("img");
-    expect(img?.getAttribute("src")).toBe("/covers/collaya.png");
+    expect(img).toBeTruthy();
+    /* next/image routes the source through its optimiser, so the raw path is
+       encoded into the query rather than the literal src — assert it survives. */
+    expect(img?.getAttribute("src")).toContain("collaya-abc123.png");
     expect(screen.queryByText(siteContent.work.shotPending)).toBeNull();
   });
 
   /* An <img> with no alt is announced by its filename. The title is what the
      image is OF. */
   it("names the cover image", () => {
-    const { container } = render(
-      <WorkCard study={study({ cover: "/covers/collaya.png" })} number={1} />,
-    );
+    const { container } = render(<WorkCard study={study({ cover })} number={1} />);
     expect(container.querySelector("img")?.getAttribute("alt")).toBe("Collaya");
   });
 

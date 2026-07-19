@@ -1,5 +1,6 @@
 import * as runtime from "react/jsx-runtime";
 import type { ComponentType } from "react";
+import { MdxImage } from "@/components/mdx/figure";
 
 // Velite compiles each MDX body to a string of JS that, when executed with a
 // jsx-runtime, returns the MDX component. This runs on the server by default.
@@ -10,8 +11,9 @@ function useMDXComponent(code: string): ComponentType<{
   return fn({ ...runtime }).default;
 }
 
-/** Custom components available to every MDX file (extend as the site grows). */
-const mdxComponents: Record<string, ComponentType> = {};
+/** Custom components available to every MDX file (extend as the site grows).
+    `img` upgrades every markdown image into a captioned <figure> (figure.tsx). */
+const mdxComponents: Record<string, ComponentType> = { img: MdxImage };
 
 export function MDXContent({
   code,

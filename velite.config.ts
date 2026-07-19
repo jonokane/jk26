@@ -2,6 +2,7 @@ import { defineConfig, defineCollection, s } from "velite";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeUnwrapImages from "rehype-unwrap-images";
 import { splitMarkdownSections } from "./src/components/work/case-study-sections";
 import { tokeniseStatements } from "./src/components/about/statement-tokens";
 
@@ -54,7 +55,10 @@ const work = defineCollection({
       impact: s.string().max(240),
       order: s.number().int(),
       draft: s.boolean().default(false),
-      cover: s.string().optional(),
+      /* A content-relative image (e.g. `./media/foo.jpg`); velite copies it to
+         /static hashed and resolves it to { src, width, height, blurDataURL, … }
+         — the dimensions and blur placeholder the cover components use. */
+      cover: s.image().optional(),
       tags: s.array(s.string()).default([]),
       featured: s.boolean().default(false),
       path: s.path(),
@@ -148,6 +152,10 @@ export default defineConfig({
     rehypePlugins: [
       rehypeSlug,
       [rehypeAutolinkHeadings, { behavior: "wrap" }],
+      /* Lift a standalone body image out of the <p> remark wraps it in, so the
+         figure component (mdx-content.tsx) renders <figure> as a block sibling
+         of the prose, not an invalid <figure> nested inside a <p>. */
+      rehypeUnwrapImages,
     ],
   },
 });
