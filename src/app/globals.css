@@ -19,7 +19,7 @@
 :root {
   --canvas:    #ffffff;
   --ink:       #0d0d0d;
-  --mute:      #9a9a9a;
+  --mute:      #767676; /* meets AA on white (~4.5:1); was #9a9a9a (2.8:1, failed) */
   --dim:       #bcbcbc; /* teleprompter resting word */
   --slate:     #4d616e; /* muted slate — hero tagline + case-study impact; a desaturated echo of --contact */
   --hairline:  #e6e6e6;
