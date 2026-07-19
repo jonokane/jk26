@@ -1,10 +1,10 @@
 import type { ComponentType, HTMLAttributes } from "react";
 
 /**
- * A case study renders at three heading depths — h1 on `/work/[slug]` (it is
- * the page's subject), h3 in the home Work document, h3 on a shelf panel — and
- * the *only* thing that changes is the tag. Shared here so no surface invents
- * its own mapping.
+ * A case study renders at two heading depths — h1 on `/work/[slug]` and in the
+ * modal (it is the page's subject), h3 in the home Work document — and the
+ * *only* thing that changes is the tag. Shared here so no surface invents its
+ * own mapping.
  *
  * Module scope, defined once: picking a heading at render time must never
  * create a new component type, which would remount the subtree

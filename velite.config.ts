@@ -3,39 +3,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeUnwrapImages from "rehype-unwrap-images";
-import { splitMarkdownSections } from "./src/components/work/case-study-sections";
 import { tokeniseStatements } from "./src/components/about/statement-tokens";
-
-/**
- * The case study body, a second time, split into its `## ` sections (spec §8,
- * §9). The shelf renders one panel per section group and cannot split the
- * compiled body (it is a minified function body), so each section is compiled
- * to its own MDX component here, from the same raw markdown that produces
- * `body`. `s.mdx()` compiles the string it is handed — the raw file content
- * only when handed nothing — so feeding it a section's markdown Just Works,
- * and `ctx.meta` (the file) flows down the parse context into it.
- *
- * The heading line itself is left out of each section's markdown: the shelf
- * renders the heading as a panel label, the vertical read renders it from
- * `body`. Neither surface prints it twice.
- */
-const sections = () =>
-  s.preprocess(
-    /* `.min(1)` turns an empty or section-less body into a loud build failure
-       rather than a study that silently reaches the page with nothing in it.
-       That is only true because `strict: true` is set below — without it velite
-       logs the violation as `info` and writes the bad data anyway, which is
-       exactly what this comment wrongly promised from Phase 1 until 2026-07-16. */
-    (_value, ctx) =>
-      splitMarkdownSections(ctx.meta.content ?? "").map(({ heading, markdown }) => ({
-        heading,
-        // the key must be `body`, and it must be a string: `s.mdx()` compiles
-        // the whole file when handed `undefined`, which would silently give
-        // every panel the entire case study
-        body: markdown,
-      })),
-    s.array(s.object({ heading: s.string(), body: s.mdx() })).min(1),
-  );
 
 const work = defineCollection({
   name: "CaseStudy",
@@ -63,7 +31,6 @@ const work = defineCollection({
       featured: s.boolean().default(false),
       path: s.path(),
       body: s.mdx(),
-      sections: sections(),
     })
     .transform((data) => {
       const slug = data.path.replace(/^work\//, "");

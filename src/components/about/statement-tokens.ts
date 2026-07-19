@@ -1,7 +1,7 @@
 /**
  * Turning the About body's markdown into role-tagged words (spec §5) — pure,
- * so it is unit-testable and has no idea Velite or React exist (the
- * `splitMarkdownSections` house style, spec §14).
+ * so it is unit-testable and has no idea Velite or React exist (spec §14 house
+ * style: keep the content-module dependency out of what's unit-tested).
  *
  * Jono authors the statements as ordinary markdown paragraphs and marks the
  * words that should land heavy with `**bold**`. The teleprompter's per-word
