@@ -65,7 +65,7 @@ export function WorkCard({ study, number }: { study: CaseStudy; number: number }
         )}
         <span className={styles.view}>{siteContent.work.viewLabel}</span>
       </div>
-      <div className={styles.shot}>
+      <div className={styles.shot} data-has-cover={study.cover ? "" : undefined}>
         {study.cover ? (
           <Image
             src={study.cover.src}

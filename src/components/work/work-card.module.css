@@ -197,6 +197,13 @@
   overflow: hidden;
 }
 
+/* A real cover fills the shot with a busy photo; a 1px slate frame contains it
+   (Jono's ask). The near-invisible --hairline the placeholder uses can't — the
+   photo bleeds into the card — so covers get the more present --slate. */
+.shot[data-has-cover] {
+  border: 1px solid var(--slate);
+}
+
 .shotCaption {
   font-family: var(--font-mono);
   font-size: 11px;
