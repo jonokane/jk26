@@ -1,5 +1,5 @@
+import Link from "next/link";
 import type { EarlierProject } from "#site/content";
-import { isViewUrl } from "@/components/work/url-label";
 import { sortedEarlierWork } from "@/components/work/work-data";
 import { siteContent } from "@/lib/site-content";
 import styles from "@/components/work/earlier-work.module.css";
@@ -18,9 +18,9 @@ export function attributeParts(entry: EarlierProject): string[] {
  *
  * Two lines per entry — a title and one meta line — because the whole panel has
  * to sit between the pinned title and the counter inside one pinned viewport.
- * The title itself is the link when the project has a live URL (dropping a third
- * URL line that would not fit); entries whose `view` is a plain value like
- * "Archived" render an unlinked title.
+ * The title itself is always the internal link to that entry's modal (dropping
+ * a third URL line that would not fit); the external live `view` link, when
+ * there is one, lives inside the modal instead.
  *
  * A list, not the card grid this used to be, and no MDX body: the body is what
  * /work/[slug] is for, and rendering it here would make the panel unbounded and
@@ -36,18 +36,9 @@ export function EarlierWork() {
         {sortedEarlierWork.map((entry) => (
           <li key={entry.title} className={styles.item} data-earlier-work-entry={entry.title}>
             <h4 className={styles.title}>
-              {isViewUrl(entry.view) ? (
-                <a
-                  href={entry.view}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={styles.titleLink}
-                >
-                  {entry.title}
-                </a>
-              ) : (
-                entry.title
-              )}
+              <Link href={entry.url} className={styles.titleLink}>
+                {entry.title}
+              </Link>
             </h4>
             <p className={styles.attributes}>
               {attributeParts(entry).map((part, i) => (

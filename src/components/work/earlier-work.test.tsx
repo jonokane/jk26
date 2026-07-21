@@ -12,12 +12,16 @@ const entry = (over: Partial<EarlierProject> = {}) =>
     role: "Design Lead",
     timeframe: "2007-13",
     view: "Archived",
+    url: "/earlier/cinematiq",
     order: 1,
     ...over,
   }) as unknown as EarlierProject;
 
 vi.mock("@/components/work/work-data", () => ({
-  sortedEarlierWork: [entry(), entry({ title: "Shift", view: "https://shift.com" })],
+  sortedEarlierWork: [
+    entry(),
+    entry({ title: "Shift", view: "https://shift.com", url: "/earlier/shift" }),
+  ],
 }));
 
 const { EarlierWork } = await import("@/components/work/earlier-work");
@@ -42,13 +46,24 @@ describe("EarlierWork", () => {
     expect(screen.getByText("Shift")).toBeTruthy();
   });
 
-  /* A link only when `view` is a real URL. "Archived" is a plain-text value the
-     full meta slab shows, and linking it would be a link to nowhere. */
-  it("links only the entries whose view is a URL", () => {
+  /* Every title is an internal Link to the earlier detail url, regardless of
+     whether `view` is a real URL — the external live link now lives inside the
+     modal (Task 3), not the list. The list no longer branches on isViewUrl. */
+  it("links every title to its earlier detail url, regardless of view", () => {
     const { container } = render(<EarlierWork />);
     const links = container.querySelectorAll("a");
-    expect(links).toHaveLength(1);
-    expect(links[0].getAttribute("href")).toBe("https://shift.com");
+    expect(links).toHaveLength(2);
+    links.forEach((link) => {
+      expect(link.getAttribute("href")).toMatch(/^\/earlier\//);
+    });
+  });
+
+  /* The list no longer branches on isViewUrl: the title always links to the
+     internal earlier detail url, never out to the external `view`. */
+  it("links every title to its earlier detail url, not the external view", () => {
+    const { container } = render(<EarlierWork />);
+    const link = container.querySelector("a");
+    expect(link?.getAttribute("href")).toMatch(/^\/earlier\//);
   });
 
   /* Spec §9: this panel is a LIST, not the card grid it used to be — no MDX
