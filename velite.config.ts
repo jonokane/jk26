@@ -72,18 +72,23 @@ const statements = () =>
 const earlier = defineCollection({
   name: "EarlierProject",
   pattern: "earlier/**/*.mdx",
-  schema: s.object({
-    title: s.string().max(120),
-    sector: s.array(s.string()).min(1),
-    discipline: s.array(s.string()).min(1),
-    platform: s.array(s.string()).default([]),
-    role: s.string(),
-    timeframe: s.string(),
-    view: s.string(),
-    order: s.number().int(),
-    path: s.path(),
-    body: s.mdx(),
-  }),
+  schema: s
+    .object({
+      title: s.string().max(120),
+      sector: s.array(s.string()).min(1),
+      discipline: s.array(s.string()).min(1),
+      platform: s.array(s.string()).default([]),
+      role: s.string(),
+      timeframe: s.string(),
+      view: s.string(),
+      order: s.number().int(),
+      path: s.path(),
+      body: s.mdx(),
+    })
+    .transform((data) => {
+      const slug = data.path.replace(/^earlier\//, "");
+      return { ...data, slug, url: `/earlier/${slug}` };
+    }),
 });
 
 const site = defineCollection({
