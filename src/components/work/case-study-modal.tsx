@@ -43,12 +43,17 @@ export function CaseStudyModal({ label, children }: { label: string; children: R
     const lenis = getLenis();
     lenis?.stop();
 
+    /* Capture the focus target BEFORE inerting: the trigger lives inside the
+       background we're about to make inert, and an engine that blurred inert
+       elements synchronously would otherwise capture <body> and lose the
+       focus-return on close. */
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+
     const backgrounded = Array.from(document.body.children).filter(
       (el): el is HTMLElement => el instanceof HTMLElement && el !== sheet && !el.contains(sheet),
     );
     backgrounded.forEach((el) => (el.inert = true));
 
-    const previouslyFocused = document.activeElement as HTMLElement | null;
     const raf = requestAnimationFrame(() => {
       setOpen(true);
       sheet?.focus({ preventScroll: true });

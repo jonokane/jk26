@@ -71,7 +71,9 @@ export function WorkCard({ study, number }: { study: CaseStudy; number: number }
             src={study.cover.src}
             alt={study.title}
             fill
-            sizes="(max-width: 900px) 90vw, 40vw"
+            /* The shot is ~0.4 of a min(66vw, 820px) card, so it caps ~320px;
+               the gallery only renders above 900px (below, the index shows). */
+            sizes="(min-width: 1242px) 320px, 26vw"
             placeholder="blur"
             blurDataURL={study.cover.blurDataURL}
             className={styles.cover}

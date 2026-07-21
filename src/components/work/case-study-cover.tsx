@@ -17,7 +17,9 @@ export function CaseStudyCover({ study }: { study: CaseStudy }) {
           src={study.cover.src}
           alt={study.title}
           fill
-          sizes="100vw"
+          /* The cover sits in the max-width:1000px article (6vw padding), so it
+             tops out ~880px, never the full viewport. */
+          sizes="(min-width: 1000px) 880px, 88vw"
           placeholder="blur"
           blurDataURL={study.cover.blurDataURL}
           className={styles.cover}
