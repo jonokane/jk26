@@ -37,7 +37,7 @@ src/components/work/earlier-detail.tsx     NEW  the earlier item's rendering (ti
 src/components/work/earlier-detail.module.css NEW
 src/components/work/earlier-work.tsx        MODIFY  titles link to /earlier/[slug], not the external URL
 velite.config.ts                            MODIFY  add slug/url transform to the `earlier` collection
-src/components/work/work-lists.ts           MODIFY  add nextEarlier() (mirrors nextStudy())
+src/components/work/work-lists.ts           MODIFY  add generic nextBySlug() (nextStudy delegates to it)
 content/earlier/*.mdx                        MODIFY  port the doc's fuller body copy (6 files)
 ```
 
@@ -85,8 +85,9 @@ impact, client, summary), so it is deliberately simpler:
 - **Live link** — `View live →` to `item.view` (`target="_blank" rel="noreferrer"`)
   **only when** `isViewUrl(item.view)` (Cinematiq, YDN, Design Pattern Library).
   Archived items (Shift, Intuit, Bubbles) show no live link.
-- **Next** — `Next: <title> →` via `nextEarlier(sortedEarlierWork, slug)`
-  (reuses the featured "next" affordance; wraps at the ends like `nextStudy`).
+- **Next** — `Next: <title> →` via `nextBySlug(sortedEarlierWork, slug)`
+  (reuses the featured "next" affordance; no wrap — the last item shows no
+  Next, matching `nextStudy`).
   A plain `<Link href={next.url}>` so it re-intercepts into the modal.
 
 All copy that is a fixed label (eyebrow prefix, "View live", "Next", "All work")
@@ -126,7 +127,7 @@ does not sprout one-off facets. Frontmatter otherwise unchanged (the two dead
 
 ## Testing
 
-- **Unit:** `nextEarlier()` (wraps at ends, returns the right neighbour, handles
+- **Unit:** `nextBySlug()` (no wrap — undefined past the end, returns the right neighbour, handles
   a single-item list); `earlier-detail` renders title/body and shows the live
   link only for URL `view` values (not for "Archived"); the earlier-work list
   links every title to its `/earlier/[slug]` url.
@@ -145,7 +146,7 @@ does not sprout one-off facets. Frontmatter otherwise unchanged (the two dead
   `(.)earlier/[slug]` coexist under `@modal`; the single `default.tsx` (null)
   serves both closed states. Standard Next parallel-routing; verify a
   work-modal and an earlier-modal each open and close cleanly.
-- **`nextEarlier` scope.** "Next" cycles within earlier items only (not into the
+- **`nextBySlug` scope.** "Next" cycles within earlier items only (not into the
   featured studies) — earlier is its own list.
 - **No cover/impact.** `EarlierDetail` must not assume the featured fields; it
   reads only `title`, `sector`, `discipline`, `platform`, `role`, `timeframe`,
