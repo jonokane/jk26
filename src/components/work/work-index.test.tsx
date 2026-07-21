@@ -27,6 +27,7 @@ vi.mock("@/components/work/work-data", () => ({
       discipline: ["Product Design"],
       timeframe: "2015",
       view: "https://cinematiq.com",
+      url: "/earlier/cinematiq",
     },
   ],
 }));
@@ -165,10 +166,10 @@ describe("the earlier-work section", () => {
     expect(screen.getByText(siteContent.work.earlierTitle)).toBeTruthy();
   });
 
-  it("links a project's title when its view is a URL", () => {
+  it("links a project's title to its modal, not its external view", () => {
     const { container } = render(<WorkIndex />);
     const link = container.querySelector("[data-work-earlier-row] a");
-    expect(link?.getAttribute("href")).toBe("https://cinematiq.com");
+    expect(link?.getAttribute("href")).toBe("/earlier/cinematiq");
   });
 
   /* The earlier work is filtered by the same facets as the case studies. */

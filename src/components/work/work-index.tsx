@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { publishedWork, sortedEarlierWork } from "@/components/work/work-data";
 import { attributeParts } from "@/components/work/earlier-work";
-import { isViewUrl } from "@/components/work/url-label";
 import {
   NO_FILTER,
   applyFilter,
@@ -164,8 +163,8 @@ export function WorkIndex({ toggle }: { toggle?: ReactNode }) {
       {/* The earlier work — the gallery's last panel, brought into the index as a
           separate, smaller list so the index does not lose it. Filtered by the
           same facets (shownEarlier); hidden entirely when a filter leaves none of
-          it, rather than showing an empty heading. The title is the link when the
-          project has a live URL. */}
+          it, rather than showing an empty heading. The title opens the project's
+          modal (/earlier/[slug]), the same as in the gallery. */}
       {shownEarlier.length > 0 && (
         <section className={styles.earlier} aria-labelledby="index-earlier-title">
           <h3 id="index-earlier-title" className={styles.earlierHeading}>
@@ -175,18 +174,9 @@ export function WorkIndex({ toggle }: { toggle?: ReactNode }) {
             {shownEarlier.map((entry) => (
               <li key={entry.title} className={styles.earlierRow} data-work-earlier-row>
                 <h4 className={styles.earlierRowTitle}>
-                  {isViewUrl(entry.view) ? (
-                    <a
-                      href={entry.view}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={styles.earlierRowLink}
-                    >
-                      {entry.title}
-                    </a>
-                  ) : (
-                    entry.title
-                  )}
+                  <Link href={entry.url} className={styles.earlierRowLink}>
+                    {entry.title}
+                  </Link>
                 </h4>
                 <p className={styles.earlierRowMeta}>
                   {attributeParts(entry).map((part, i) => (
