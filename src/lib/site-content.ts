@@ -76,6 +76,9 @@ export const siteContent = {
     viewToggleLabel: "Choose a view",
     /** The card's call to action. The arrow beside it is CSS content, not copy. */
     viewLabel: "View case study",
+    /** The earlier-item modal's outbound link to a still-live project. The arrow
+     *  beside it is CSS content, not copy. */
+    viewLiveLabel: "View live",
     /** Sits in a card's image slot until a real `cover` is set in frontmatter. */
     shotPending: "Case study imagery in progress",
     // The detail surface's wide image slot caption (spec §10, the prototype's

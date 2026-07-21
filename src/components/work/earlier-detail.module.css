@@ -1,0 +1,84 @@
+/* The earlier-item detail (spec 2026-07-20): a lighter case study. Draws on the
+   case-study-intro type roles, without the impact lead or attribute grid. */
+.detail {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 6vh 6vw 12vh;
+}
+
+.eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--work);
+}
+
+.title {
+  margin: 0.4rem 0 0.8rem;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-variation-settings: "wght" 620;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--mute);
+}
+
+/* Separator is a design decision, never copy (spec §15). */
+.meta span + span::before {
+  content: " · ";
+}
+
+.body {
+  margin-top: 3.2rem;
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.body :where(p) {
+  margin: 0 0 1.2rem;
+}
+
+.body :where(h2, h3) {
+  margin: 2.4rem 0 0.8rem;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.body :where(ul) {
+  margin: 0 0 1.2rem;
+  padding-left: 1.2rem;
+}
+
+.body :where(li) {
+  margin: 0.3rem 0;
+}
+
+.live {
+  margin-top: 2.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+}
+
+.live a {
+  color: var(--ink);
+  text-underline-offset: 4px;
+}
+
+.live a::after {
+  content: "→";
+  display: inline-block;
+  margin-left: 0.4em;
+}
