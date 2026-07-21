@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formatStudyNumber,
+  nextBySlug,
   nextStudy,
   selectPublishedWork,
   sortByOrder,
@@ -73,5 +74,19 @@ describe("formatStudyNumber", () => {
   it("pads single digits to two", () => {
     expect(formatStudyNumber(1)).toBe("01");
     expect(formatStudyNumber(12)).toBe("12");
+  });
+});
+
+describe("nextBySlug", () => {
+  const list = [{ slug: "a" }, { slug: "b" }, { slug: "c" }];
+  it("returns the next entry by slug", () => {
+    expect(nextBySlug(list, "a")).toEqual({ slug: "b" });
+    expect(nextBySlug(list, "b")).toEqual({ slug: "c" });
+  });
+  it("returns undefined past the last entry (no wrap)", () => {
+    expect(nextBySlug(list, "c")).toBeUndefined();
+  });
+  it("returns undefined for an unknown slug", () => {
+    expect(nextBySlug(list, "z")).toBeUndefined();
   });
 });

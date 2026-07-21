@@ -18,10 +18,19 @@ export function sortByOrder<T extends { order: number }>(items: readonly T[]): T
   return [...items].sort((a, b) => a.order - b.order);
 }
 
+/** The entry immediately after `slug` in `list`, or undefined at the end (no wrap).
+ *  Slug-keyed so it serves both the work and earlier lists. */
+export function nextBySlug<T extends { slug: string }>(
+  list: readonly T[],
+  slug: string,
+): T | undefined {
+  const index = list.findIndex((item) => item.slug === slug);
+  return index === -1 ? undefined : list[index + 1];
+}
+
 /** The study immediately after `slug` in `published`, for the "Next: {title}" teaser. */
 export function nextStudy(published: readonly CaseStudy[], slug: string): CaseStudy | undefined {
-  const index = published.findIndex((study) => study.slug === slug);
-  return index === -1 ? undefined : published[index + 1];
+  return nextBySlug(published, slug);
 }
 
 /** 1-based position of `slug` in `published` — the case study's display number (spec §8). */
