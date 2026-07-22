@@ -16,7 +16,7 @@ const RECIPIENT_EMAIL = "jono@jonokane.com";
 // visitor's address is the reply-to), so the subdomain is invisible in practice.
 const FROM_ADDRESS = "Jono Kane — jonokane.com <contact@send.jonokane.com>";
 
-// Cloudflare Turnstile (spec §10): verified only when TURNSTILE_SECRET_KEY is
+// Cloudflare Turnstile (spec §10): verified only when TURNSTILE_SECRET is
 // set — read per-request (like RESEND_API_KEY below) so dev/preview without
 // keys still work. Must be paired with the client's public
 // NEXT_PUBLIC_TURNSTILE_SITE_KEY — set both together, or neither.
@@ -116,12 +116,12 @@ export async function POST(request: Request) {
   // the honeypot uses — the widget guarantees a real visitor carries a token,
   // so a rejection here means a bot or a broken widget (which the mailto
   // fallback covers), not a false positive worth hiding. ---
-  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+  const turnstileSecret = process.env.TURNSTILE_SECRET;
   if (turnstileSecret) {
     const token = typeof turnstileToken === "string" ? turnstileToken : "";
     if (!token) {
       console.error(
-        "[contact] TURNSTILE_SECRET_KEY is set but no token was submitted — is NEXT_PUBLIC_TURNSTILE_SITE_KEY set on the client?",
+        "[contact] TURNSTILE_SECRET is set but no token was submitted — is NEXT_PUBLIC_TURNSTILE_SITE_KEY set on the client?",
       );
       return NextResponse.json({ ok: false, error: "turnstile_missing" }, { status: 403 });
     }

@@ -11,7 +11,7 @@ vi.mock("resend", () => ({
 import { POST } from "@/app/api/contact/route";
 
 const ORIGINAL_KEY = process.env.RESEND_API_KEY;
-const ORIGINAL_TS = process.env.TURNSTILE_SECRET_KEY;
+const ORIGINAL_TS = process.env.TURNSTILE_SECRET;
 
 function makeRequest(body: unknown): Request {
   return new Request("http://localhost/api/contact", {
@@ -38,8 +38,8 @@ describe("POST /api/contact", () => {
   afterEach(() => {
     if (ORIGINAL_KEY === undefined) delete process.env.RESEND_API_KEY;
     else process.env.RESEND_API_KEY = ORIGINAL_KEY;
-    if (ORIGINAL_TS === undefined) delete process.env.TURNSTILE_SECRET_KEY;
-    else process.env.TURNSTILE_SECRET_KEY = ORIGINAL_TS;
+    if (ORIGINAL_TS === undefined) delete process.env.TURNSTILE_SECRET;
+    else process.env.TURNSTILE_SECRET = ORIGINAL_TS;
   });
 
   it("sends via Resend and returns 200 for a valid payload", async () => {
@@ -114,7 +114,7 @@ describe("POST /api/contact", () => {
 
   it("sends when Turnstile verification passes", async () => {
     process.env.RESEND_API_KEY = "test-key";
-    process.env.TURNSTILE_SECRET_KEY = "ts-secret";
+    process.env.TURNSTILE_SECRET = "ts-secret";
     const fetchSpy = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(new Response(JSON.stringify({ success: true }), { status: 200 }));
@@ -128,7 +128,7 @@ describe("POST /api/contact", () => {
 
   it("rejects with 403 and does not send when Turnstile verification fails", async () => {
     process.env.RESEND_API_KEY = "test-key";
-    process.env.TURNSTILE_SECRET_KEY = "ts-secret";
+    process.env.TURNSTILE_SECRET = "ts-secret";
     const fetchSpy = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(new Response(JSON.stringify({ success: false }), { status: 200 }));
@@ -142,7 +142,7 @@ describe("POST /api/contact", () => {
 
   it("rejects with 403 when the Turnstile secret is set but no token is sent", async () => {
     process.env.RESEND_API_KEY = "test-key";
-    process.env.TURNSTILE_SECRET_KEY = "ts-secret";
+    process.env.TURNSTILE_SECRET = "ts-secret";
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const res = await POST(makeRequest(validPayload)); // no turnstileToken

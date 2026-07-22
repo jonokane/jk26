@@ -360,7 +360,9 @@ export function Contact() {
             {/* Cloudflare Turnstile (spec §10): rendered only when the site key
                 is configured. Managed + interaction-only, so it is usually
                 invisible and yields a token via onSuccess; a used/expired token
-                is cleared so the submit button re-gates on a fresh one. */}
+                is cleared so the submit button re-gates on a fresh one. The
+                `action` label is Cloudflare's Spin attribution analytics only —
+                no functional effect. */}
             {TURNSTILE_SITE_KEY && (
               <div className={`${styles.turnstile} ${styles.fieldFull}`}>
                 <Turnstile
@@ -369,7 +371,7 @@ export function Contact() {
                   onSuccess={(t) => setToken(t)}
                   onError={() => setToken(null)}
                   onExpire={() => setToken(null)}
-                  options={{ appearance: "interaction-only", theme: "auto" }}
+                  options={{ appearance: "interaction-only", theme: "auto", action: "turnstile-spin-v2" }}
                 />
               </div>
             )}
