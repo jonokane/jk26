@@ -174,7 +174,6 @@
 }
 
 .sending,
-.success,
 .errorMessage {
   margin: 0;
   font-size: 0.95rem;
@@ -185,6 +184,98 @@
   color: var(--contact);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* Turnstile row: managed + interaction-only, so usually invisible. When it does
+   surface it spans both columns and sits just above the submit. */
+.turnstile {
+  grid-column: 1 / -1;
+}
+
+/* The sent state (spec §12): the form gives way to this confirmation, which
+   echoes what was sent and offers a reset. It takes the form's slot (same
+   margin-top) so the section does not jump. Motion lives in the component
+   (motion/react); these are the resting styles. Focused programmatically on
+   arrival, so its focus ring is suppressed — the content, not a box, is the cue. */
+.sent {
+  margin-top: 7vh;
+  max-width: 900px;
+  outline: none;
+}
+
+.sentTitle {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-variation-settings: "wght" 700;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  color: var(--contact);
+}
+
+.sentSubline {
+  margin: 14px 0 0;
+  font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.sentEcho {
+  margin: 40px 0 0;
+  padding-top: 28px;
+  border-top: 1px solid var(--hairline);
+}
+
+.echoLabel {
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* preserve the visitor's own line breaks in the echoed message */
+.echoMessage {
+  margin: 0 0 24px;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.echoFrom {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+/* Same accent-button treatment as the submit, so "send another" reads as the
+   primary action of the panel. */
+.sendAnother {
+  margin-top: 40px;
+  font: inherit;
+  font-size: 1rem;
+  font-variation-settings: "wght" 560;
+  letter-spacing: 0.02em;
+  color: var(--canvas);
+  background: var(--contact);
+  border: none;
+  border-radius: 2px;
+  padding: 16px 40px;
+  cursor: pointer;
+  box-shadow: var(--shadow-elevation-medium);
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.sendAnother:hover {
+  transform: translateY(-2px);
+  opacity: 0.92;
+  box-shadow: var(--shadow-elevation-high);
 }
 
 .footer {

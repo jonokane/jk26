@@ -136,7 +136,15 @@ export const siteContent = {
     ],
     submit: "Start a conversation",
     sending: "Sending",
-    success: "Thanks, I will get back to you soon.",
+    /** The success state (spec §12): the form fades out and this panel rises in,
+        echoing what was sent, with a button to send another. */
+    success: {
+      title: "Message sent.",
+      subline: "It's on its way to my inbox.",
+      yourMessageLabel: "Your message",
+      fromLabel: "From",
+      sendAnother: "Send another message",
+    },
     error: "Something went wrong on my end. Email me directly and I will pick it up:",
     /** Field validation copy. The browser's native messages are off-brand, so
         we supply our own and hand them to setCustomValidity (spec §15). */

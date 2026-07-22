@@ -16,6 +16,12 @@ const RECIPIENT_EMAIL = "jono@jonokane.com";
 // visitor's address is the reply-to), so the subdomain is invisible in practice.
 const FROM_ADDRESS = "Jono Kane — jonokane.com <contact@send.jonokane.com>";
 
+// Cloudflare Turnstile (spec §10): verified only when TURNSTILE_SECRET_KEY is
+// set — read per-request (like RESEND_API_KEY below) so dev/preview without
+// keys still work. Must be paired with the client's public
+// NEXT_PUBLIC_TURNSTILE_SITE_KEY — set both together, or neither.
+const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
 const MAX_LENGTHS = {
   name: 200,
   email: 320,
@@ -36,6 +42,8 @@ type ContactPayload = {
   company?: unknown;
   /** ms elapsed between the form mounting and this submit, per the client's clock. */
   elapsedMs?: unknown;
+  /** Cloudflare Turnstile token from the client widget (spec §10). */
+  turnstileToken?: unknown;
 };
 
 function isNonEmptyString(value: unknown): value is string {
@@ -51,6 +59,24 @@ function silentOk() {
   return NextResponse.json({ ok: true });
 }
 
+/**
+ * Verify a Turnstile token against Cloudflare's siteverify endpoint. Returns
+ * false on any failure — a network error or a rejected token both mean "not
+ * proven human", so we do not send.
+ */
+async function verifyTurnstile(secret: string, token: string, ip: string | null): Promise<boolean> {
+  const form = new URLSearchParams({ secret, response: token });
+  if (ip) form.set("remoteip", ip);
+  try {
+    const res = await fetch(TURNSTILE_VERIFY_URL, { method: "POST", body: form });
+    const data = (await res.json()) as { success?: boolean };
+    return data.success === true;
+  } catch (err) {
+    console.error("[contact] Turnstile verification request failed:", err);
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   let payload: ContactPayload;
   try {
@@ -59,7 +85,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
   }
 
-  const { name, email, message, company, elapsedMs } = payload;
+  const { name, email, message, company, elapsedMs, turnstileToken } = payload;
 
   // --- Spam gates: evaluated before validation, and always answered as if
   // the submission succeeded (spec §10 — never tell a bot it was caught). ---
@@ -83,6 +109,29 @@ export async function POST(request: Request) {
   }
   if (!isPlausibleEmail(email)) {
     return NextResponse.json({ ok: false, error: "invalid_email" }, { status: 400 });
+  }
+
+  // --- Bot check: Cloudflare Turnstile (spec §10). Enforced only when the
+  // secret is configured; a missing/failed token is a 403, not the silent-ok
+  // the honeypot uses — the widget guarantees a real visitor carries a token,
+  // so a rejection here means a bot or a broken widget (which the mailto
+  // fallback covers), not a false positive worth hiding. ---
+  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+  if (turnstileSecret) {
+    const token = typeof turnstileToken === "string" ? turnstileToken : "";
+    if (!token) {
+      console.error(
+        "[contact] TURNSTILE_SECRET_KEY is set but no token was submitted — is NEXT_PUBLIC_TURNSTILE_SITE_KEY set on the client?",
+      );
+      return NextResponse.json({ ok: false, error: "turnstile_missing" }, { status: 403 });
+    }
+    const ip =
+      request.headers.get("CF-Connecting-IP") ??
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      null;
+    if (!(await verifyTurnstile(turnstileSecret, token, ip))) {
+      return NextResponse.json({ ok: false, error: "turnstile_failed" }, { status: 403 });
+    }
   }
 
   const apiKey = process.env.RESEND_API_KEY;

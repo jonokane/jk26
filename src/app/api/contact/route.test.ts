@@ -11,6 +11,7 @@ vi.mock("resend", () => ({
 import { POST } from "@/app/api/contact/route";
 
 const ORIGINAL_KEY = process.env.RESEND_API_KEY;
+const ORIGINAL_TS = process.env.TURNSTILE_SECRET_KEY;
 
 function makeRequest(body: unknown): Request {
   return new Request("http://localhost/api/contact", {
@@ -37,6 +38,8 @@ describe("POST /api/contact", () => {
   afterEach(() => {
     if (ORIGINAL_KEY === undefined) delete process.env.RESEND_API_KEY;
     else process.env.RESEND_API_KEY = ORIGINAL_KEY;
+    if (ORIGINAL_TS === undefined) delete process.env.TURNSTILE_SECRET_KEY;
+    else process.env.TURNSTILE_SECRET_KEY = ORIGINAL_TS;
   });
 
   it("sends via Resend and returns 200 for a valid payload", async () => {
@@ -106,6 +109,46 @@ describe("POST /api/contact", () => {
     expect(mockSend).not.toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("RESEND_API_KEY is not set"));
 
+    errorSpy.mockRestore();
+  });
+
+  it("sends when Turnstile verification passes", async () => {
+    process.env.RESEND_API_KEY = "test-key";
+    process.env.TURNSTILE_SECRET_KEY = "ts-secret";
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response(JSON.stringify({ success: true }), { status: 200 }));
+
+    const res = await POST(makeRequest({ ...validPayload, turnstileToken: "good-token" }));
+
+    expect(res.status).toBe(200);
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    fetchSpy.mockRestore();
+  });
+
+  it("rejects with 403 and does not send when Turnstile verification fails", async () => {
+    process.env.RESEND_API_KEY = "test-key";
+    process.env.TURNSTILE_SECRET_KEY = "ts-secret";
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response(JSON.stringify({ success: false }), { status: 200 }));
+
+    const res = await POST(makeRequest({ ...validPayload, turnstileToken: "bad-token" }));
+
+    expect(res.status).toBe(403);
+    expect(mockSend).not.toHaveBeenCalled();
+    fetchSpy.mockRestore();
+  });
+
+  it("rejects with 403 when the Turnstile secret is set but no token is sent", async () => {
+    process.env.RESEND_API_KEY = "test-key";
+    process.env.TURNSTILE_SECRET_KEY = "ts-secret";
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const res = await POST(makeRequest(validPayload)); // no turnstileToken
+
+    expect(res.status).toBe(403);
+    expect(mockSend).not.toHaveBeenCalled();
     errorSpy.mockRestore();
   });
 });
