@@ -107,7 +107,7 @@ describe("living gradient", () => {
     expect(css).toContain("@property --hero-drift");
   });
 
-  /* An infinite colour animation must respect prefers-reduced-motion
+  /* An infinite color animation must respect prefers-reduced-motion
      (spec §6, bug 3 — the prototype never gates drift). The drift now lives on
      the wordmark, so that is where reduced motion must switch it off. */
   it("gates the wordmark drift behind prefers-reduced-motion", () => {
@@ -219,7 +219,7 @@ describe("reduced-motion first-paint guard", () => {
 
     /* Locate the guard rule by its selector, then slice its own declaration
        body by brace-matching (not the whole media block) so a comment or a
-       neighbouring rule can't make this pass for the wrong reason. */
+       neighboring rule can't make this pass for the wrong reason. */
     const selector = '.hero[data-built="false"] .letter';
     const selectorStart = mediaBlock.indexOf(selector);
     expect(selectorStart).toBeGreaterThan(-1);

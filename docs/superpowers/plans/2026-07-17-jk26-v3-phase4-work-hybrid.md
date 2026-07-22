@@ -15,7 +15,7 @@ Every task's requirements implicitly include all of these. They are copied from 
 - **pnpm only.** `pnpm test` is ALREADY non-watch (`"test": "vitest run"`). Never `pnpm test run` — `run` becomes a filename filter, matches nothing, exits 1. `pnpm test <path>` for one file.
 - **Content never lives in JSX** (spec §14/§15). Every string — including accessible names, button labels, and punctuation-as-separator — lives in `src/lib/site-content.ts` or MDX. Tunables live in a config module. Editing words must never require touching a component.
 - **Design decisions live in CSS, not markup.** Tokens are CSS custom properties mapped by the `@theme` block in `globals.css`. Compose semantic classes; do not repeat a 12-utility string. Unlayered rules beat anything in an `@layer`.
-- **Nothing is derived, computed, or generated in the palettes: a hex is a hex.** `globals.css.test.ts` fails the build if `color-mix`/`oklch`/`calc` appears in a palette. Do not add a colour to the palettes in this phase — every token you need already exists (see Task 1).
+- **Nothing is derived, computed, or generated in the palettes: a hex is a hex.** `globals.css.test.ts` fails the build if `color-mix`/`oklch`/`calc` appears in a palette. Do not add a color to the palettes in this phase — every token you need already exists (see Task 1).
 - **There is no clock anywhere in this codebase. Do not reintroduce one.**
 - **Respect `prefers-reduced-motion`**, and establish it in **CSS** so it is correct at FIRST PAINT. A post-hydration effect flashes the animated state first — that is a bug Phase 2 shipped and fixed (spec §11).
 - **Do not add a second RAF loop** or `autoRaf`. Lenis is driven from GSAP's ticker in `src/components/smooth-scroll.tsx`. Build scroll choreography on that.
@@ -29,7 +29,7 @@ Every task's requirements implicitly include all of these. They are copied from 
 `CLAUDE.md`: **mechanism-verification is blind to what a visitor actually sees.** Tests passing, a clean console, and correct DOM state have all been true of shipped code that looked wrong or was unusable. Every serious bug found on this branch had green gates for its entire life.
 
 - **Look at the rendered pixels**, in both themes, before calling visual work done.
-- **Reachability is not `element.click()`** — that fires on `visibility: hidden` elements. `document.elementFromPoint(centre)` must return the element or a descendant.
+- **Reachability is not `element.click()`** — that fires on `visibility: hidden` elements. `document.elementFromPoint(center)` must return the element or a descendant.
 - **Check the dev server postdates your commit.** Stale `next-server` processes have served days-old CSS and produced convincing false results. Kill with `lsof -ti:3000 -sTCP:LISTEN` (plain `lsof -ti:3000` returns Chrome clients too).
 - **Prove a new test can fail.** Break the thing on purpose, watch it go red, put it back. Report both outputs.
 - **Anchor source-text regexes.** This project has twice shipped a regex that matched its own prefix (`/backdrop-filter:/` matches inside `-webkit-backdrop-filter:`). Use a negative lookbehind.
@@ -80,7 +80,7 @@ Every task's requirements implicitly include all of these. They are copied from 
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: `WORK` (the config object); `travelFor(trackScrollWidth, viewportWidth): number`; `wrapperHeightFor(travel, viewportHeight): number`; `linearProgress(wrapTop, wrapHeight, viewportHeight): number`; `trackOffsetFor(progress, travel): number`; `activeIndexFor(centres, viewportWidth): number`; `cardOpacityFor(distanceFromCentre, viewportWidth): number`; `scrollDeltaForPan(deltaX, wrapHeight, viewportHeight, travel): number`.
+- Produces: `WORK` (the config object); `travelFor(trackScrollWidth, viewportWidth): number`; `wrapperHeightFor(travel, viewportHeight): number`; `linearProgress(wrapTop, wrapHeight, viewportHeight): number`; `trackOffsetFor(progress, travel): number`; `activeIndexFor(centers, viewportWidth): number`; `cardOpacityFor(distanceFromCenter, viewportWidth): number`; `scrollDeltaForPan(deltaX, wrapHeight, viewportHeight, travel): number`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -158,9 +158,9 @@ describe("trackOffsetFor", () => {
 
 describe("activeIndexFor", () => {
   /* Spec §9: the active card is the one nearest the viewport's horizontal
-     centre — deliberately NOT derived from progress, which would drift from
+     center — deliberately NOT derived from progress, which would drift from
      what the eye reports as cards enter and leave. */
-  it("is the card whose centre is nearest the viewport centre", () => {
+  it("is the card whose center is nearest the viewport center", () => {
     expect(activeIndexFor([100, 480, 900], 1000)).toBe(1);
   });
 
@@ -181,7 +181,7 @@ describe("cardOpacityFor", () => {
   });
 
   /* Distance is unsigned: a card the same way off to the left reads the same. */
-  it("does not care which side of centre the card is on", () => {
+  it("does not care which side of center the card is on", () => {
     expect(cardOpacityFor(-800, 1000)).toBe(cardOpacityFor(800, 1000));
   });
 });
@@ -242,7 +242,7 @@ export const WORK = {
   scrollPerPixel: 1,
 
   /** A card at full opacity sits within this fraction of viewport width of the
-   *  centre. Spec §9: `0.55 × innerWidth`. */
+   *  center. Spec §9: `0.55 × innerWidth`. */
   focalBand: 0.55,
 
   /** What a card outside the focal band fades to. Spec §9: 0.42. */
@@ -311,23 +311,23 @@ export function trackOffsetFor(progress: number, travel: number): number {
 }
 
 /**
- * The card nearest the viewport's horizontal centre.
+ * The card nearest the viewport's horizontal center.
  *
  * Deliberately NOT derived from progress (spec §9). Progress is a property of
  * the scroll; the active card is a property of what is actually on screen, and
  * the two drift apart at the ends of the track where the first and last cards
  * sit against their gutters. The counter has to agree with the eye.
  *
- * `centres` are viewport-relative card centres, in order.
+ * `centers` are viewport-relative card centers, in order.
  */
-export function activeIndexFor(centres: readonly number[], viewportWidth: number): number {
+export function activeIndexFor(centers: readonly number[], viewportWidth: number): number {
   const middle = viewportWidth * 0.5;
   let best = 0;
   let bestDistance = Infinity;
-  centres.forEach((centre, i) => {
-    const distance = Math.abs(centre - middle);
+  centers.forEach((center, i) => {
+    const distance = Math.abs(center - middle);
     /* Strictly less-than, so a tie keeps the earlier card and the counter cannot
-       flicker between two equidistant neighbours. */
+       flicker between two equidistant neighbors. */
     if (distance < bestDistance) {
       bestDistance = distance;
       best = i;
@@ -337,8 +337,8 @@ export function activeIndexFor(centres: readonly number[], viewportWidth: number
 }
 
 /** Full inside the focal band, dim outside it. `distance` may be signed. */
-export function cardOpacityFor(distanceFromCentre: number, viewportWidth: number): number {
-  return Math.abs(distanceFromCentre) < viewportWidth * WORK.focalBand ? 1 : WORK.cardDimOpacity;
+export function cardOpacityFor(distanceFromCenter: number, viewportWidth: number): number {
+  return Math.abs(distanceFromCenter) < viewportWidth * WORK.focalBand ? 1 : WORK.cardDimOpacity;
 }
 
 /**
@@ -1337,20 +1337,20 @@ export function useGallery({
       if (bar) bar.style.width = `${(progress * 100).toFixed(2)}%`;
 
       const cards = [...track.querySelectorAll<HTMLElement>("[data-work-card], [data-work-panel]")];
-      const centres = cards.map((card) => {
+      const centers = cards.map((card) => {
         const rect = card.getBoundingClientRect();
         return rect.left + rect.width / 2;
       });
 
       cards.forEach((card, i) => {
         card.style.opacity = String(
-          cardOpacityFor(centres[i] - window.innerWidth * 0.5, window.innerWidth),
+          cardOpacityFor(centers[i] - window.innerWidth * 0.5, window.innerWidth),
         );
       });
 
       /* Only on change: this runs every frame and a setState per frame would
          re-render the section 60 times a second. */
-      const index = activeIndexFor(centres, window.innerWidth);
+      const index = activeIndexFor(centers, window.innerWidth);
       if (index !== lastIndex) {
         lastIndex = index;
         onActiveIndex(index);
@@ -1739,7 +1739,7 @@ Then prove the guard works: dispatch `{ deltaX: 0, deltaY: 240 }` and confirm th
 
 - [ ] **Step 8: Verify the counter agrees with the eye**
 
-Scroll to three positions across the gallery. At each, read the counter and confirm the highlighted card really is the one nearest the horizontal centre. Report the three readings.
+Scroll to three positions across the gallery. At each, read the counter and confirm the highlighted card really is the one nearest the horizontal center. Report the three readings.
 
 - [ ] **Step 9: Commit**
 
@@ -1937,7 +1937,7 @@ Append to `src/components/work/work.module.css`. Values are §9's, verbatim:
   border-color: var(--work);
 }
 
-/* The pressed state has to survive a colour-blind read and a greyscale print,
+/* The pressed state has to survive a color-blind read and a grayscale print,
    so it is not carried by hue alone: the fill inverts. */
 .pill[aria-pressed="true"] {
   color: var(--canvas);
@@ -2468,10 +2468,10 @@ Run: `pnpm test src/components/work/work-gallery.test.tsx` — expected PASS. Th
 
 Fresh `pnpm dev` (kill the old server first — check its start time postdates your last commit). Then, at 1440px:
 
-1. Scroll the whole gallery start to finish in **both themes**. Screenshot at least three positions each. **Look at them.** The cards must be legible, the hatch must read as a placeholder and not as an error, the counter must agree with the centre card.
+1. Scroll the whole gallery start to finish in **both themes**. Screenshot at least three positions each. **Look at them.** The cards must be legible, the hatch must read as a placeholder and not as an error, the counter must agree with the center card.
 2. `document.documentElement.scrollWidth <= window.innerWidth` — the page must never scroll horizontally, whatever the track does.
 3. Tab through the section from the header. Every card and every row must take focus, and **the focus ring must be visible** — this is the Phase 3 About bug, where a focusable link sat at 14% opacity inside a scroll-driven zone. If a card is at `cardDimOpacity` when focused, that is the same defect; report it.
-4. `document.elementFromPoint` on a card's centre must return the card or a descendant.
+4. `document.elementFromPoint` on a card's center must return the card or a descendant.
 5. Click a card and confirm it lands on `/work/<slug>`.
 6. Console must be clean.
 
@@ -2500,7 +2500,7 @@ Report to the controller: what you measured, what you saw in the screenshots, an
 | Sticky 100vh stage, vertical scroll translates `#wtrack` in X | 6, 7 |
 | `travel = max(0, scrollWidth - innerWidth + innerWidth*0.06)` | 1 |
 | `lp = clamp(-wrapRect.top / (wrapH - vh), 0, 1)`, linear | 1 |
-| Active index = nearest viewport centre, NOT from `lp` | 1, 7 |
+| Active index = nearest viewport center, NOT from `lp` | 1, 7 |
 | Focal band `0.55 × innerWidth`, else `0.42`, `transition: opacity 0.5s ease` | 1, 4 |
 | Wayfinding: locked title, live counter, progress bar bottom | 7, 9 |
 | Card geometry, number/year/title/impact/tags/view | 4 |

@@ -19,7 +19,7 @@
 - **No em-dashes in visitor-facing copy** (house style).
 - **Design decisions live in CSS**, as custom properties mapped to Tailwind by the `@theme` block in `globals.css`.
 - **No second RAF loop.** Lenis and GSAP share one ticker via `smooth-scroll.tsx`. A stray RAF has silently locked scrolling on this site before.
-- **Both palettes are hand-edited.** Nothing derived or computed from the other. Changing a colour must never require touching logic.
+- **Both palettes are hand-edited.** Nothing derived or computed from the other. Changing a color must never require touching logic.
 - **Do not touch** `content/**` (no migration needed), `smooth-scroll.tsx`, `gsap.ts`, `mdx-content.tsx`, `hash-scroll.tsx`, `use-reduced-motion.ts`, `fonts-ready.tsx`, `api/contact/route.ts`, `velite.config.ts`.
 - Node's `Date.now()` is fine in app code; the removed scene engine was the only clock consumer.
 
@@ -53,8 +53,8 @@ The cyberpunk time-of-day pivot: living sky, 8 scene keyframes, frosted-flip
 slab, decode/terminal motif, sky FX (god rays, smog, grain, veil), and the
 vertical Work read.
 
-Parked because a design that must hold at every hour is optimised for no
-hour: layout read as arbitrary, colour went muddy, motion stayed clunky.
+Parked because a design that must hold at every hour is optimized for no
+hour: layout read as arbitrary, color went muddy, motion stayed clunky.
 Superseded by docs/superpowers/specs/2026-07-16-stark-visual-language-design.md
 
 Run it again:  git switch --detach archive/cold-noon && pnpm install && pnpm dev"
@@ -337,7 +337,7 @@ git commit -m "refactor: remove the living sky and the scene engine
 
 The time-of-day system: 8 keyframes, the scene engine, the first-paint
 script, and every sky layer. A design that must hold at every hour is
-optimised for no hour. Preserved at tag archive/cold-noon.
+optimized for no hour. Preserved at tag archive/cold-noon.
 
 The site renders against undefined custom properties until the new token
 layer lands. Spec: 2026-07-16-stark-visual-language-design.md §3"
@@ -435,7 +435,7 @@ And inside the `labels` object, add:
 
 - [ ] **Step 5: Reduce the hero stylesheet**
 
-Replace `src/components/hero/hero.module.css` entirely. Values come from spec §6 and `Portfolio v2:37`. Colours resolve once Task 7 lands the palettes.
+Replace `src/components/hero/hero.module.css` entirely. Values come from spec §6 and `Portfolio v2:37`. Colors resolve once Task 7 lands the palettes.
 
 ```css
 .hero {
@@ -594,7 +594,7 @@ git rm src/components/work/work-shelf.tsx src/components/work/shelf-labels.ts \
        src/components/work/header-work-row.tsx
 ```
 
-> `about.test.tsx` is deleted because it asserts collector behaviour that no longer exists. Phase 3 writes the teleprompter's own tests against the new mechanic.
+> `about.test.tsx` is deleted because it asserts collector behavior that no longer exists. Phase 3 writes the teleprompter's own tests against the new mechanic.
 
 - [ ] **Step 3: Reduce About to a stub carrying the real statements**
 
@@ -665,7 +665,7 @@ Replace `src/components/about/about.module.css` entirely:
 }
 ```
 
-> `.statement` is `--about` green, not ink. That is the prototype's actual behaviour (spec §8, conflict register #5) and putting it here means the dark-mode green wall — the spec's highest-risk surface (§15) — is visible to look at the moment Task 7 lands.
+> `.statement` is `--about` green, not ink. That is the prototype's actual behavior (spec §8, conflict register #5) and putting it here means the dark-mode green wall — the spec's highest-risk surface (§15) — is visible to look at the moment Task 7 lands.
 
 - [ ] **Step 5: Reduce Work to a stub**
 
@@ -804,7 +804,7 @@ gallery). The stubs keep every real word and both anchors, so scroll-spy
 and deep links keep working while the foundation lands.
 
 About's statements render in --about green per the prototype's actual
-behaviour, not the README's inverted paraphrase (spec §8, register #5)."
+behavior, not the README's inverted paraphrase (spec §8, register #5)."
 ```
 
 ---
@@ -948,7 +948,7 @@ body { font-family: 'mae-variable' } and Jono confirmed."
 
 ### Task 7: Two locked palettes
 
-The heart of the pivot. Two hand-authored palettes replace ~40 scene properties. Not interpolated, not derived — a design that must hold at every hour is optimised for no hour (spec §3).
+The heart of the pivot. Two hand-authored palettes replace ~40 scene properties. Not interpolated, not derived — a design that must hold at every hour is optimized for no hour (spec §3).
 
 **Files:**
 - Modify: `src/app/globals.css`
@@ -1001,7 +1001,7 @@ describe("palettes", () => {
   /* The whole point of two locked palettes: a hex is a hex. If a dark value
      is ever expressed as a function of a light one, the muddiness that killed
      Cold Noon has a way back in. */
-  it("derives nothing — no colour functions in either palette", () => {
+  it("derives nothing — no color functions in either palette", () => {
     for (const body of [paletteBody(":root {"), paletteBody(':root[data-theme="dark"]')]) {
       expect(body).not.toMatch(/color-mix|oklch|hsl\(|rgb\(|calc\(/);
     }
@@ -1133,7 +1133,7 @@ none) with the accents lifted to clear 4.5:1 on pure black — the
 handoff's violet lands ~3.2:1.
 
 Both are hand-edited, adjacent, same tokens in the same order, nothing
-derived. A design that must hold at every hour is optimised for no
+derived. A design that must hold at every hour is optimized for no
 hour; two fixed sets can be looked at and locked. Dark is expected to
 be iterated by hand (spec §3)."
 ```
@@ -1175,7 +1175,7 @@ import {
 } from "@/lib/theme-engine";
 
 describe("resolveTheme", () => {
-  it("honours an explicit choice over the system preference", () => {
+  it("honors an explicit choice over the system preference", () => {
     expect(resolveTheme("light", true)).toBe("light");
     expect(resolveTheme("dark", false)).toBe("dark");
   });
@@ -1259,7 +1259,7 @@ export function resolveTheme(choice: ThemeChoice | null, systemPrefersDark: bool
   return systemPrefersDark ? "dark" : "light";
 }
 
-/** Narrow an untrusted localStorage value. Anything unrecognised follows the OS. */
+/** Narrow an untrusted localStorage value. Anything unrecognized follows the OS. */
 export function parseThemeChoice(raw: string | null): ThemeChoice {
   return raw === "light" || raw === "dark" || raw === "system" ? raw : "system";
 }
@@ -1325,7 +1325,7 @@ describe("preHydrationThemeScript", () => {
   /* The case that matters: an explicit choice must beat the OS before first
      paint, or a dark-choosing visitor on a light OS gets a white flash — the
      exact failure the deleted scene script existed to prevent. */
-  it("honours an explicit choice over the OS, matching the engine", () => {
+  it("honors an explicit choice over the OS, matching the engine", () => {
     setSystemPrefersDark(false);
     localStorage.setItem(THEME_STORAGE_KEY, "dark");
     run();
@@ -1360,7 +1360,7 @@ Expected: FAIL — `Cannot find module '@/lib/pre-hydration-theme'`.
 
 - [ ] **Step 7: Write the script**
 
-Create `src/lib/pre-hydration-theme.ts`. The storage key and the media query are serialised from the engine at build time — single source of truth, no manual sync.
+Create `src/lib/pre-hydration-theme.ts`. The storage key and the media query are serialized from the engine at build time — single source of truth, no manual sync.
 
 ```ts
 import { DARK_QUERY, THEME_STORAGE_KEY } from "@/lib/theme-engine";
@@ -1431,12 +1431,12 @@ Expected: `<html data-theme="dark">`, a pure black canvas, no white flash on rel
 git add -A
 git commit -m "feat(theme): resolution engine and pre-hydration script
 
-A pure resolver (explicit choice beats the OS; anything unrecognised in
+A pure resolver (explicit choice beats the OS; anything unrecognized in
 localStorage follows the OS) plus an inline script that stamps
 data-theme before first paint, so dark never flashes white.
 
 The script is pinned to the engine by test, the way the deleted scene
-script was — the storage key and media query are serialised from the
+script was — the storage key and media query are serialized from the
 engine, so the two cannot drift. Spec §4"
 ```
 
@@ -1523,7 +1523,7 @@ describe("ThemeToggle", () => {
 
   /* An explicit choice must survive a reload that disagrees with the OS —
      that is the entire reason the choice is persisted. */
-  it("honours a stored choice over the OS preference", async () => {
+  it("honors a stored choice over the OS preference", async () => {
     setSystemPrefersDark(false);
     localStorage.setItem(THEME_STORAGE_KEY, "dark");
     render(<ThemeToggle />);
@@ -1724,6 +1724,6 @@ Before planning Phase 2, all of these must hold:
 Later phases, planned against real pixels rather than guessed at now:
 
 - **Phase 2 — Welcome + nav morph.** Per-letter build-in, the living gradient (and it stays on the landed nav mark), the FLIP morph on the kept `use-wordmark-morph.ts`, the reduced-motion path that fixes the prototype's permanently-blurred wordmark and its missing accessible name.
-- **Phase 3 — About teleprompter.** `content/site/about.mdx`, the markdown-emphasis tokeniser, `teleprompter-config.ts`, the sticky 640vh stage.
+- **Phase 3 — About teleprompter.** `content/site/about.mdx`, the markdown-emphasis tokenizer, `teleprompter-config.ts`, the sticky 640vh stage.
 - **Phase 4 — Work.** The filterable vertical index first, then the horizontal gallery, then the `@modal` intercepting route and its scroll lock.
 - **Phase 5 — Contact + polish.** Restyle onto the new tokens (keep the working Resend route), `content/site/` for the remaining prose, meta/OG, full a11y and reduced-motion audit.

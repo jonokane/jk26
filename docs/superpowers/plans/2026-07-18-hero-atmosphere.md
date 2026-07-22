@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a subtle, ethereal, animated colour wash behind the hero only — two blurred depth planes (a drifting aurora haze + flowing liquid folds) drawn from the site's accents, with a reading lane that keeps the type legible and a gentle cursor push/pull — kept cheap enough not to spin fans.
+**Goal:** Add a subtle, ethereal, animated color wash behind the hero only — two blurred depth planes (a drifting aurora haze + flowing liquid folds) drawn from the site's accents, with a reading lane that keeps the type legible and a gentle cursor push/pull — kept cheap enough not to spin fans.
 
 **Architecture:** A decorative `HeroAtmosphere` client component mounts behind the hero's content, painting two `<canvas>` planes plus a reading-lane div, driven off the app's existing GSAP ticker (never a second RAF loop), rendered at reduced resolution, throttled to ~30fps, and removed entirely when the hero scrolls off-screen. Pure maths live in a unit-tested `atmosphere-engine.ts`; every tunable lives in `hero-atmosphere-config.ts`.
 
@@ -19,7 +19,7 @@ Every task's requirements implicitly include these.
 - **The locked recipe (verbatim, goes in the config):** `intensity 1.3`, `blur 33`, `variation 0.75`, `depth 0.3`, `lane 0.8`, `cursor 0.5`, `balance 0.8` (fold-forward). Palette: the site accents `--about` / `--work` / `--contact`, read live off computed style.
 - **Derived, never hardcoded:** `farBlur = blur * (1 + 0.9 * variation)`, `nearBlur = max(0, blur * (1 - 0.75 * variation))`.
 - **No second RAF loop (CLAUDE.md).** Drive the draw from `gsap.ticker` (import `gsap` from `@/lib/gsap`): `gsap.ticker.add(cb)` while the hero is on screen, `gsap.ticker.remove(cb)` when it isn't. Never call `requestAnimationFrame` or set `autoRaf`. Never change `gsap.ticker.fps()` (Lenis needs full rate — throttle *inside* the callback).
-- **Theme colours differ per theme** (`globals.css`): re-read the accents when `<html>`'s `data-theme` changes (a `MutationObserver`).
+- **Theme colors differ per theme** (`globals.css`): re-read the accents when `<html>`'s `data-theme` changes (a `MutationObserver`).
 - **Both themes:** light draws `source-over` at low alpha (pale tints on white); dark draws with `globalCompositeOperation = "lighter"` (luminous glows on black).
 - **Reduced motion is first-class (spec §11):** under `prefers-reduced-motion: reduce`, draw ONE static frame and never subscribe to the ticker.
 - **Low-power / touch downgrade:** on a coarse pointer OR a viewport narrower than `PERF.staticMaxWidth`, draw one static frame (no ticker, no cursor). Cursor interaction is fine-pointer only regardless.
@@ -69,7 +69,7 @@ export const ATMOSPHERE = {
   variation: 0.75,
   /** Contrast between sheer and dense. */
   depth: 0.3,
-  /** Reading-lane centre opacity (0 = off). */
+  /** Reading-lane center opacity (0 = off). */
   lane: 0.8,
   /** Cursor push/pull + parallax-lean strength (0 = none). */
   cursor: 0.5,
@@ -177,9 +177,9 @@ describe("foldBulge (cursor push/pull)", () => {
   it("is ~zero far from the cursor", () => {
     expect(Math.abs(foldBulge(0, 1000, 0.9, 0.3, 50, 0.5))).toBeLessThan(1e-3);
   });
-  it("is signed by whether the cursor is above/below centre", () => {
-    const above = foldBulge(500, 1000, 0.5, 0.2, 50, 0.5); // cursor above centre (y<0.5)
-    const below = foldBulge(500, 1000, 0.5, 0.8, 50, 0.5); // cursor below centre
+  it("is signed by whether the cursor is above/below center", () => {
+    const above = foldBulge(500, 1000, 0.5, 0.2, 50, 0.5); // cursor above center (y<0.5)
+    const below = foldBulge(500, 1000, 0.5, 0.8, 50, 0.5); // cursor below center
     expect(above).toBeGreaterThan(0);
     expect(below).toBeLessThan(0);
   });
@@ -236,7 +236,7 @@ export function foldAlpha(intensity: number, balance: number, depth: number, dar
 /**
  * The cursor push/pull for a fold at horizontal position `x` (the amount to
  * SUBTRACT from the fold's y). A Gaussian falloff around the cursor's x; signed
- * by whether the cursor sits above (pull up) or below (push down) centre.
+ * by whether the cursor sits above (pull up) or below (push down) center.
  * `cursorNormY` is 0..1 down the hero; `strength` is the cursor recipe.
  */
 export function foldBulge(
@@ -267,7 +267,7 @@ git commit -m "feat(hero): atmosphere engine — pure maths, unit-tested"
 
 ### Task 3: The atmosphere component + CSS (static render)
 
-Build the component that paints the two planes + reading lane, sized with overscan, coloured from the live accents — drawing ONE static frame for now (the ticker loop, cursor, and perf gating come in Tasks 4–5). Includes a jsdom smoke test.
+Build the component that paints the two planes + reading lane, sized with overscan, colored from the live accents — drawing ONE static frame for now (the ticker loop, cursor, and perf gating come in Tasks 4–5). Includes a jsdom smoke test.
 
 **Files:**
 - Create: `src/components/hero/hero-atmosphere.tsx`
@@ -307,7 +307,7 @@ Build the component that paints the two planes + reading lane, sized with oversc
   will-change: filter, transform;
 }
 
-/* The reading lane: a soft clearing in the canvas colour behind the type, its own
+/* The reading lane: a soft clearing in the canvas color behind the type, its own
    blur feathering the edges so it melts into the field. JS sets its background
    (theme ground + strength) and geometry. */
 .lane {
@@ -746,7 +746,7 @@ The atmosphere is a motion/perf feature — not done until the pixels and the pe
 
 - [ ] **Step 1: Fresh dev server.** Kill any stale `next dev`; start `pnpm dev`; confirm ready and postdating the commits (CLAUDE.md — stale servers have produced false results here).
 
-- [ ] **Step 2: Visual (light + dark).** Load `/`. Confirm: a soft, ethereal wash sits behind the hero — pale accent tints on white / luminous accent glows on black; the near folds read as more-defined than the far haze (depth of field); it fades to canvas before the About section; and the **kicker, wordmark, and tagline stay fully legible** (reading lane). Toggle the theme and confirm the field re-colours (the MutationObserver) rather than staying light-mode colours.
+- [ ] **Step 2: Visual (light + dark).** Load `/`. Confirm: a soft, ethereal wash sits behind the hero — pale accent tints on white / luminous accent glows on black; the near folds read as more-defined than the far haze (depth of field); it fades to canvas before the About section; and the **kicker, wordmark, and tagline stay fully legible** (reading lane). Toggle the theme and confirm the field re-colors (the MutationObserver) rather than staying light-mode colors.
 
 - [ ] **Step 3: Build-in.** Reload and watch: the atmosphere fades in over ~1.2s and does not pop or fight the JONOKANE build-in.
 

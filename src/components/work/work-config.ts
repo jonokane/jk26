@@ -9,7 +9,7 @@
  */
 export const WORK = {
   /**
-   * How much of each card's scroll CELL is spent holding it dead-centre, versus
+   * How much of each card's scroll CELL is spent holding it dead-center, versus
    * easing on to the next. Every card — first and last included — gets an equal
    * cell, so the most recent study dwells exactly as long as the rest (it used
    * to get a half-width band and so the least focus of all, which is why it was
@@ -28,9 +28,9 @@ export const WORK = {
   strokeSpan: 0.6,
 
   /**
-   * Where the active card centres, as a fraction of viewport width. 0.5 is dead
-   * centre; lower nudges it left so the next card peeks in further on the right.
-   * The horizontal analogue of the teleprompter's `focalPosition`.
+   * Where the active card centers, as a fraction of viewport width. 0.5 is dead
+   * center; lower nudges it left so the next card peeks in further on the right.
+   * The horizontal analog of the teleprompter's `focalPosition`.
    */
   focusX: 0.5,
 

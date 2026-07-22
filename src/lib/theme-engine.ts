@@ -22,7 +22,7 @@ export function resolveTheme(choice: ThemeChoice | null, systemPrefersDark: bool
   return systemPrefersDark ? "dark" : "light";
 }
 
-/** Narrow an untrusted localStorage value. Anything unrecognised follows the OS. */
+/** Narrow an untrusted localStorage value. Anything unrecognized follows the OS. */
 export function parseThemeChoice(raw: string | null): ThemeChoice {
   return raw === "light" || raw === "dark" || raw === "system" ? raw : "system";
 }

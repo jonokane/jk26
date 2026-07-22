@@ -7,11 +7,11 @@ _Date: 2026-07-16 · Supersedes: `2026-07-14-cyberpunk-visual-language-design.md
 Cold Noon is being parked. It failed for four reasons, in Jono's words:
 
 1. **Layout read as amateur.** Because elements had to survive every hour of the day, positions and proportions drifted into looking arbitrary.
-2. **Colour went muddy.** Every colour was a sample from a continuous curve, so nothing could be pinned down and locked. Text struggled to be legible, let alone to pop.
+2. **Color went muddy.** Every color was a sample from a continuous curve, so nothing could be pinned down and locked. Text struggled to be legible, let alone to pop.
 3. **Motion was clunky.** Tunable, but never crisp.
 4. **It read as a video game**, not as a striking image.
 
-The through-line: **a design that must hold at every hour is optimised for no hour.** v3 removes the variable. Two palettes, hand-authored and locked, and a design that leans entirely on type and motion.
+The through-line: **a design that must hold at every hour is optimized for no hour.** v3 removes the variable. Two palettes, hand-authored and locked, and a design that leans entirely on type and motion.
 
 The governing design is the handoff in `docs/notes/jk26-v3-handoff/`, developed with Claude Design.
 
@@ -25,7 +25,7 @@ The handoff documents disagree in six places. Each is resolved below with its ci
 | 2 | **Wordmark spec** | `Design System:183`'s caption says `clamp(4rem, 13vw, 12rem)` / wght 680 — while `Design System:182`, its own demo one line above, renders `clamp(4rem, 9vw, 7rem)` lowercase. The row contradicts itself. `README:55`, `README:88` and `Portfolio v2:37` all agree on `clamp(3rem, 9vw, 8rem)`, ALL CAPS, wght 300, tracking 0.14em, Config Variable. | **README + Portfolio v2.** The Design System's wordmark row is stale and internally inconsistent. Jono confirmed: Config Variable, all-caps, wght 300, 0.14em. |
 | 3 | **"Roboto Flex carries the design"** (`Design System:57`) | Contradicts `Design System:157` in the same file. | Dead prose from an earlier generation. No design impact; ignore. |
 | 4 | **Nav z-index** | `README:65` says 40; `Design System:227` says 50; `Portfolio v2` renders 40. | **40.** |
-| 5 | **Teleprompter colour roles** | `README:109` says emphasised words take the accent. `Portfolio v2` code: `live = (role === 'a') ? aboutColor : '#0d0d0d'` — ambient words take the accent, emphasised go to ink at wght 780. | **The code.** Inversion is real; see §8. |
+| 5 | **Teleprompter color roles** | `README:109` says emphasized words take the accent. `Portfolio v2` code: `live = (role === 'a') ? aboutColor : '#0d0d0d'` — ambient words take the accent, emphasized go to ink at wght 780. | **The code.** Inversion is real; see §8. |
 | 6 | **Teleprompter weight floor** | `README:109` says "440 → 780". Code is `lerp(400, target, focus)`, where 440 is the *ambient target*, not the floor. | **The code.** Base is 400. |
 
 **Rule: where a prototype's code and the README disagree, the code wins** — the README says so itself ("they are the ground truth"). The exception is where Jono has ruled directly, as in #1 and #2.
@@ -80,7 +80,7 @@ The ~40 scene custom properties are replaced by two hand-authored palettes. **Th
 
 Declared on `:root` and `:root[data-theme="dark"]`, mapped to Tailwind utilities by the existing `@theme` block in `globals.css`. Recurring materials and type roles stay semantic classes in `@layer components` — the current convention holds.
 
-**Both palettes are hand-edited, and that is a requirement.** They sit adjacent in `globals.css`, one block each, same token names in the same order, so the two can be read side by side and a value changed in one line. Nothing is derived, computed, or generated from the other — a hex is a hex. Dark is expected to be iterated on after it is built (Jono, 2026-07-16); anything that makes changing a colour require touching logic is a defect.
+**Both palettes are hand-edited, and that is a requirement.** They sit adjacent in `globals.css`, one block each, same token names in the same order, so the two can be read side by side and a value changed in one line. Nothing is derived, computed, or generated from the other — a hex is a hex. Dark is expected to be iterated on after it is built (Jono, 2026-07-16); anything that makes changing a color require touching logic is a defect.
 
 ### Light (handoff verbatim)
 
@@ -118,7 +118,7 @@ Canvas `#000000` per the brief. The handoff accents fail on black — violet lan
 
 ### The hardcoded-hex trap
 
-The prototype's teleprompter interpolates toward `'#0d0d0d'` and `'#bcbcbc'` as **JS string literals**, not tokens. Ported as-is, dark mode breaks silently — emphasised words would resolve to near-black on a black canvas. **Every colour the motion layer interpolates must be read from the token layer** (resolved once per theme change and cached, not per frame).
+The prototype's teleprompter interpolates toward `'#0d0d0d'` and `'#bcbcbc'` as **JS string literals**, not tokens. Ported as-is, dark mode breaks silently — emphasized words would resolve to near-black on a black canvas. **Every color the motion layer interpolates must be read from the token layer** (resolved once per theme change and cached, not per frame).
 
 ## 4. Theme
 
@@ -144,7 +144,7 @@ A third Velite collection — `welcome.mdx`, `about.mdx`, `contact.mdx` — carr
 | Markdown | Role | Rendering |
 |---|---|---|
 | unmarked | `a` (ambient) | mixes `--dim` → `--about`, weight 400 → 440 |
-| `**bold**` | `e` (emphasised) | mixes `--dim` → `--ink`, weight 400 → 780 |
+| `**bold**` | `e` (emphasized) | mixes `--dim` → `--ink`, weight 400 → 780 |
 | `*italic*` | `i` | mixes `--dim` → `--ink`, weight 400 → 440, italic |
 
 So the author writes:
@@ -154,9 +154,9 @@ For two decades I have solved challenging product and UX problems at **Yahoo!**,
 **Amazon**, **Meta**, and smaller startups, and now as founder of **Collaya**.
 ```
 
-A Velite transform reads the raw body, splits paragraphs into statements, and tokenises each into `{text, role}[]`. Pure function, unit-tested — structurally identical to the proven `splitMarkdownSections`. Editing the words, or which words land heavy, never touches a component.
+A Velite transform reads the raw body, splits paragraphs into statements, and tokenizes each into `{text, role}[]`. Pure function, unit-tested — structurally identical to the proven `splitMarkdownSections`. Editing the words, or which words land heavy, never touches a component.
 
-Tokeniser contract: split on whitespace; punctuation stays attached to its word; the rendered spans carry no whitespace between them (the `.aline` flex `column-gap: 0.26em` supplies the spacing, per the prototype).
+Tokenizer contract: split on whitespace; punctuation stays attached to its word; the rendered spans carry no whitespace between them (the `.aline` flex `column-gap: 0.26em` supplies the spacing, per the prototype).
 
 `site-content.ts` keeps only micro-strings — nav labels, accessible names, button text, validation messages — where the compiler checks them.
 
@@ -176,7 +176,7 @@ background-clip: text;
 animation: drift 9s ease-in-out infinite;
 ```
 
-Per-letter `animation-delay`: `0, -0.6, -1.2, -1.8, -2.4, -3, -3.6, -4.2s`. Negative offsets phase each letter into the same loop, so colour travels through the word rather than eight letters pulsing together. The gradient returns to `--about` at 100% so the 280% pan is seamless.
+Per-letter `animation-delay`: `0, -0.6, -1.2, -1.8, -2.4, -3, -3.6, -4.2s`. Negative offsets phase each letter into the same loop, so color travels through the word rather than eight letters pulsing together. The gradient returns to `--about` at 100% so the 280% pan is seamless.
 
 This is the one place three accents coexist. Welcome owns no accent of its own; the gradient previews all three. "One accent per section" holds for About/Work/Contact.
 
@@ -186,13 +186,13 @@ This is the one place three accents coexist. Welcome owns no accent of its own; 
 
 1. **Reduced motion leaves the wordmark permanently 2.5× scaled and 9px blurred.** The prototype's reset targets `#wm-fly .l`, but the fly copy is `display:none` in reduce mode; the visible anchor letters only get `opacity` overridden and keep inheriting the from-state transform and filter. v3 resolves to rest state on whichever copy is visible.
 2. **No accessible name under reduced motion.** `aria-label` lives on the fly copy, which is hidden in that mode. The accessible name must not depend on the motion path.
-3. **`drift` is never gated.** An infinite colour animation must respect `prefers-reduced-motion`; it resolves to a static mid-phase fill.
+3. **`drift` is never gated.** An infinite color animation must respect `prefers-reduced-motion`; it resolves to a static mid-phase fill.
 
 ## 7. Nav + morph
 
 Fixed, `padding: 26px 6vw`, z-index 40, glass (`--nav-glass` + `backdrop-filter: blur(20px) saturate(1.4)`). Hidden until `header-on`; `opacity .4s`, `transform .45s cubic-bezier(.2,.7,.2,1)`.
 
-Scroll-scrubbed FLIP over the first `0.85 × vh`: `p = clamp(scrollY / (0.85·vh), 0, 1)`, eased `e = p²(3−2p)`. An in-flow anchor (`visibility:hidden`) supplies the start rect; a fixed fly copy (`z-index:45`, `transform-origin: 0 0`) moves. Interpolate left edge, **vertical centre**, and scale (`1 → endH/startH`), then convert centre back to a top-left `y = cy − (startH·k)/2`. `header-on` toggles at `p > 0.98`.
+Scroll-scrubbed FLIP over the first `0.85 × vh`: `p = clamp(scrollY / (0.85·vh), 0, 1)`, eased `e = p²(3−2p)`. An in-flow anchor (`visibility:hidden`) supplies the start rect; a fixed fly copy (`z-index:45`, `transform-origin: 0 0`) moves. Interpolate left edge, **vertical center**, and scale (`1 → endH/startH`), then convert center back to a top-left `y = cy − (startH·k)/2`. `header-on` toggles at `p > 0.98`.
 
 **The landed wordmark keeps the living gradient** (Jono, 2026-07-16; visible in the 2026-07-16 prototype still, where the nav mark reads green→violet). This is automatic rather than a special case: the fly copy *becomes* the nav brand — it never fades out and the `#brand-slot` stays at `opacity: 0` behind it forever — so the gradient and its 9s `drift` simply ride along at nav scale. Do not "simplify" the landed state to a flat-ink brand; and note `drift` must keep running after the morph settles.
 
@@ -209,7 +209,7 @@ Deltas to adopt from the prototype: measure every frame (the hook measures on Sc
 A `640vh` wrapper drives a `sticky`, `100vh`, `overflow:hidden` stage. Scroll budget 540vh. Locked title "Who I am." top-left in `--about`. Right rail of 4 dots (6px → 9px, `--dim` → `--about`, `all 0.4s ease`).
 
 ```js
-focalY     = vh * 0.6                                   // focal centre
+focalY     = vh * 0.6                                   // focal center
 focalRange = vh * 0.24                                  // falloff radius
 lp         = clamp(-wrapRect.top / (wrapH - vh), 0, 1)
 activeCenter = lerp(firstBlockCenter, lastBlockCenter, lp)
@@ -227,19 +227,19 @@ opacity = delta < 0 ? lerp(0.5, 1, focus) : lerp(0.14, 1, focus)
 
 Per word: `color = mix(--dim, live, focus)`, `wght = lerp(400, target, focus)`, where `live`/`target` come from the role table in §5.
 
-**Build the code's behaviour, not the README's paraphrase** (register #5, #6).
+**Build the code's behavior, not the README's paraphrase** (register #5, #6).
 
-**Colour roles are inverted from the README.** `README:109` says emphasised words take the accent. The code gives the accent to *unmarked* words and sends *emphasised* words to **ink** at weight 780. The design is a field of green with black bold hits — not black text with green highlights. This is the single most consequential misreading available here: build it from the README and the section reads inside-out.
+**Color roles are inverted from the README.** `README:109` says emphasized words take the accent. The code gives the accent to *unmarked* words and sends *emphasized* words to **ink** at weight 780. The design is a field of green with black bold hits — not black text with green highlights. This is the single most consequential misreading available here: build it from the README and the section reads inside-out.
 
 **Base weight is 400**, not 440 — 440 is the ambient target.
 
 **The opacity floors are counterintuitive and the README omits them.** Words above the focus blur hard (7px) but hold a floor of **0.5**; words below stay crisp (2px) but fade to **0.14**. Read words go soft but stay present; unread words stay sharp but recede. The blur figures themselves match the README exactly — only the floors are missing from it.
 
-Measure block centres on resize and `document.fonts.ready`.
+Measure block centers on resize and `document.fonts.ready`.
 
 ### Every constant above lives in `teleprompter-config.ts`
 
-The focal position and range, both blur ceilings, both opacity floors, the weight floor and its three targets, and the rail dot sizes are **tunables, not literals** — the same treatment `wordmark-config.ts` and `scene-config.ts` gave their recipes. Jono expects to tweak the 0.5 floor and its neighbours by feel after seeing it move (2026-07-16), and that must be a one-line edit in one file, not a hunt through a hook.
+The focal position and range, both blur ceilings, both opacity floors, the weight floor and its three targets, and the rail dot sizes are **tunables, not literals** — the same treatment `wordmark-config.ts` and `scene-config.ts` gave their recipes. Jono expects to tweak the 0.5 floor and its neighbors by feel after seeing it move (2026-07-16), and that must be a one-line edit in one file, not a hunt through a hook.
 
 ```ts
 export const TELEPROMPTER = {
@@ -261,7 +261,7 @@ The weights are the one unavoidable duplication: the hook lerps them, and the re
 
 The focus/blur/opacity/weight math itself is a pure function over this config and a distance — unit-tested, no DOM. The hook does measurement and writes styles; it holds no numbers.
 
-Guard fix: the prototype uses `if (!this.first) return`, so a first-block centre of exactly `0` silently kills the teleprompter. Use an explicit measured flag.
+Guard fix: the prototype uses `if (!this.first) return`, so a first-block center of exactly `0` silently kills the teleprompter. Use an explicit measured flag.
 
 ## 9. Work — hybrid
 
@@ -284,16 +284,16 @@ The gallery is a **horizontal teleprompter** — the About section's mechanic tu
 ```js
 lp    = clamp(-wrapRect.top / (wrapH - vh), 0, 1)          // 0..1 across the pin
 idx   = dwelledIndex(lp, panelCount, DWELL)                // fractional panel index, plateau at each integer
-x     = focusX * innerWidth - lerp(cardCentres, idx)       // centre the active card at focusX
+x     = focusX * innerWidth - lerp(cardCenters, idx)       // center the active card at focusX
 track.transform = translateX(x)
 progress.width  = lp * 100 + '%'
 ```
 
 **Dwell is the fix for "the first study is easy to scroll past," and it is a tunable, not a constant.** A linear scroll→pan map gives every card the same constant velocity, so the most recent and most important study slides by no more stickily than any other. `dwelledIndex` instead holds each card at the focus position for a stretch of scroll, then eases (smoothstep) to the next — so you cannot cross a card without scrolling *through* its dwell. `DWELL ∈ [0,1]` spans continuous-skim (`0`, a gentle per-card ease) to one-at-a-time snap (`1`); it lives in the config for Jono to dial by feel. There is **no "linear, no easing"** rule — that was an early mistake; motion on this site is eased by default.
 
-`cardCentres` are measured once per layout (track-local, cached), not per frame — which also retires the prototype's per-frame `getBoundingClientRect`. `travel` for the wrapper height is `lastCentre − firstCentre`, still derived from measured content, never authored.
+`cardCenters` are measured once per layout (track-local, cached), not per frame — which also retires the prototype's per-frame `getBoundingClientRect`. `travel` for the wrapper height is `lastCenter − firstCenter`, still derived from measured content, never authored.
 
-Active index is `round(idx)`; because each card is genuinely centred at focus, the counter agrees with the eye by construction. Cards within `focalBand × innerWidth` of the focus sit at opacity 1, else `0.42`, `transition: opacity 0.5s ease`.
+Active index is `round(idx)`; because each card is genuinely centered at focus, the counter agrees with the eye by construction. Cards within `focalBand × innerWidth` of the focus sit at opacity 1, else `0.42`, `transition: opacity 0.5s ease`.
 
 **The focused card traces its own perimeter as you scroll through its dwell.** A high dwell holds a card almost still, which raises the question "am I still scrolling?" — the stroke answers it. A 2px ring (`--work`) draws from the top-left corner clockwise around the card, `0→1` across the card's active band (`cardStrokeProgress`), completing exactly as the card hands off; it fades in on focus and out as the card dims. It is an SVG `rect` with `pathLength=1`, so `stroke-dashoffset = 1 − progress` traces it whatever the card's real size, driven per frame by the hook. Purpose: keep the eye moving on a held card, draw attention to it as the clickable thing, and tell the visitor their scroll is landing — either click this one or keep going to the next. Decorative, `aria-hidden`, `pointer-events:none` so it never intercepts a click.
 
@@ -337,7 +337,7 @@ The prototype's overlay and the repo's `/work/[slug]` are the same thing at two 
 - `@modal/(.)work/[slug]` — slides up from a gallery/index click, `translateY(100%→0)`, `0.6s cubic-bezier(.2,.8,.2,1)`, pill close top-right, Escape to close.
 - `/work/[slug]` — full page on direct load, refresh, or share.
 
-URL stays the source of truth for what's open; back button and SEO both work. Content: eyebrow (`client`), `h1`, impact lead, attribute grid (`dt`/`dd`), labelled prose sections from `sections()`, `.dshot` slot.
+URL stays the source of truth for what's open; back button and SEO both work. Content: eyebrow (`client`), `h1`, impact lead, attribute grid (`dt`/`dd`), labeled prose sections from `sections()`, `.dshot` slot.
 
 **Add the scroll lock the prototype lacks.** It relies on `overscroll-behavior: contain` alone, so the page scrolls behind the open overlay. Stop the Lenis instance while the modal is open and resume on close.
 
@@ -368,7 +368,7 @@ Reveal: one-shot IntersectionObserver at threshold 0.2, `unobserve` on fire, `op
 
 **Repurposed:** `use-wordmark-morph.ts` (§7) · `pre-hydration-scene.ts` → `pre-hydration-theme.ts` (§4) · `shelf-math.ts` → gallery scroll→X (§9) · `url-label.ts` (§5) · `case-study-*` → detail surface (§10) · `use-scroll-spy.ts` → mid-test rewrite (§7) · `site-content.ts` → labels only (§5).
 
-**New:** theme provider + toggle · `content/site/` collection + statement tokeniser · teleprompter · gallery + index + toggle · `@modal` intercepting route · Config Variable registration.
+**New:** theme provider + toggle · `content/site/` collection + statement tokenizer · teleprompter · gallery + index + toggle · `@modal` intercepting route · Config Variable registration.
 
 Also remove: the unused `Geist`/`Geist_Mono` `next/font/google` imports in `layout.tsx` — leftovers; the site is served entirely from the Adobe kit.
 

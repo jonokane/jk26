@@ -24,14 +24,14 @@ const PANEL_SELECTOR = "[data-work-card], [data-work-panel]";
  *
  * `deltaX` is only pixels when `deltaMode` says so. It is also emitted in LINES
  * (mode 1 — Firefox's mouse wheel, and its shift+wheel) and pages (mode 2), so a
- * raw `deltaX` of 3 can mean "three lines", not three pixels. Unnormalised, a
- * line-mode notch was measured travelling 1px where its pixel-mode equivalent
- * travelled 98 — and because the handler calls `preventDefault` first, the
+ * raw `deltaX` of 3 can mean "three lines", not three pixels. Unnormalized, a
+ * line-mode notch was measured traveling 1px where its pixel-mode equivalent
+ * traveled 98 — and because the handler calls `preventDefault` first, the
  * browser's own scrolling is suppressed too. The gesture is not merely wrong, it
  * is dead, which spec §9 names as worse than never claiming it.
  *
  * The constants are Lenis's own (`LINE_HEIGHT = 100 / 6`), not a guess: it
- * normalises every wheel event it handles this way, so matching it keeps a pan
+ * normalizes every wheel event it handles this way, so matching it keeps a pan
  * and a scroll feeling like the same hand.
  */
 const LINE_HEIGHT = 100 / 6;
@@ -74,16 +74,16 @@ export function useGallery({
 
     let travel = 0;
     let lastIndex = -1;
-    /* The cards, and their track-local centres, cached from `measure`. Reading
+    /* The cards, and their track-local centers, cached from `measure`. Reading
        them here rather than per frame is the difference between one layout pass
        when the size changes and one forced reflow every single frame (a card's
        `getBoundingClientRect` in `update` synchronously flushed layout, which
-       Task 6's review flagged). Track-local centres do not move as the track
+       Task 6's review flagged). Track-local centers do not move as the track
        pans, so they only change on resize or font load — exactly when `measure`
        already runs. */
     let cards: HTMLElement[] = [];
-    let centres: number[] = [];
-    /* Each card's perimeter-stroke rect, cached alongside the centres. Parallel
+    let centers: number[] = [];
+    /* Each card's perimeter-stroke rect, cached alongside the centers. Parallel
        to `cards`, so `traceRects[i]` belongs to `cards[i]`; the earlier-work
        panel has no rect, hence the nulls. */
     let traceRects: (SVGElement | null)[] = [];
@@ -101,11 +101,11 @@ export function useGallery({
       if (disposed) return;
       cards = [...track.querySelectorAll<HTMLElement>(PANEL_SELECTOR)];
       /* Track-local: `offsetLeft` is relative to the track (its offset parent),
-         and unaffected by the track's own transform, so a centre measured here
+         and unaffected by the track's own transform, so a center measured here
          stays valid every frame however far the track has panned. */
-      centres = cards.map((card) => card.offsetLeft + card.offsetWidth / 2);
+      centers = cards.map((card) => card.offsetLeft + card.offsetWidth / 2);
       traceRects = cards.map((card) => card.querySelector<SVGElement>("[data-trace]"));
-      travel = travelFor(centres);
+      travel = travelFor(centers);
       /* The wrapper's height IS the scroll budget, derived from what we just
          measured. The prototype hardcoded 520vh and let the two drift apart
          every time a study was added or drafted (spec §9, gap 1). */
@@ -122,8 +122,8 @@ export function useGallery({
       /* The horizontal teleprompter: hold each card at the focus, ease to the
          next (spec §9). The dwell is what keeps the first, most-recent study from
          being scrolled past. */
-      const index = dwelledIndex(progress, centres.length, WORK.dwell);
-      const offset = focusOffset(centres, index, window.innerWidth);
+      const index = dwelledIndex(progress, centers.length, WORK.dwell);
+      const offset = focusOffset(centers, index, window.innerWidth);
       track.style.transform = `translateX(${offset.toFixed(1)}px)`;
 
       const bar = progressRef.current;
@@ -134,9 +134,9 @@ export function useGallery({
 
       const focus = WORK.focusX * window.innerWidth;
       cards.forEach((card, i) => {
-        /* Its live viewport centre is its cached track-local centre plus however
+        /* Its live viewport center is its cached track-local center plus however
            far the track has panned — no per-card layout read. */
-        card.style.opacity = String(cardOpacityFor(centres[i] + offset - focus, window.innerWidth));
+        card.style.opacity = String(cardOpacityFor(centers[i] + offset - focus, window.innerWidth));
       });
 
       /* Only on change: this runs every frame and a setState per frame would
@@ -158,7 +158,7 @@ export function useGallery({
       const ring = traceRects[active];
       if (ring) {
         ring.style.strokeDashoffset = (
-          1 - cardStrokeProgress(progress, centres.length, active)
+          1 - cardStrokeProgress(progress, centers.length, active)
         ).toFixed(3);
       }
     };
@@ -214,7 +214,7 @@ export function useGallery({
      * cannot bring a focused off-screen card into view on its own, and a keyboard
      * user would land on invisible focus (the Phase 3 About bug, one axis over).
      *
-     * So when focus enters a panel, drive the page scroll that centres it — the
+     * So when focus enters a panel, drive the page scroll that centers it — the
      * same scroll a pointer pan would — and the card glides to the focus with its
      * ring where the eye is. `focusin` (not `focus`) because it bubbles up from
      * the link to this track listener. The toggle sits outside the track, so
@@ -228,9 +228,9 @@ export function useGallery({
       if (index < 0) return;
       const budget = wrap.offsetHeight - window.innerHeight;
       if (budget <= 0) return;
-      /* The middle of this panel's dwell hold, so it lands centred rather than
+      /* The middle of this panel's dwell hold, so it lands centered rather than
          caught mid-transition. */
-      const targetProgress = Math.min(1, (index + WORK.dwell / 2) / centres.length);
+      const targetProgress = Math.min(1, (index + WORK.dwell / 2) / centers.length);
       const targetY = wrap.getBoundingClientRect().top + window.scrollY + targetProgress * budget;
       const focusLenis = getLenis();
       if (focusLenis) focusLenis.scrollTo(targetY);

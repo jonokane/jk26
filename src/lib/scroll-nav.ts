@@ -69,7 +69,7 @@ export function isPlainClick(e: MouseEvent): boolean {
  * on the site glides the same way and one mechanism owns it.
  *
  * This lives here, next to navigateTo, because it was the nav's private
- * behaviour for a phase and the About statement's "Hit me up" was a raw
+ * behavior for a phase and the About statement's "Hit me up" was a raw
  * `<a href="#contact">` that fell through to the browser: the header's Contact
  * eased 5897 → 7868 over ~1.2s while the identical destination, one section
  * up, arrived at 7868 in 60ms. Same site, same link, two different mechanisms —

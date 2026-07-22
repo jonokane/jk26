@@ -32,7 +32,7 @@ export function foldAlpha(intensity: number, balance: number, depth: number, dar
 /**
  * The cursor push/pull for a fold at horizontal position `x` (the amount to
  * SUBTRACT from the fold's y). A Gaussian falloff around the cursor's x; signed
- * by whether the cursor sits above (pull up) or below (push down) centre.
+ * by whether the cursor sits above (pull up) or below (push down) center.
  * `cursorNormY` is 0..1 down the hero; `strength` is the cursor recipe.
  */
 export function foldBulge(

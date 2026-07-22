@@ -66,7 +66,7 @@ describe("the weights CSS states and the config lerps", () => {
     expect(pinnedWeight(rule, ".word")).toBe(T.weightAmbient);
   });
 
-  it("pins emphasised words to TELEPROMPTER.weightEmphasis", () => {
+  it("pins emphasized words to TELEPROMPTER.weightEmphasis", () => {
     const rule = block(reducedMotion, '.word[data-word="emphasis"]');
     expect(pinnedWeight(rule, '.word[data-word="emphasis"]')).toBe(T.weightEmphasis);
   });

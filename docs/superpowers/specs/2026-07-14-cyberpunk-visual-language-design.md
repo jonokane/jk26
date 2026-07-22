@@ -22,7 +22,7 @@ cartoon clouds, flapping birds, a friendly sun. That is not Jono, and it is not 
 
 The target is the intersection of **Ash Thorp** and **Chris Cunningham** — slick futurism laced with grime and
 dread. The reference that settled the palette is the sea-wall shot from *Blade Runner 2049*: near-monochrome,
-luminous grey, colossal, and utterly desolate, with the only true blacks in the frame belonging to the two
+luminous gray, colossal, and utterly desolate, with the only true blacks in the frame belonging to the two
 human figures.
 
 ### The thesis
@@ -105,7 +105,7 @@ Replaces the table in `src/lib/scene-config.ts`.
 | 21.5 | Evening | `#0a0e19` | `#142134` | `#24394b` | `#dbe6f0` | `#8299ac` |
 
 Dawn / Golden / Dusk / Evening are the deep saturated washes. Morning / Midday are the cold, drained,
-BR2049 greys. **These are starting values** — refine them in the `?tune` panel and copy the JSON out, per
+BR2049 grays. **These are starting values** — refine them in the `?tune` panel and copy the JSON out, per
 the existing workflow. Do not hand-edit them mid-implementation.
 
 ### 3.2 Accent colors
@@ -179,7 +179,7 @@ the old `birds` weight is **flat zero all night**, which would give us drones th
 
 **Gesture, not skyline.** One colossal form the viewer **cannot name.** Ambiguity is the entire engine of
 dread — the moment someone thinks *"oh, buildings,"* it stops being unsettling, which is precisely the
-mistake the cute clouds were making, repainted grey.
+mistake the cute clouds were making, repainted gray.
 
 Required properties, all present in the reference still:
 
@@ -272,7 +272,7 @@ Added to `deriveTokens` in `scene-engine.ts`:
 | `--daylight` | `0–1`, normalized `luminance(--sky-mid)`. Drives every day-face/night-face crossfade. |
 | `--struct-far`, `--struct-mass`, `--struct-pylon`, `--struct-gantry` | The four megastructure depths. Each mixes a base toward `--sky-hor` by its aerial-perspective amount, **then is clamped by §7.** |
 | `--slab-bg` | Per §6.1. |
-| `--slab-ink` | `#e6edee`. A **constant**, not scene-derived — the slab is always a dark surface, so its text is always light. This is the token that replaces the flipping `inkLight` behaviour, and it is deliberately *not* `--ink` (which still flips: dark at noon, light at night, because it sits on the bare sky). |
+| `--slab-ink` | `#e6edee`. A **constant**, not scene-derived — the slab is always a dark surface, so its text is always light. This is the token that replaces the flipping `inkLight` behavior, and it is deliberately *not* `--ink` (which still flips: dark at noon, light at night, because it sits on the bare sky). |
 
 ### 6.3 Radius — tokenize it
 
@@ -306,7 +306,7 @@ between them.
 > The content always wins the value contest.
 
 This is not an aesthetic preference — it is drawn from the reference. In the BR2049 still, **the two people
-and the car are the darkest values in the entire frame.** The architecture is all mid-grey. Villeneuve did not
+and the car are the darkest values in the entire frame.** The architecture is all mid-gray. Villeneuve did not
 let the scenery out-black the subject.
 
 **Implementation.** A pure clamp in `scene-engine.ts`:
@@ -580,15 +580,15 @@ Recorded so we do not relitigate them.
 
 | Rejected | Why |
 |---|---|
-| Cute vector clouds, flapping birds | Nameable cartoon objects. Recoloring them grey yields a *gloomy cheerful* sky, which is worse than either. |
-| Skyline megastructure | Nameable. The same mistake as the clouds, in grey. |
+| Cute vector clouds, flapping birds | Nameable cartoon objects. Recoloring them gray yields a *gloomy cheerful* sky, which is worse than either. |
+| Skyline megastructure | Nameable. The same mistake as the clouds, in gray. |
 | Greebled / detailed vector | Every greeble makes the form more nameable and drags it toward a skyline. |
 | Photoreal raster megastructure | **Cannot recolor.** A fixed pixel array bolted onto a continuously-interpolating system. |
 | Lit / emitting slab edge | Reads as a videogame dialog box. |
 | Scanlines, chromatic aberration | Costume. Off-the-shelf signifiers. |
 | Frosted glass (`backdrop-filter`) | An Apple idiom, not a cyberpunk one. |
 | "Kill the clock" / perpetual dark | **Secretly kills the feature while keeping the code.** If every hour is a shade of dark, no visitor ever notices the cycle. |
-| Hot sodium noon (no grey at all) | Seamless, but *pretty* — and pretty is the trap we are running from. |
+| Hot sodium noon (no gray at all) | Seamless, but *pretty* — and pretty is the trap we are running from. |
 | Constant near-black slab | Dies at midnight. Nowhere to go. |
 | Bold grotesque wordmark (Space Grotesk et al.) | Reads as *aggressive tech*. Config's thin geometric reads as *clinical precision* — the Cunningham half of the thesis. |
 | Uniform-width letter boxes at rest | Correct during the scramble, wrong at rest — narrow letters float (the "J⎵ONOKANE" bug). Natural widths at rest. |

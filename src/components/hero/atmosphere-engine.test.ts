@@ -52,9 +52,9 @@ describe("foldBulge (cursor push/pull)", () => {
   it("is ~zero far from the cursor", () => {
     expect(Math.abs(foldBulge(0, 1000, 0.9, 0.3, 50, 0.5))).toBeLessThan(1e-3);
   });
-  it("is signed by whether the cursor is above/below centre", () => {
-    const above = foldBulge(500, 1000, 0.5, 0.2, 50, 0.5); // cursor above centre (y<0.5)
-    const below = foldBulge(500, 1000, 0.5, 0.8, 50, 0.5); // cursor below centre
+  it("is signed by whether the cursor is above/below center", () => {
+    const above = foldBulge(500, 1000, 0.5, 0.2, 50, 0.5); // cursor above center (y<0.5)
+    const below = foldBulge(500, 1000, 0.5, 0.8, 50, 0.5); // cursor below center
     expect(above).toBeGreaterThan(0);
     expect(below).toBeLessThan(0);
   });

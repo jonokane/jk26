@@ -29,7 +29,7 @@
 ## Verifying visual work (this phase is nearly all visual)
 
 - **Look at the rendered pixels**, in light and dark, before calling anything done.
-- **Reachability is never `element.click()`** — it fires on hidden elements. Ask `document.elementFromPoint(rect centre)`. A whole nav was invisible on `/` in Phase 1 while a scripted click "passed".
+- **Reachability is never `element.click()`** — it fires on hidden elements. Ask `document.elementFromPoint(rect center)`. A whole nav was invisible on `/` in Phase 1 while a scripted click "passed".
 - **Check the dev server postdates your commit.** Stale `next-server` processes have served days-old CSS twice on this project. If one is running, confirm its start time; otherwise `rm -rf .next` and restart.
 - Verify reduced motion by emulating it, not by reading the code.
 
@@ -206,13 +206,13 @@ describe("living gradient", () => {
     expect(css).toContain("background-size: 280% 100%");
   });
 
-  it("phase-shifts each letter with negative delays so colour travels", () => {
+  it("phase-shifts each letter with negative delays so color travels", () => {
     for (const d of ["-0.6s", "-1.2s", "-1.8s", "-2.4s", "-3s", "-3.6s", "-4.2s"]) {
       expect(css).toContain(d);
     }
   });
 
-  /* An infinite colour animation must respect prefers-reduced-motion
+  /* An infinite color animation must respect prefers-reduced-motion
      (spec §6, bug 3 — the prototype never gates drift). */
   it("gates drift behind prefers-reduced-motion", () => {
     const rm = css.slice(css.indexOf("prefers-reduced-motion"));
@@ -251,7 +251,7 @@ Append to `src/components/hero/hero.module.css`. Values verbatim from the protot
   animation: drift 9s ease-in-out infinite;
 }
 
-/* Negative delays offset each letter into the SAME 9s loop, so colour travels
+/* Negative delays offset each letter into the SAME 9s loop, so color travels
    through the word instead of eight letters pulsing in unison. */
 .letter:nth-child(1) { animation-delay: 0s; }
 .letter:nth-child(2) { animation-delay: -0.6s; }
@@ -299,7 +299,7 @@ git add src/components/hero/hero.module.css src/components/hero/hero.test.tsx
 git commit -m "feat(hero): the living gradient
 
 Each letter carries its own three-accent gradient on a 9s drift, with
-negative per-letter delays so colour travels through the word. Welcome
+negative per-letter delays so color travels through the word. Welcome
 owns no single accent; the gradient previews all three (spec §6).
 
 The gradient is per-letter by necessity, not preference: the letters are
@@ -875,7 +875,7 @@ With the dev server confirmed fresh:
 1. Load `/` and watch the build-in. **There must be exactly ONE wordmark on screen throughout** — if a
    second one appears pinned to the top-left corner, the fly's handover is broken. Then at scrollY 0:
    no nav (spec §6), wordmark large in the hero.
-2. Scroll slowly to ~0.85×vh. Expected: the wordmark flies up and left, shrinking, and **lands centred on the nav links** — becoming the header mark. The nav glass fades in as it arrives.
+2. Scroll slowly to ~0.85×vh. Expected: the wordmark flies up and left, shrinking, and **lands centered on the nav links** — becoming the header mark. The nav glass fades in as it arrives.
 3. At the landed state, confirm **the gradient is still drifting on the nav mark** (spec §7 — the fly *becomes* the brand and never fades out). A flat-ink brand means the fly was faded and the wrong copy is showing.
 4. `document.elementFromPoint()` over the theme toggle must return the toggle button — the nav must still be usable after the morph.
 5. Scroll back to 0: the morph reverses cleanly and the nav leaves.

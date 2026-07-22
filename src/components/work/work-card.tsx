@@ -31,7 +31,7 @@ export function WorkCard({ study, number }: { study: CaseStudy; number: number }
       {/* The perimeter stroke the gallery traces while this card holds at the
           focus (spec §9): the moving proof that a still card is still catching
           the scroll. use-gallery drives `stroke-dashoffset` on the rect; the
-          card owns none of that logic. `pathLength={1}` normalises the perimeter
+          card owns none of that logic. `pathLength={1}` normalizes the perimeter
           so the offset is a plain 0..1 fraction whatever the card's real size,
           and non-scaling-stroke keeps it a crisp 2px. Decorative — aria-hidden. */}
       <svg className={styles.trace} preserveAspectRatio="none" aria-hidden="true">

@@ -1066,7 +1066,7 @@ export function HeroWordmark({ className }: { className?: string }) {
   // The wordmark must never appear in a fallback font mid-animation: stay
   // invisible until the webfont is confirmed, and give up after ~3s.
   useEffect(() => {
-    let cancelled = false;
+    let canceled = false;
     const timeout = new Promise<"fallback">((resolve) =>
       setTimeout(() => resolve("fallback"), FONT_TIMEOUT_MS),
     );
@@ -1075,10 +1075,10 @@ export function HeroWordmark({ className }: { className?: string }) {
       .then((faces): FontState => (faces.length > 0 ? "ready" : "fallback"))
       .catch((): FontState => "fallback");
     Promise.race([load, timeout]).then((state) => {
-      if (!cancelled) setFontState(state === "ready" ? "ready" : "fallback");
+      if (!canceled) setFontState(state === "ready" ? "ready" : "fallback");
     });
     return () => {
-      cancelled = true;
+      canceled = true;
     };
   }, []);
 

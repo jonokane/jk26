@@ -70,7 +70,7 @@
    The gradient, the clip and the resulting transparent fill only apply
    where the browser can actually clip a background to glyph outlines (see
    @supports below). Elsewhere the letter spans set none of it, so they
-   inherit the wordmark's opaque ink colour — readable and static, rather
+   inherit the wordmark's opaque ink color — readable and static, rather
    than an invisible wordmark.
 
    Order below is load-bearing, in the feature query and the rule body
@@ -108,7 +108,7 @@
 /* A registered custom property so it can be ANIMATED as a length. The wordmark's
    heroDrift animation sways it between the two endpoints hero.tsx computes from
    the word width (--wm-drift-a / -b); every letter inherits it and adds it to its
-   slice offset, so the colour travels through the word as one. Without @property
+   slice offset, so the color travels through the word as one. Without @property
    support it stays at 0 — a static cohesive gradient, which is still correct. */
 @property --hero-drift {
   syntax: "<length>";

@@ -11,7 +11,7 @@
 }
 
 /* The tall wrapper is the scroll budget: 640vh drives a sticky 100vh stage,
-   so 540vh of scroll sweeps the focal centre from the first statement to the
+   so 540vh of scroll sweeps the focal center from the first statement to the
    last (spec §8). */
 .wrap {
   height: 640vh;
@@ -63,11 +63,11 @@
    full width. */
 /* Normal inline flow, NOT the prototype's flex row.
    Flex blockifies its children, so every word computed to display:block and
-   the clipboard serialiser put a newline between each one — copying a
+   the clipboard serializer put a newline between each one — copying a
    statement gave one word per line. (Screen readers were unaffected: they read
    the aria-label, a different pipeline entirely.)
    The prototype needs flex + column-gap because its spans carry no whitespace
-   and punctuation has to ride on the word. Our tokeniser already attaches
+   and punctuation has to ride on the word. Our tokenizer already attaches
    punctuation at the data level, so real spaces between the words are free —
    and a real space is what makes a copy, a find-in-page, and a translation
    engine see a sentence.
@@ -105,7 +105,7 @@
    This has a price, paid at .link below: an underline is not drawn through an
    ATOMIC inline-level box, so an <a> around these words cannot underline them
    itself. Do not add `display` here without reading that rule.
-   Not `block`, which would make the clipboard serialiser break the line after
+   Not `block`, which would make the clipboard serializer break the line after
    every word. */
 .word {
   display: inline-block;
@@ -199,14 +199,14 @@
 }
 
 /* A link inside a statement. It must not fight the teleprompter: the words
-   inside keep their own animated colour and weight, so the link is marked by
-   an underline alone and never by a colour of its own.
+   inside keep their own animated color and weight, so the link is marked by
+   an underline alone and never by a color of its own.
    `color` looks like it breaks that rule and does not. Every glyph in the <a>
    sits in a .word span the hook paints, so the only text the <a> holds
-   directly is the spaces — invisible. Its colour therefore paints exactly one
+   directly is the spaces — invisible. Its color therefore paints exactly one
    thing: the underline. The accent is what makes that underline match the
    ambient words above it, and it CANNOT be set from .word, because a
-   propagated decoration is painted in the colour of the box that declared it,
+   propagated decoration is painted in the color of the box that declared it,
    not of the descendant it passes through.
    Out of focus the whole statement fades and blurs as one, so the underline
    goes with it. */
@@ -222,11 +222,11 @@
    the spaces between them: .word is an atomic inline-level box (it has to be,
    to carry a reserved width) and a decoration is not drawn through one, which
    left the link reading "Hit_me_up".
-   The colour must be named here, not inherited. `inherit` looks correct and is
+   The color must be named here, not inherited. `inherit` looks correct and is
    a trap: text-decoration-color's initial value is `currentColor`, which
    computes to ITSELF and only resolves at use — so inheriting it hands the word
-   the keyword, which re-resolves against the word's own animated colour. The
-   line under the words came out dim grey while the line under the spaces was
+   the keyword, which re-resolves against the word's own animated color. The
+   line under the words came out dim gray while the line under the spaces was
    accent. Measured, not guessed.
    Thickness can inherit, because `from-font` computes to a real value.
    text-underline-offset inherits on its own, so both halves share a baseline. */

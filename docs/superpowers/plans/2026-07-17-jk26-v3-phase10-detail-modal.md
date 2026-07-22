@@ -17,7 +17,7 @@ Every task's requirements implicitly include these. Copied from CLAUDE.md and th
 - **Never `git add -A`.** Stage only the files the task names.
 - **Never touch** `content/work/collaya.mdx` or `next.config.ts` (Jono's uncommitted work).
 - **Content never lives in JSX (§14).** Every user-facing string — including accessible names and captions — lives in `src/lib/site-content.ts`. Editing words must not require touching a component.
-- **Stark tokens only.** The live palette tokens are `--canvas --ink --mute --dim --hairline --row-hover --about --work --contact --nav-glass --nav-edge --shadow-color`, the elevation composites `--shadow-elevation-low|-medium|-high|-lift`, and the fonts `--font-mono --font-display --font-body --font-wordmark`. The dead Cold Noon tokens `--scrim --sub --card-bg --card-border --elev --text-glow --sky-top --sky-mid --sky-hor --scrim-runway` are undefined and must not appear in any new/edited CSS. Natural swaps: `--sub`→`--mute`, `--card-border`→`--hairline`, `--elev` box-shadow→`--shadow-elevation-*`, `--card-bg`→`--canvas`, `--text-glow` text-shadow→drop it, `--sky-*` gradient→stark greys (`--row-hover`/`--canvas`).
+- **Stark tokens only.** The live palette tokens are `--canvas --ink --mute --dim --hairline --row-hover --about --work --contact --nav-glass --nav-edge --shadow-color`, the elevation composites `--shadow-elevation-low|-medium|-high|-lift`, and the fonts `--font-mono --font-display --font-body --font-wordmark`. The dead Cold Noon tokens `--scrim --sub --card-bg --card-border --elev --text-glow --sky-top --sky-mid --sky-hor --scrim-runway` are undefined and must not appear in any new/edited CSS. Natural swaps: `--sub`→`--mute`, `--card-border`→`--hairline`, `--elev` box-shadow→`--shadow-elevation-*`, `--card-bg`→`--canvas`, `--text-glow` text-shadow→drop it, `--sky-*` gradient→stark grays (`--row-hover`/`--canvas`).
 - **Motion curves (spec §11):** overlay slide is `0.6s cubic-bezier(0.2, 0.8, 0.2, 1)`, transform only. Standard curve elsewhere is `cubic-bezier(0.2, 0.7, 0.2, 1)`.
 - **Reduced motion is first-class (spec §11).** Under `prefers-reduced-motion: reduce`, the sheet does not animate (no slide) and closing navigates immediately.
 - **No second RAF loop (CLAUDE.md).** The one Lenis+GSAP ticker owns scrolling. Lock the background with `getLenis()?.stop()` / `getLenis()?.start()`; let the modal scroll natively with `data-lenis-prevent` on its scroll container. Never add `autoRaf` or a `requestAnimationFrame` scroll loop.
@@ -37,7 +37,7 @@ Every task's requirements implicitly include these. Copied from CLAUDE.md and th
 - Modify: `src/components/work/case-study-cover.tsx` + rewrite `case-study-cover.module.css` — wide `.dshot` bottom slot (stark hatched placeholder + mono caption).
 - Modify: `src/components/work/case-study-article.tsx` + `case-study-article.module.css` — drop the `number` prop, reposition the cover to *after* the body, restyle `.article` measure + `.body` prose to the prototype's `.dbody`.
 - Modify: `src/components/work/case-study-next.tsx` (no change) + `case-study-next.module.css` — `--sub`→`--mute`.
-- Modify: `src/app/work/[slug]/page.tsx` — drop `number` threading, centre the article, keep the back link.
+- Modify: `src/app/work/[slug]/page.tsx` — drop `number` threading, center the article, keep the back link.
 - Create: `src/components/work/case-study-tokens.test.ts` — regression guard: no dead tokens in the case-study module CSS.
 - Test: `src/components/work/case-study-intro.test.tsx`, `case-study-meta.test.tsx`.
 
@@ -148,7 +148,7 @@ describe("CaseStudyMeta", () => {
 ```
 
 - [ ] **Step 2: Run it to confirm it fails** against the current component (which uses global `.slab`/`.pill`). Run: `pnpm test src/components/work/case-study-meta.test.tsx`
-  Expected: likely PASS for structure but this locks behaviour before the CSS/class rewrite. If the current component already satisfies the assertions, that is fine — proceed; the change is stylistic and the test guards it.
+  Expected: likely PASS for structure but this locks behavior before the CSS/class rewrite. If the current component already satisfies the assertions, that is fine — proceed; the change is stylistic and the test guards it.
 
 - [ ] **Step 3: Edit `case-study-meta.tsx`** — replace the global classes with module classes. Keep the `rows` array and label logic exactly as-is. The container/rows/label/value/link become module classes:
 
@@ -418,7 +418,7 @@ export function CaseStudyCover({ study }: { study: CaseStudy }) {
 
 ```css
 /* The detail image slot (spec §10, prototype `.dshot`): a wide band, hatched in
-   stark greys until a real cover lands. Replaces the parked 4:3 card, which drew
+   stark grays until a real cover lands. Replaces the parked 4:3 card, which drew
    on removed `--card-border`, `--elev`, and the Cold Noon `--sky-*` gradient. */
 .shot {
   position: relative;
@@ -503,7 +503,7 @@ export function CaseStudyArticle({
 - [ ] **Step 4: Rewrite `case-study-article.module.css`:**
 
 ```css
-/* The case study as a centred reading column (spec §10, prototype `.dwrap`).
+/* The case study as a centered reading column (spec §10, prototype `.dwrap`).
    `--card-border` (border-top) and `--text-glow` (heading shadow) were removed
    with the Cold Noon palette; the prose is restyled to the prototype's `.dbody`
    on stark tokens. */
@@ -573,7 +573,7 @@ git commit -m "feat(work): wide detail image slot + stark prose body (§10)"
 
 ## Task 5: Restyle `/work/[slug]`, and the `--sub` remnant in Next
 
-Centre the article on the full page, drop the `number` threading, and fix the last dead token on this surface (`case-study-next.module.css` `--sub`).
+Center the article on the full page, drop the `number` threading, and fix the last dead token on this surface (`case-study-next.module.css` `--sub`).
 
 **Files:**
 - Modify: `src/app/work/[slug]/page.tsx`
@@ -582,7 +582,7 @@ Centre the article on the full page, drop the `number` threading, and fix the la
 **Interfaces:**
 - Consumes: `CaseStudyArticle` (Task 4 signature — no `number`), `siteContent.labels.allWork`.
 
-- [ ] **Step 1: Edit `page.tsx`** — remove the `studyNumber` import and call, remove the `number` prop, and wrap the back link in a centred bar that matches the article's measure. Body of the returned JSX:
+- [ ] **Step 1: Edit `page.tsx`** — remove the `studyNumber` import and call, remove the `number` prop, and wrap the back link in a centered bar that matches the article's measure. Body of the returned JSX:
 
 ```tsx
   return (
@@ -633,7 +633,7 @@ Remove the now-unused `studyNumber` import (keep `nextStudy`).
 
 ```bash
 git add "src/app/work/[slug]/page.tsx" src/components/work/case-study-next.module.css
-git commit -m "feat(work): stark /work/[slug] page — centred article, back link (§10)"
+git commit -m "feat(work): stark /work/[slug] page — centered article, back link (§10)"
 # + trailers
 ```
 
@@ -849,7 +849,7 @@ describe("CaseStudyModal", () => {
     expect(start).toHaveBeenCalledOnce();
   });
 
-  it("is a labelled modal dialog", () => {
+  it("is a labeled modal dialog", () => {
     render(<CaseStudyModal label="Alpha">body</CaseStudyModal>);
     const dialog = screen.getByRole("dialog");
     expect(dialog.getAttribute("aria-modal")).toBe("true");
@@ -1112,7 +1112,7 @@ git commit -m "fix(work): tune detail modal spacing/lock after browser pass (§1
 
 ## Self-review notes (checked against §10 before hand-off)
 
-- **§10 content — eyebrow (client), h1, impact, dt/dd grid, labelled prose, `.dshot` slot:** Tasks 3 (eyebrow=client, h1, impact), 2 (dt/dd grid), 4 (prose `.dbody` + `.dshot`). ✅
+- **§10 content — eyebrow (client), h1, impact, dt/dd grid, labeled prose, `.dshot` slot:** Tasks 3 (eyebrow=client, h1, impact), 2 (dt/dd grid), 4 (prose `.dbody` + `.dshot`). ✅
 - **§10 intercepting + parallel routes, slide `translateY(100%→0)` 0.6s cubic-bezier(.2,.8,.2,1), pill close top-right, Escape:** Tasks 7 (routes), 8 (shell + CSS). ✅
 - **§10 scroll lock the prototype lacks — stop Lenis on open, resume on close:** Task 8 (`getLenis().stop()/start()` + `data-lenis-prevent`), verified Task 9 Step 3. ✅
 - **§10 URL is source of truth; back button + SEO:** `router.back()` close, `/work/[slug]` full page kept for hard load/SEO (`generateStaticParams` + `generateMetadata` untouched). Verified Task 9 Steps 4–5. ✅

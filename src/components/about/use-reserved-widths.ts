@@ -35,10 +35,10 @@ export function useReservedWidths(
     const column = columnRef.current;
     if (!active || !column) return;
 
-    let cancelled = false;
+    let canceled = false;
 
     const reserve = () => {
-      if (cancelled) return;
+      if (canceled) return;
       const words = [...column.querySelectorAll<HTMLElement>("[data-word]")];
       if (words.length === 0) return;
 
@@ -75,7 +75,7 @@ export function useReservedWidths(
     void (document.fonts?.ready ?? Promise.resolve()).then(reserve);
 
     return () => {
-      cancelled = true;
+      canceled = true;
       for (const w of column.querySelectorAll<HTMLElement>("[data-word]")) {
         w.style.minWidth = "";
       }

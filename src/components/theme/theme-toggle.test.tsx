@@ -70,7 +70,7 @@ describe("ThemeToggle", () => {
 
   /* An explicit choice must survive a reload that disagrees with the OS —
      that is the entire reason the choice is persisted. */
-  it("honours a stored choice over the OS preference", async () => {
+  it("honors a stored choice over the OS preference", async () => {
     setSystemPrefersDark(false);
     localStorage.setItem(THEME_STORAGE_KEY, "dark");
     render(<ThemeToggle />);

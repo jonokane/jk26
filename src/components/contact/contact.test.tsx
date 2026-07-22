@@ -17,7 +17,7 @@ describe("Contact", () => {
     expect(screen.getByRole("heading", { name: siteContent.titles.contact })).toBeTruthy();
   });
 
-  it("renders the three labelled fields and the submit", () => {
+  it("renders the three labeled fields and the submit", () => {
     render(<Contact />);
     expect(screen.getByLabelText(siteContent.contact.fields.name)).toBeTruthy();
     expect(screen.getByLabelText(siteContent.contact.fields.email)).toBeTruthy();

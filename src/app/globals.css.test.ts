@@ -64,7 +64,7 @@ describe("palettes", () => {
   /* The whole point of two locked palettes: a hex is a hex. If a dark value
      is ever expressed as a function of a light one, the muddiness that killed
      Cold Noon has a way back in. */
-  it("derives nothing — no colour functions in either palette", () => {
+  it("derives nothing — no color functions in either palette", () => {
     for (const body of [paletteBody(":root {"), paletteBody(':root[data-theme="dark"]')]) {
       expect(body).not.toMatch(/color-mix|oklch|hsl\(|rgb\(|calc\(/);
     }
@@ -190,7 +190,7 @@ describe(".site-header nav links (globals.css)", () => {
     expect(rule).not.toContain("--sub");
   });
 
-  it("colours the nav link with the muted-text token at rest", () => {
+  it("colors the nav link with the muted-text token at rest", () => {
     const rule = ruleBody(css, ".site-header nav a {");
     expect(rule).toMatch(/color:\s*var\(--mute\)/);
   });

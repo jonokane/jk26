@@ -68,7 +68,7 @@ describe("WorkCard", () => {
     const { container } = render(<WorkCard study={study({ cover })} number={1} />);
     const img = container.querySelector("img");
     expect(img).toBeTruthy();
-    /* next/image routes the source through its optimiser, so the raw path is
+    /* next/image routes the source through its optimizer, so the raw path is
        encoded into the query rather than the literal src — assert it survives. */
     expect(img?.getAttribute("src")).toContain("collaya-abc123.png");
     expect(screen.queryByText(siteContent.work.shotPending)).toBeNull();

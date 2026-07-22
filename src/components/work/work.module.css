@@ -1,7 +1,7 @@
 /* No horizontal padding: the gallery stage is full-bleed and clips at the
    viewport edge, and the card geometry (min(66vw, 820px), a 6vw leading gutter)
    is measured against innerWidth. An inset here would clip the track short of
-   the edges and put the stage's centre out of step with the maths. The heading
+   the edges and put the stage's center out of step with the maths. The heading
    block carries its own inset instead. */
 .work {
   /* No min-height and no padding: the gallery wrapper carries its own measured
@@ -141,7 +141,7 @@
 }
 
 /* The active view, filled in the section accent — inverts its fill rather than
-   only shifting hue, so the selection survives a colour-blind read. */
+   only shifting hue, so the selection survives a color-blind read. */
 .viewSegment[aria-pressed="true"] {
   color: var(--canvas);
   background: var(--work);
@@ -239,7 +239,7 @@
   border-color: var(--work);
 }
 
-/* The pressed state has to survive a colour-blind read and a greyscale print,
+/* The pressed state has to survive a color-blind read and a grayscale print,
    so it is not carried by hue alone: the fill inverts. */
 .pill[aria-pressed="true"] {
   color: var(--canvas);

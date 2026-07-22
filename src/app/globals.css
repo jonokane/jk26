@@ -33,7 +33,7 @@
   --nav-edge:  rgba(15, 15, 15, 0.06);
 
   /* Shadow hue for the elevation primitives below — HSL args only (no function
-     call here, so the hex-only palette test still passes). A mid grey lifts a
+     call here, so the hex-only palette test still passes). A mid gray lifts a
      surface off the white canvas. */
   --shadow-color: 0deg 0% 70%;
 
@@ -67,7 +67,7 @@
   --nav-edge:  rgba(255, 255, 255, 0.08);
 
   /* On the pure-black canvas a dark shadow cannot register (nothing is darker
-     than #000), so the elevation inverts: a grey GLOW lifts the surface off the
+     than #000), so the elevation inverts: a gray GLOW lifts the surface off the
      page instead of a shadow pressing it down. Same layered shape, a lighter
      hue — but kept DIM: a bright glow (this was 82%) reads as tacky neon on
      black, so it sits just high enough to lift the surface, no more. */
@@ -78,7 +78,7 @@
    and more real than one hard drop). Composed from --shadow-color, which is
    per-theme in the palettes above — this block is theme-agnostic. It is
    deliberately OUTSIDE the two palette blocks: those are hex-only and a test
-   guards them against colour functions, and these use hsl(). Values are the
+   guards them against color functions, and these use hsl(). Values are the
    generator's, verbatim; scale them here to lift more. */
 :root {
   --shadow-elevation-low:

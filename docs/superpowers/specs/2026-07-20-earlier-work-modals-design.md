@@ -16,7 +16,7 @@ featured case studies use — a lighter "mini case study" showing its body copy.
 ## What it is
 
 Clicking an earlier project's title opens the existing `CaseStudyModal` over the
-one-pager (same behaviour as a Work card), showing the project's title, a compact
+one-pager (same behavior as a Work card), showing the project's title, a compact
 meta line, its body copy, and — where one exists — a "View live" link. A hard
 load or refresh of the URL falls through to a real standalone page. This mirrors
 the featured-study pattern exactly (`/work/[slug]` + `@modal/(.)work/[slug]`),
@@ -127,7 +127,7 @@ does not sprout one-off facets. Frontmatter otherwise unchanged (the two dead
 
 ## Testing
 
-- **Unit:** `nextBySlug()` (no wrap — undefined past the end, returns the right neighbour, handles
+- **Unit:** `nextBySlug()` (no wrap — undefined past the end, returns the right neighbor, handles
   a single-item list); `earlier-detail` renders title/body and shows the live
   link only for URL `view` values (not for "Archived"); the earlier-work list
   links every title to its `/earlier/[slug]` url.

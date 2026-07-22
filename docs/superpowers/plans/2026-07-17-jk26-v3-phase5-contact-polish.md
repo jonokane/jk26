@@ -13,7 +13,7 @@
 Every task implicitly includes all of these. Values are binding, copied from the spec/CLAUDE.md.
 
 - **Content never lives in JSX** (spec §14/§15). Every visible string — labels, the footer link text, the button — lives in `src/lib/site-content.ts`. Editing copy must not touch a component.
-- **Design decisions live in CSS**, using the palette tokens. **Nothing computed in the palettes**; `globals.css.test.ts` fails on `color-mix`/`oklch`/`calc` in a palette. Do **not** add a colour to the palettes — every token needed exists (below).
+- **Design decisions live in CSS**, using the palette tokens. **Nothing computed in the palettes**; `globals.css.test.ts` fails on `color-mix`/`oklch`/`calc` in a palette. Do **not** add a color to the palettes — every token needed exists (below).
 - **Theme-aware, two locked palettes.** Use tokens, never literal hexes, for anything that must flip with the theme. The button's solid `--contact` fill takes `--canvas` text — verified to contrast in both themes (white on `#2f7d8f` light, black on `#5ab6cb` dark).
 - **There is no clock; nothing time-of-day derived.**
 - **Respect `prefers-reduced-motion`** for anything substantial; the form's only motion is the button's `translateY(-2px)` hover, which is fine, but do not add scroll-motion here.
@@ -113,7 +113,7 @@ describe("Contact", () => {
     expect(screen.getByRole("heading", { name: siteContent.titles.contact })).toBeTruthy();
   });
 
-  it("renders the three labelled fields and the submit", () => {
+  it("renders the three labeled fields and the submit", () => {
     render(<Contact />);
     expect(screen.getByLabelText(siteContent.contact.fields.name)).toBeTruthy();
     expect(screen.getByLabelText(siteContent.contact.fields.email)).toBeTruthy();
@@ -475,7 +475,7 @@ Fresh `pnpm dev`. Scroll the one-pager top to bottom — Welcome → About → W
 
 - [ ] **Step 3: Dispatch the whole-phase review**
 
-Build the package (`scripts/review-package <phase-5-base> HEAD`) and dispatch a reviewer (opus) with the §12 constraints and the "restyle, don't re-plumb" rule. The review must confirm: the Resend logic is untouched; no dead token or literal colour slipped in; the button contrasts in both themes; the footer's conditional link is correct; content stays out of JSX.
+Build the package (`scripts/review-package <phase-5-base> HEAD`) and dispatch a reviewer (opus) with the §12 constraints and the "restyle, don't re-plumb" rule. The review must confirm: the Resend logic is untouched; no dead token or literal color slipped in; the button contrasts in both themes; the footer's conditional link is correct; content stays out of JSX.
 
 - [ ] **Step 4: Fix what the review finds, then finish the branch**
 

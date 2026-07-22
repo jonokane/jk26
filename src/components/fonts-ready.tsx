@@ -14,14 +14,14 @@ const DEADLINE_MS = 3000;
  */
 export function FontsReady() {
   useEffect(() => {
-    let cancelled = false;
+    let canceled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const deadline = performance.now() + DEADLINE_MS;
     const attempt = () => {
       document.fonts
         .load(SPEC)
         .then((faces) => {
-          if (cancelled) return;
+          if (canceled) return;
           if (faces.length > 0) document.documentElement.classList.add("fonts-mae");
           else if (performance.now() < deadline) timer = setTimeout(attempt, 150);
         })
@@ -29,7 +29,7 @@ export function FontsReady() {
     };
     attempt();
     return () => {
-      cancelled = true;
+      canceled = true;
       if (timer !== undefined) clearTimeout(timer);
     };
   }, []);

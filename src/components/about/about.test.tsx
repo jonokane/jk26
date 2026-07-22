@@ -87,7 +87,7 @@ describe("About", () => {
      one used to exist, and it passed while reading nothing. Nothing in the
      codebase selected [data-static] on this section, so the assertion would
      have stayed green if the entire reduced-motion block had been deleted —
-     green on markup, blind to the behaviour. The mechanism is CSS, so the
+     green on markup, blind to the behavior. The mechanism is CSS, so the
      tests that can actually see it are the CSS ones (teleprompter-config.test)
      and the browser. */
 

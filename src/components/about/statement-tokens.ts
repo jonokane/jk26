@@ -31,7 +31,7 @@ export type Statement = Word[];
  * `***bold italic***`, `**bold**`, or `*italic*` — longest-first so
  * `***x***` matches whole. Without the `***` alternative, matching against
  * `**[^*]+\*\*` first lands one character in, leaving a stray `*` orphaned on
- * each side that then merges into neighbouring words as a literal asterisk.
+ * each side that then merges into neighboring words as a literal asterisk.
  */
 const EMPHASIS = /(\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*)/g;
 
@@ -202,7 +202,7 @@ function attachEdgePunctuation(chunks: Chunk[]): Statement {
  * corruption the way the punctuation-direction and `***` bugs were — but an
  * unsupported construct WILL render literally, so it is visible immediately.
  */
-export function tokeniseStatements(markdown: string): Statement[] {
+export function tokenizeStatements(markdown: string): Statement[] {
   return markdown
     .replace(FRONTMATTER, "")
     .replace(HTML_COMMENT, "")

@@ -11,7 +11,7 @@ import type { WordRole } from "@/components/about/statement-tokens";
  *
  * The degenerate guard is not academic. With zero-width edges the ratio is
  * `0/0` at exactly `x === edge0` — and that is the block sitting ON the focal
- * centre, i.e. the statement the visitor is reading. NaN then flows into its
+ * center, i.e. the statement the visitor is reading. NaN then flows into its
  * weight and blur, and the browser silently drops `blur(NaNpx)` rather than
  * complaining, so it would degrade invisibly. A zero range means "no zone", so
  * collapse to the step function that is its limit.
@@ -22,7 +22,7 @@ export function smoothstep(edge0: number, edge1: number, x: number): number {
   return t * t * (3 - 2 * t);
 }
 
-/** 1 at the focal centre, easing to 0 at `focalRange` away, either side. */
+/** 1 at the focal center, easing to 0 at `focalRange` away, either side. */
 export function focusFor(delta: number, focalRange: number): number {
   return 1 - smoothstep(0, focalRange, Math.abs(delta));
 }
@@ -48,7 +48,7 @@ export function wordWeight(role: WordRole, focus: number): number {
   return T.weightFloor + (target - T.weightFloor) * focus;
 }
 
-/** The focal centre sweeps the column from the first block to the last. */
-export function activeCentre(first: number, last: number, progress: number): number {
+/** The focal center sweeps the column from the first block to the last. */
+export function activeCenter(first: number, last: number, progress: number): number {
   return first + (last - first) * progress;
 }

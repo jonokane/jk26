@@ -5,7 +5,7 @@
  *
  * The gallery is a horizontal teleprompter: the active card holds at a focus
  * position, then the next eases into it, mirroring the About section's vertical
- * focus-and-dwell. Everything here is DERIVED from measured card centres — §9's
+ * focus-and-dwell. Everything here is DERIVED from measured card centers — §9's
  * "prototype gaps" were almost all one fault, a count written down that should
  * have been measured, so nothing in this module may be given one.
  */
@@ -26,15 +26,15 @@ function smoothstep(edge0: number, edge1: number, x: number): number {
 /**
  * The distance the track travels: from the first card sitting at the focus to
  * the last. Both positions share `focusX × innerWidth`, so it cancels and the
- * travel is simply the span between the outer card centres — derived from the
+ * travel is simply the span between the outer card centers — derived from the
  * measured layout, never authored. A single card (or none) has nowhere to go.
  *
- * `cardCentres` are track-local (measured at `translateX = 0`), so they do not
+ * `cardCenters` are track-local (measured at `translateX = 0`), so they do not
  * move as the track pans and can be cached across frames.
  */
-export function travelFor(cardCentres: readonly number[]): number {
-  if (cardCentres.length < 2) return 0;
-  return cardCentres[cardCentres.length - 1] - cardCentres[0];
+export function travelFor(cardCenters: readonly number[]): number {
+  if (cardCenters.length < 2) return 0;
+  return cardCenters[cardCenters.length - 1] - cardCenters[0];
 }
 
 /**
@@ -97,33 +97,33 @@ export function dwelledIndex(progress: number, panelCount: number, dwell: number
 }
 
 /**
- * The `translateX` that centres the card at `fractionalIndex` on the focus.
+ * The `translateX` that centers the card at `fractionalIndex` on the focus.
  *
  * `fractionalIndex` is `dwelledIndex`'s output, so between two cards it is
- * fractional; the focus rides the interpolated point between their centres,
+ * fractional; the focus rides the interpolated point between their centers,
  * which is what makes the transition a glide rather than a jump. The offset is
- * `focus − centre`: positive early (the first card's centre is left of focus, so
+ * `focus − center`: positive early (the first card's center is left of focus, so
  * the track shifts right to bring it in), negative late.
  */
 export function focusOffset(
-  cardCentres: readonly number[],
+  cardCenters: readonly number[],
   fractionalIndex: number,
   viewportWidth: number,
 ): number {
-  if (cardCentres.length === 0) return 0;
-  const last = cardCentres.length - 1;
+  if (cardCenters.length === 0) return 0;
+  const last = cardCenters.length - 1;
   const i0 = Math.min(Math.max(Math.floor(fractionalIndex), 0), last);
   const i1 = Math.min(i0 + 1, last);
   const frac = fractionalIndex - i0;
-  const centre = cardCentres[i0] + (cardCentres[i1] - cardCentres[i0]) * frac;
-  return WORK.focusX * viewportWidth - centre;
+  const center = cardCenters[i0] + (cardCenters[i1] - cardCenters[i0]) * frac;
+  return WORK.focusX * viewportWidth - center;
 }
 
 /**
  * The card the counter names: the one the focus is nearest. Rounding the
- * fractional index is exact here — each card is genuinely centred at the focus
+ * fractional index is exact here — each card is genuinely centered at the focus
  * during its dwell, so `round` agrees with the eye by construction, and there is
- * no separate nearest-centre measurement to drift from it.
+ * no separate nearest-center measurement to drift from it.
  */
 export function activeIndexFor(fractionalIndex: number): number {
   return Math.round(fractionalIndex);
@@ -131,7 +131,7 @@ export function activeIndexFor(fractionalIndex: number): number {
 
 /**
  * A card's opacity from its signed distance to the focus. Full within the focal
- * band, dim outside it — so the focused card and a close neighbour read as one,
+ * band, dim outside it — so the focused card and a close neighbor read as one,
  * and the far cards recede. `distance` may be signed; only its magnitude counts.
  */
 export function cardOpacityFor(distanceFromFocus: number, viewportWidth: number): number {

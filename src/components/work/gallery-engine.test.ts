@@ -13,14 +13,14 @@ import {
 import { WORK } from "@/components/work/work-config";
 
 describe("travelFor", () => {
-  /* Travel is the span between the outer card centres: from the first sitting at
+  /* Travel is the span between the outer card centers: from the first sitting at
      the focus to the last. focusX × innerWidth cancels, so it is pure geometry
-     off the measured centres. */
-  it("is the distance between the first and last card centres", () => {
+     off the measured centers. */
+  it("is the distance between the first and last card centers", () => {
     expect(travelFor([400, 1200, 2600])).toBe(2600 - 400);
   });
 
-  /* One card (or none) has nowhere to travel — and centring it would be its own
+  /* One card (or none) has nowhere to travel — and centering it would be its own
      resting place regardless. */
   it("is 0 for a single card", () => {
     expect(travelFor([400])).toBe(0);
@@ -65,8 +65,8 @@ describe("linearProgress", () => {
 });
 
 describe("dwelledIndex", () => {
-  /* The endpoints are exact whatever the dwell: progress 0 is card 0 centred,
-     progress 1 is the last card centred. */
+  /* The endpoints are exact whatever the dwell: progress 0 is card 0 centered,
+     progress 1 is the last card centered. */
   it("pins the endpoints to the first and last card", () => {
     expect(dwelledIndex(0, 5, 0.5)).toBe(0);
     expect(dwelledIndex(1, 5, 0.5)).toBe(4);
@@ -86,7 +86,7 @@ describe("dwelledIndex", () => {
   /* The last card holds through the entire final cell — there is no card after
      it to ease toward, so it stays put from the start of its cell to progress 1. */
   it("holds the last card across its whole final cell", () => {
-    // 5 panels: card 4's cell is [0.8, 1]. It is centred throughout.
+    // 5 panels: card 4's cell is [0.8, 1]. It is centered throughout.
     expect(dwelledIndex(0.8, 5, 0.5)).toBe(4);
     expect(dwelledIndex(0.9, 5, 0.5)).toBe(4);
     expect(dwelledIndex(1, 5, 0.5)).toBe(4);
@@ -114,20 +114,20 @@ describe("dwelledIndex", () => {
 });
 
 describe("focusOffset", () => {
-  /* Centring card 0 puts its centre at focusX × innerWidth; the offset is the
-     shift that gets it there. With focusX 0.5, innerWidth 1000, first centre 400:
+  /* Centering card 0 puts its center at focusX × innerWidth; the offset is the
+     shift that gets it there. With focusX 0.5, innerWidth 1000, first center 400:
      0.5×1000 − 400 = 100 (positive, the track shifts right to bring it in). */
-  it("centres the first card at the focus", () => {
+  it("centers the first card at the focus", () => {
     expect(focusOffset([400, 1200], 0, 1000)).toBeCloseTo(500 - 400, 5);
   });
 
-  it("centres the last card at the focus", () => {
+  it("centers the last card at the focus", () => {
     expect(focusOffset([400, 1200], 1, 1000)).toBeCloseTo(500 - 1200, 5);
   });
 
-  /* A fractional index rides the interpolated point between two centres — this
+  /* A fractional index rides the interpolated point between two centers — this
      is what makes the transition a glide. Halfway between 400 and 1200 is 800. */
-  it("rides the interpolated centre between two cards", () => {
+  it("rides the interpolated center between two cards", () => {
     expect(focusOffset([400, 1200], 0.5, 1000)).toBeCloseTo(500 - 800, 5);
   });
 
@@ -138,7 +138,7 @@ describe("focusOffset", () => {
 
 describe("activeIndexFor", () => {
   /* The counter names the card the focus is nearest. Each card is genuinely
-     centred at focus during its dwell, so rounding the fractional index agrees
+     centered at focus during its dwell, so rounding the fractional index agrees
      with the eye by construction. */
   it("rounds the fractional index to the nearest card", () => {
     expect(activeIndexFor(1.4)).toBe(1);

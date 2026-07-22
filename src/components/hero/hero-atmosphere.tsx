@@ -16,11 +16,11 @@ type Rgb = [number, number, number];
    clamps (caps at 8rem), so past ~1424px it stops growing — but a purely
    viewport-relative ellipse keeps widening and drifts off the word. Deriving the
    horizontal geometry from the measured word keeps the clearing sized to and
-   centred on the lockup at any width (spec §Reading-lane geometry). Horizontal
-   only: the lockup is flex-centred vertically, so the vertical ellipse stays a
+   centered on the lockup at any width (spec §Reading-lane geometry). Horizontal
+   only: the lockup is flex-centered vertically, so the vertical ellipse stays a
    stable 44% radius at 50% of the lane box. */
 const LANE_RX_FRAC = 1.15; // horizontal radius as a multiple of the word's width
-const LANE_CX_FRAC = 0.4; // centre-x as a fraction across the word from its left edge
+const LANE_CX_FRAC = 0.4; // center-x as a fraction across the word from its left edge
 
 /**
  * The hero's ambient wash (spec 2026-07-18). Two blurred depth planes — a
@@ -49,7 +49,7 @@ export function HeroAtmosphere() {
 
     let W = 0, H = 0, baseSize = 0;
     // Eased cursor state, read by paint() and leaned onto the planes each tick.
-    // Rests at centre (0.5, 0.44) with zero strength until a fine pointer hovers.
+    // Rests at center (0.5, 0.44) with zero strength until a fine pointer hovers.
     const cursor = { x: 0.5, y: 0.44, k: 0 };
 
     const accents = (): Rgb[] => {
@@ -131,7 +131,7 @@ export function HeroAtmosphere() {
       nearCtx.globalCompositeOperation = "source-over";
     };
 
-    /* The reading lane, centred on and sized to the real lockup. The wordmark
+    /* The reading lane, centered on and sized to the real lockup. The wordmark
        anchor is never transformed (only its letters and the kicker/tagline are —
        hero.module.css), so its rect is stable to measure even mid build-in.
        Measured against the lane element's own box, so the .lane inset never has

@@ -7,9 +7,9 @@
   margin-right: 6vw;
   display: flex;
   flex-direction: column;
-  /* Top-aligned, NOT centred, so the heading sits on the card's top edge (this
+  /* Top-aligned, NOT centered, so the heading sits on the card's top edge (this
      panel shares the card's 56vh and bottom alignment, so its box top already
-     lands there). Centring instead let the taller-than-a-card list spill UPWARD
+     lands there). Centering instead let the taller-than-a-card list spill UPWARD
      into the pinned title on short windows — the collision this fixes. The list
      is a shade over a card tall, so the rows are packed a little tighter than
      the study cards' prose to keep all seven entries clear of the counter. */
@@ -47,7 +47,7 @@
   transition: color 0.4s ease;
 }
 
-/* The title is the entry's link when it has a live URL — it carries the colour
+/* The title is the entry's link when it has a live URL — it carries the color
    itself and drops the underline, so the list stays a clean two lines per row. */
 .titleLink {
   color: inherit;

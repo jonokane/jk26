@@ -48,10 +48,10 @@ function Words({ words }: { words: Word[] }) {
 
 /**
  * One statement. Each word is its own element because each animates its own
- * colour and weight — separated by REAL spaces, in normal inline flow.
+ * color and weight — separated by REAL spaces, in normal inline flow.
  *
  * The prototype uses a flex row with a column-gap and no whitespace, because
- * its spans need punctuation to ride on the word. Our tokeniser attaches
+ * its spans need punctuation to ride on the word. Our tokenizer attaches
  * punctuation at the data level, so real spaces cost nothing — and they are
  * what the clipboard, a find-in-page and a translation engine see. Under flex
  * the words computed to display:block and copying gave one word per line. The

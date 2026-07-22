@@ -29,7 +29,7 @@ The thesis: **two kinds of beautiful, both wrong.**
   blown-out, clinical, silent — *not built for people*.
 
 The clock *means* something — midnight seduces you, noon exposes you. The anchor
-reference is the *Blade Runner 2049* sea-wall: near-monochrome, luminous grey,
+reference is the *Blade Runner 2049* sea-wall: near-monochrome, luminous gray,
 colossal, desolate. The insight that made it tractable: **brightness was never
 the enemy — cuteness was.** Ambiguity, not villainy. Certainly not cute.
 
@@ -77,7 +77,7 @@ the enemy — cuteness was.** Ambiguity, not villainy. Certainly not cute.
 
 | Explored | Verdict |
 |---|---|
-| Muted-grey "Cold Noon" noon vs a bright day | ✅ Landed here — grey is more captivating than cheerful |
+| Muted-gray "Cold Noon" noon vs a bright day | ✅ Landed here — gray is more captivating than cheerful |
 | Dark-always slab material | ❌ Text invisible at day → replaced with the **frosted-flip** slab (✅) |
 | Flat CSS-vector megastructure / city | ❌ Read as "weird slashes" / bar-chart — flat vectors can't fake a city → **parked for real 3D post-launch** |
 | Transports (flying craft) | ❌ "Slashes with dots" → parked |

@@ -22,7 +22,7 @@ The governing spec is **`docs/superpowers/specs/2026-07-16-stark-visual-language
 
 Stark white (light) / pure black (dark), carried entirely by type and motion. One accent per section — green (About), violet (Work), teal (Contact) — never mixed. Almost no chrome; no icons or illustrations, the design is type-only by rule.
 
-**Why the pivot.** Two prior directions are parked. The second, "Cold Noon", derived every colour from the visitor's clock and was killed on sight: layout read amateur, colours went muddy and illegible, motion stayed clunky, and it read "video game like". The diagnosis that governs v3: **a design that must hold at every hour is optimised for no hour.** There is no clock in this codebase now.
+**Why the pivot.** Two prior directions are parked. The second, "Cold Noon", derived every color from the visitor's clock and was killed on sight: layout read amateur, colors went muddy and illegible, motion stayed clunky, and it read "video game like". The diagnosis that governs v3: **a design that must hold at every hour is optimized for no hour.** There is no clock in this codebase now.
 
 The site is a one-pager — **Welcome → About → Work → Contact** — with `/work/[slug]` case study pages as the canonical share/SEO surface and the reduced-motion reading path. (The old time-aware Farewell section is cut; its premise was the clock.)
 
@@ -39,7 +39,7 @@ The site is a one-pager — **Welcome → About → Work → Contact** — with 
 1. ~~**Repo hygiene**~~ · ~~**Design system**~~ · ~~**Hero + header**~~ _(pre-pivot, in `archive/cold-noon`)_
 2. ~~**Phase 1 — v3 foundation**~~ _(done 2026-07-16)_
 3. **Phase 2 — Welcome + nav morph.** Per-letter build-in, the living gradient (it stays on the landed nav mark), the scroll-scrubbed FLIP morph on the kept `use-wordmark-morph.ts` — which reclaims `header-on` from Phase 1's temporary ScrollTrigger stand-in in `site-header.tsx`. Fix the prototype's reduced-motion bugs (wordmark left 2.5× scaled + blurred; accessible name lost with the motion path; ungated `drift`).
-4. **Phase 3 — About teleprompter.** `content/site/about.mdx` + a markdown-emphasis tokeniser (`**bold**` → emphasised, `*italic*` → italic), `teleprompter-config.ts` for every tunable, the sticky 640vh stage. **Build the prototype's real behaviour, not the README's paraphrase**: unmarked words take the *accent*, emphasised words go to *ink* at wght 780 (spec conflict register #5).
+4. **Phase 3 — About teleprompter.** `content/site/about.mdx` + a markdown-emphasis tokenizer (`**bold**` → emphasized, `*italic*` → italic), `teleprompter-config.ts` for every tunable, the sticky 640vh stage. **Build the prototype's real behavior, not the README's paraphrase**: unmarked words take the *accent*, emphasized words go to *ink* at wght 780 (spec conflict register #5).
 5. **Phase 4 — Work.** The filterable vertical index first, then the horizontal gallery, then the `@modal` intercepting route + its scroll lock. Derive the wrapper height from measured track width (the prototype's hardcoded `520vh` silently drifts).
 6. **Phase 5 — Contact + polish.** Restyle onto the new tokens (keep the working Resend route), remaining prose to `content/site/`, meta/OG, full a11y + reduced-motion audit.
 

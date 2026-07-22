@@ -12,7 +12,7 @@ export const ATMOSPHERE = {
   variation: 0.75,
   /** Contrast between sheer and dense. */
   depth: 0.3,
-  /** Reading-lane centre opacity (0 = off). */
+  /** Reading-lane center opacity (0 = off). */
   lane: 0.8,
   /** Cursor push/pull + parallax-lean strength (0 = none). */
   cursor: 0.5,

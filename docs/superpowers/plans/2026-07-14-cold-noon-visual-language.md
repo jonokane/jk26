@@ -16,7 +16,7 @@ Copied from the spec (`docs/superpowers/specs/2026-07-14-cold-noon-visual-langua
 - **Park, never delete.** Per Jono's direction and the repo's existing precedent (the parked TotalBlack hero). No file in this plan is deleted. The current diurnal design becomes parked, reachable by flipping `ACTIVE_STYLE`.
 - **`ACTIVE_STYLE` gates the two visual languages.** One constant in `src/lib/active-style.ts`. Default `"coldnoon"`. Flip to `"diurnal"` + `pnpm build` restores the old design wholesale. Both paths must build and run.
 - **No copy in JSX.** All strings in `src/lib/site-content.ts`. This plan adds none.
-- **Colours only from scene tokens.** No hex/Tailwind-palette colours in components. Hex lives only in the keyframe configs, the engine's derivation constants, and the token *defaults* in `globals.css`.
+- **Colors only from scene tokens.** No hex/Tailwind-palette colors in components. Hex lives only in the keyframe configs, the engine's derivation constants, and the token *defaults* in `globals.css`.
 - **No second RAF loop.** Parallax rides the existing `gsap.ticker` (`smooth-scroll.tsx`). No `requestAnimationFrame`/`autoRaf` in the scene or parallax system.
 - **One DOM writer** for scene tokens: `applySceneToRoot`. No other module calls `root.style.setProperty` for scene tokens.
 - **Zero new sky-roster keyframe fields** beyond the `clouds`→`haze`, `birds`→`transports` slot rename. The `pass` weight is **Plan B**.
@@ -151,7 +151,7 @@ export const SCENE_KEYFRAMES_DIURNAL: readonly SceneKeyframe[] = [
 
 - [ ] **Step 4: Create the Cold Noon keyframes**
 
-Create `src/lib/scene-config.coldnoon.ts` (colours from spec §3.1, weights from §4.3):
+Create `src/lib/scene-config.coldnoon.ts` (colors from spec §3.1, weights from §4.3):
 
 ```ts
 import type { SceneKeyframe } from "@/lib/scene-config";
@@ -812,7 +812,7 @@ Run: `pnpm test scene-engine` → FAIL (struct fields are still the `s.mid` stub
 ```ts
 export const CONTRAST_FLOOR = 0.18;
 
-/** Push a structure colour to the correct side of the ink by mixing toward the
+/** Push a structure color to the correct side of the ink by mixing toward the
  *  horizon (spec §7). Day (dark ink): struct must be LIGHTER than ink+floor.
  *  Night (light ink): struct must be DARKER than ink-floor. */
 export function clampToInk(hex: string, inkHex: string, inkLight: boolean, horHex: string): string {
@@ -880,7 +880,7 @@ git commit -m "feat(scene): --struct-* tokens + contrast-invariant clamp"
 import styles from "@/components/sky/sky.module.css";
 
 /** The megastructure (spec §5): one colossal form you cannot name. Flat vector
- *  filled with scene tokens, recolouring at every hour. Four layers carry depth. */
+ *  filled with scene tokens, recoloring at every hour. Four layers carry depth. */
 export function Megastructure() {
   return (
     <div className={styles.megastructure} aria-hidden="true">
@@ -944,7 +944,7 @@ In `layout.tsx`, `import { Megastructure } from "@/components/sky/megastructure"
 
 - [ ] **Step 4: Build + check**
 
-Run: `pnpm build` → PASS. (Manual: Midday shows a grey monumental gesture washing into the horizon; Midnight near-black; the wordmark is never eaten — Task 7 keeps structures off the ink's value.)
+Run: `pnpm build` → PASS. (Manual: Midday shows a gray monumental gesture washing into the horizon; Midnight near-black; the wordmark is never eaten — Task 7 keeps structures off the ink's value.)
 
 - [ ] **Step 5: Commit**
 
@@ -1152,7 +1152,7 @@ git commit -m "feat(sky): the lens — static grain + vignette (coldnoon)"
 
 **Reversibility coverage (Jono's park-not-delete request):** nothing is deleted — clouds/birds/old sun/old materials/old palette all persist as parked files or `[data-style="diurnal"]` overrides. `ACTIVE_STYLE="diurnal"` + `pnpm build` restores the old design: old palette (Task 1), clouds+birds (2/3), disc sun + dense stars (4), frosted white-glass slab + radius 18 (6), no megastructure/lens (8/10 guarded). The one intentional stub (Task 5's `struct*` = `s.mid`) is replaced within the same phase (Task 7) and never renders (megastructure mounts in Task 8), so it is not a shipped placeholder.
 
-**Gap flagged (not silently dropped):** the megastructure's *elaborate* night face (lit window-grids, signage bloom, §4.2) is not a separate component — the silhouette recolours to its clamped dark fill and running lights live on the transports. Lit window-grids on the structure itself are a bounded follow-up if wanted.
+**Gap flagged (not silently dropped):** the megastructure's *elaborate* night face (lit window-grids, signage bloom, §4.2) is not a separate component — the silhouette recolors to its clamped dark fill and running lights live on the transports. Lit window-grids on the structure itself are a bounded follow-up if wanted.
 
 **2. Placeholder scan.** No "TBD"/"handle edge cases"/"similar to Task N". Complete code in every code step. Two deliberate, documented items: the `var(--struct-*, fallback)` graceful defaults (Task 3) and the Task-5 struct stub (replaced in Task 7, never rendered).
 

@@ -30,7 +30,7 @@ describe("CaseStudyModal", () => {
     expect(start).toHaveBeenCalledOnce();
   });
 
-  it("is a labelled modal dialog", () => {
+  it("is a labeled modal dialog", () => {
     render(<CaseStudyModal label="Alpha">body</CaseStudyModal>);
     const dialog = screen.getByRole("dialog");
     expect(dialog.getAttribute("aria-modal")).toBe("true");

@@ -3,7 +3,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeUnwrapImages from "rehype-unwrap-images";
-import { tokeniseStatements } from "./src/components/about/statement-tokens";
+import { tokenizeStatements } from "./src/components/about/statement-tokens";
 
 const work = defineCollection({
   name: "CaseStudy",
@@ -40,7 +40,7 @@ const work = defineCollection({
 
 /**
  * The About statements (spec §5). Jono authors them as ordinary markdown
- * paragraphs and marks the heavy words with `**bold**`; the tokeniser turns
+ * paragraphs and marks the heavy words with `**bold**`; the tokenizer turns
  * that into the role-tagged words the teleprompter animates. Editing the copy,
  * or which words land, never touches a component.
  *
@@ -53,7 +53,7 @@ const work = defineCollection({
  */
 const statements = () =>
   s.preprocess(
-    (_value, ctx) => tokeniseStatements(ctx.meta.content ?? ""),
+    (_value, ctx) => tokenizeStatements(ctx.meta.content ?? ""),
     s
       .array(
         s.array(

@@ -1,5 +1,5 @@
 /* The detail image slot (spec §10, prototype `.dshot`): a wide band, hatched in
-   stark greys until a real cover lands. Replaces the parked 4:3 card, which drew
+   stark grays until a real cover lands. Replaces the parked 4:3 card, which drew
    on removed `--card-border`, `--elev`, and the Cold Noon `--sky-*` gradient. */
 .shot {
   position: relative;

@@ -3,7 +3,7 @@
 import { useEffect, type RefObject } from "react";
 import { ScrollTrigger } from "@/lib/gsap";
 import { TELEPROMPTER as T } from "@/components/about/teleprompter-config";
-import { activeCentre, blockStyle, focusFor, wordWeight } from "@/components/about/teleprompter-engine";
+import { activeCenter, blockStyle, focusFor, wordWeight } from "@/components/about/teleprompter-engine";
 import type { WordRole } from "@/components/about/statement-tokens";
 
 interface Opts {
@@ -15,15 +15,15 @@ interface Opts {
 
 /**
  * The teleprompter (spec §8). A tall wrapper drives a sticky stage; the column
- * is translated so the focal centre tracks the scroll, and each block's words
+ * is translated so the focal center tracks the scroll, and each block's words
  * resolve as they pass through it.
  *
  * Runs on ScrollTrigger — the shared GSAP ticker that also drives Lenis. No
  * second RAF loop: a competing one has silently locked scrolling on this site.
  *
- * Every colour is READ FROM THE TOKEN LAYER, never hardcoded. The prototype
+ * Every color is READ FROM THE TOKEN LAYER, never hardcoded. The prototype
  * interpolates toward the string literals '#0d0d0d' and '#bcbcbc'; ported that
- * way, dark mode breaks silently — emphasised words would resolve to near-black
+ * way, dark mode breaks silently — emphasized words would resolve to near-black
  * on a black canvas (spec §3).
  */
 export function useTeleprompter({ wrapRef, columnRef, active, onActiveStatement }: Opts): void {
@@ -36,7 +36,7 @@ export function useTeleprompter({ wrapRef, columnRef, active, onActiveStatement 
     const blocks = [...column.querySelectorAll<HTMLElement>("[data-statement]")].map((el) => ({
       el,
       words: [...el.querySelectorAll<HTMLElement>("[data-word]")],
-      centre: 0,
+      center: 0,
     }));
     if (blocks.length === 0) return;
 
@@ -52,25 +52,25 @@ export function useTeleprompter({ wrapRef, columnRef, active, onActiveStatement 
 
     let measured = false;
     const measure = () => {
-      for (const b of blocks) b.centre = b.el.offsetTop + b.el.offsetHeight / 2;
+      for (const b of blocks) b.center = b.el.offsetTop + b.el.offsetHeight / 2;
       measured = blocks.length > 0;
     };
 
     const apply = (progress: number) => {
       /* An explicit flag, not `if (!first) return`: the prototype guards on the
-         first block's centre being truthy, so a centre of exactly 0 silently
+         first block's center being truthy, so a center of exactly 0 silently
          kills the whole section (spec §8). */
       if (!measured) return;
       const vh = window.innerHeight;
       const focalY = vh * T.focalPosition;
       const focalRange = vh * T.focalRange;
-      const centre = activeCentre(blocks[0].centre, blocks[blocks.length - 1].centre, progress);
-      column.style.transform = `translateY(${(focalY - centre).toFixed(1)}px)`;
+      const center = activeCenter(blocks[0].center, blocks[blocks.length - 1].center, progress);
+      column.style.transform = `translateY(${(focalY - center).toFixed(1)}px)`;
 
       let nearest = 0;
       let nearestDist = Infinity;
       blocks.forEach((b, i) => {
-        const delta = b.centre - centre;
+        const delta = b.center - center;
         const focus = focusFor(delta, focalRange);
         const { blur, opacity } = blockStyle(delta, focus);
         b.el.style.opacity = opacity.toFixed(3);
@@ -100,7 +100,7 @@ export function useTeleprompter({ wrapRef, columnRef, active, onActiveStatement 
     });
 
     /* Config Variable and Mae change the blocks' heights, so a pre-font
-       measurement puts every centre in the wrong place. */
+       measurement puts every center in the wrong place. */
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
     /* The theme toggle swaps the tokens the words interpolate toward. */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  activeCentre, blockStyle, focusFor, smoothstep, wordWeight,
+  activeCenter, blockStyle, focusFor, smoothstep, wordWeight,
 } from "@/components/about/teleprompter-engine";
 import { TELEPROMPTER as T } from "@/components/about/teleprompter-config";
 
@@ -14,7 +14,7 @@ describe("smoothstep", () => {
 });
 
 describe("focusFor", () => {
-  it("is 1 at the focal centre and 0 at the edge of the range", () => {
+  it("is 1 at the focal center and 0 at the edge of the range", () => {
     expect(focusFor(0, 240)).toBe(1);
     expect(focusFor(240, 240)).toBe(0);
     expect(focusFor(-240, 240)).toBe(0);
@@ -67,11 +67,11 @@ describe("wordWeight", () => {
   });
 });
 
-describe("activeCentre", () => {
+describe("activeCenter", () => {
   it("sweeps from the first block to the last across the scroll", () => {
-    expect(activeCentre(100, 900, 0)).toBe(100);
-    expect(activeCentre(100, 900, 1)).toBe(900);
-    expect(activeCentre(100, 900, 0.5)).toBe(500);
+    expect(activeCenter(100, 900, 0)).toBe(100);
+    expect(activeCenter(100, 900, 1)).toBe(900);
+    expect(activeCenter(100, 900, 0.5)).toBe(500);
   });
 });
 
@@ -92,7 +92,7 @@ describe("TELEPROMPTER config", () => {
 });
 
 describe("degenerate focal range", () => {
-  /* 0/0 at exactly x === edge0 — which is the block ON the focal centre, i.e.
+  /* 0/0 at exactly x === edge0 — which is the block ON the focal center, i.e.
      the statement being read. NaN then flows into its weight and blur, and the
      browser silently drops blur(NaNpx) rather than complaining, so it would
      degrade invisibly. */

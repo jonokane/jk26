@@ -44,7 +44,7 @@ describe("preHydrationThemeScript", () => {
   /* The case that matters: an explicit choice must beat the OS before first
      paint, or a dark-choosing visitor on a light OS gets a white flash — the
      exact failure the deleted scene script existed to prevent. */
-  it("honours an explicit choice over the OS, matching the engine", () => {
+  it("honors an explicit choice over the OS, matching the engine", () => {
     setSystemPrefersDark(false);
     localStorage.setItem(THEME_STORAGE_KEY, "dark");
     run();

@@ -67,7 +67,7 @@
   fill: none;
   stroke: var(--work);
   stroke-width: 2px;
-  /* dash = whole perimeter (pathLength normalised to 1), so the offset alone
+  /* dash = whole perimeter (pathLength normalized to 1), so the offset alone
      controls how much is drawn: 1 shows nothing, 0 the full ring. The hook sets
      it to 1 − strokeProgress each frame. */
   stroke-dasharray: 1;
