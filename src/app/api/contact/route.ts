@@ -9,11 +9,12 @@ import { Resend } from "resend";
 
 const RECIPIENT_EMAIL = "jono@collaya.com";
 
-// The verified Resend sending domain still needs provisioning by Jono; until
-// then sends will fail at Resend regardless of this address, and (today)
-// never reach that point at all — RESEND_API_KEY isn't set, so requests
-// short-circuit at the "not configured" branch below.
-const FROM_ADDRESS = "Jono Kane — jonokane.com <contact@jonokane.com>";
+// Sent from the verified `send.jonokane.com` Resend subdomain, not the root: a
+// dedicated sending subdomain isolates transactional-mail reputation from the
+// domain's Google Workspace inbox mail. The display name still reads
+// "jonokane.com", and only Jono ever sees this From (the form mails him; the
+// visitor's address is the reply-to), so the subdomain is invisible in practice.
+const FROM_ADDRESS = "Jono Kane — jonokane.com <contact@send.jonokane.com>";
 
 const MAX_LENGTHS = {
   name: 200,
