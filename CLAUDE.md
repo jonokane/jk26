@@ -51,6 +51,10 @@ This project uses **pnpm** — always. Do **not** run `npm install`/`npm run` he
 | Run a script | `pnpm <script>` |
 | One-off tool (npx equivalent) | `pnpm dlx <tool>` |
 
+## Deploy
+
+Hosted on **Vercel** (the Collaya team), deployed from `github.com/eljonokane/jk26`. **`main` is the production trunk** — every push to `main` triggers a production deploy; other branches and PRs get preview deployments. Vercel auto-detects Next.js + pnpm and runs `pnpm build`, which runs Velite from `next.config.ts`; there is no `vercel.json`. The contact form's `RESEND_API_KEY` lives in the Vercel project's environment variables (never committed) — without it the form degrades to a `mailto:` link. `jk26-v3` was the long-lived build branch during development; it was fast-forwarded into `main` at launch, so the two are now the same line of work.
+
 ## How it fits together
 
 - **Content pipeline.** `.mdx` files in `content/` are validated against the schemas in `velite.config.ts` and compiled into `.velite/` (git-ignored, regenerated). Two collections: `work` (case studies, `content/work/`) and `earlier` (one-paragraph entries, `content/earlier/`). Import typed data from `#site/content`. **`work-lists.ts` holds pure list logic; `work-data.ts` is the two-line glue that applies it to `#site/content`** — import `publishedWork` from `work-data`, not `work-lists`.
