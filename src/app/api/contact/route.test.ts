@@ -49,7 +49,7 @@ describe("POST /api/contact", () => {
     expect(json).toEqual({ ok: true });
     expect(mockSend).toHaveBeenCalledTimes(1);
     const call = mockSend.mock.calls[0][0];
-    expect(call.to).toBe("jono@collaya.com");
+    expect(call.to).toBe("jono@jonokane.com");
     expect(call.replyTo).toBe("ada@example.com");
     expect(call.text).toContain("Let's build something.");
   });

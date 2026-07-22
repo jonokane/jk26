@@ -7,7 +7,7 @@ import { Resend } from "resend";
  * persistence — a submission either sends or it doesn't; nothing is stored.
  */
 
-const RECIPIENT_EMAIL = "jono@collaya.com";
+const RECIPIENT_EMAIL = "jono@jonokane.com";
 
 // Sent from the verified `send.jonokane.com` Resend subdomain, not the root: a
 // dedicated sending subdomain isolates transactional-mail reputation from the
