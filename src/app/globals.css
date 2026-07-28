@@ -128,6 +128,16 @@ body {
   font-variation-settings: "wght" 400;
 }
 
+/* Bold prose. Mae is a variable face and `body` pins `wght 400` via
+   font-variation-settings, which takes precedence over `font-weight` — so
+   markdown `**bold**` (<strong>/<b>) would otherwise render at 400. Set the
+   weight axis directly to bold; 700 matches the design's emphasis weight
+   (About emphasis, section titles). Tune here if it reads heavy. */
+strong,
+b {
+  font-variation-settings: "wght" 700;
+}
+
 /* The hero build-in starts each letter at scale 2, dropped -18vh, so for the
    ~2.1s of the intro the fixed live wordmark spills past the right edge — at a
    390px viewport scrollWidth peaked at 621px and the page could be flicked
