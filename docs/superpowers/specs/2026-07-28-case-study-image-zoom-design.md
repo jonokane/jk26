@@ -10,9 +10,15 @@ There's no way to see any case-study image larger.
 
 ## Decision
 
-**A click-to-zoom lightbox on every case-study body figure.** Because inline, `<Breakout>`,
-and `<Pin>` images all render through **`MdxImage`** (`figure.tsx`), the affordance lives there
-once and all three get it.
+**A click-to-zoom lightbox on the *small* case-study body figures — inline and `<Pin>`.**
+Because both render through **`MdxImage`** (`figure.tsx`), the affordance lives there once.
+
+**Refinement (2026-07-28, post-build):** `<Breakout>` images are *excluded*. A breakout is
+already displayed at or beyond full-screen width — often taller than the viewport (the page
+scrolls to it) — so a lightbox that must fit the whole image on screen can only ever *shrink*
+it, which reads as a broken "zoom". Breakouts opt out via a `ZoomDisabled` context that
+`<Breakout>` provides and `ZoomableImage` reads; inside it, `ZoomableImage` renders a plain
+figure image (no trigger). Rule: the small images zoom; the breakout already *is* the big view.
 
 Click (or Enter/Space) → the image **animates from its exact on-screen rect up to a
 full-viewport view** (a FLIP zoom) over a stark theme-canvas backdrop, caption in mono beneath.

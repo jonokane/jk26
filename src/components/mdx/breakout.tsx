@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ZoomDisabled } from "@/components/mdx/zoom-context";
 import styles from "@/components/mdx/breakout.module.css";
 
 /**
@@ -15,11 +16,14 @@ import styles from "@/components/mdx/breakout.module.css";
  *   </Breakout>
  * The blank lines are required — they let MDX parse the inside as Markdown,
  * which keeps Velite's src rewriting and the caption convention working.
+ *
+ * Zoom is disabled inside (via <ZoomDisabled>): a breakout is already the
+ * full-size view, so a fit-in-viewport lightbox could only shrink it.
  */
 export function Breakout({ children }: { children: ReactNode }) {
   return (
     <div className={styles.breakout} data-mdx-breakout>
-      {children}
+      <ZoomDisabled>{children}</ZoomDisabled>
     </div>
   );
 }
