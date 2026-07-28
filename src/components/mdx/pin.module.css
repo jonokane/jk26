@@ -27,10 +27,6 @@
   padding-bottom: 30vh;
 }
 
-.text > :last-child {
-  padding-bottom: 0;
-}
-
 /* Narrow screens: stack. Media on top, static; prose full width beneath. */
 @media (max-width: 820px) {
   .pin {
