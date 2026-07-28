@@ -63,6 +63,9 @@ export function Lightbox({
 
   useOverlayLock({ containerRef: dialogRef, onDismiss: dismiss });
 
+  // `origin` must be stable across the lightbox's lifetime — ZoomableImage holds
+  // it in useState and sets it once on open. A per-render object would re-fire
+  // this enter FLIP mid-view.
   // ENTER FLIP: jump to the origin rect without transition, force a reflow so
   // that paints, then release to the natural (full-viewport) position so it
   // animates origin -> target.

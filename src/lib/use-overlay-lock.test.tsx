@@ -62,4 +62,29 @@ describe("useOverlayLock", () => {
     fireEvent.keyDown(window, { key: "Escape" });
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
+
+  it("on Escape, only the overlay that owns focus dismisses (nesting)", () => {
+    const outerDismiss = vi.fn();
+    const innerDismiss = vi.fn();
+    function Overlay({ id, onDismiss }: { id: string; onDismiss: () => void }) {
+      const ref = useRef<HTMLDivElement>(null);
+      useOverlayLock({ containerRef: ref, onDismiss });
+      return (
+        <div ref={ref} tabIndex={-1} data-testid={id}>
+          <button>x</button>
+        </div>
+      );
+    }
+    render(
+      <>
+        <Overlay id="outer" onDismiss={outerDismiss} />
+        <Overlay id="inner" onDismiss={innerDismiss} />
+      </>,
+    );
+    // The inner overlay mounts last and moves focus into itself, so only it
+    // should respond to Escape.
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(innerDismiss).toHaveBeenCalledTimes(1);
+    expect(outerDismiss).not.toHaveBeenCalled();
+  });
 });

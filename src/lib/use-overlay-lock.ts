@@ -56,7 +56,14 @@ export function useOverlayLock({
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onDismissRef.current();
+        // Only the overlay that owns focus responds. Otherwise, with the image
+        // lightbox open over the modal, a single Escape fires BOTH window
+        // listeners and tears down the modal behind the still-open lightbox.
+        // (`Node.contains` includes the node itself; the explicit `=== container`
+        // is just for clarity.) Symmetric with the focus-position Tab guard below.
+        if (container.contains(document.activeElement) || document.activeElement === container) {
+          onDismissRef.current();
+        }
         return;
       }
       if (event.key !== "Tab") return;
