@@ -2,6 +2,7 @@ import * as runtime from "react/jsx-runtime";
 import type { ComponentType } from "react";
 import { MdxImage } from "@/components/mdx/figure";
 import { Breakout } from "@/components/mdx/breakout";
+import { Pin } from "@/components/mdx/pin";
 
 // Velite compiles each MDX body to a string of JS that, when executed with a
 // jsx-runtime, returns the MDX component. This runs on the server by default.
@@ -18,7 +19,7 @@ function useMDXComponent(code: string): ComponentType<{
     (MdxImage's props are all optional; Breakout requires `children`), so no
     single non-`any` prop type is contravariantly compatible with every entry. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mdxComponents: Record<string, ComponentType<any>> = { img: MdxImage, Breakout };
+const mdxComponents: Record<string, ComponentType<any>> = { img: MdxImage, Breakout, Pin };
 
 export function MDXContent({
   code,
