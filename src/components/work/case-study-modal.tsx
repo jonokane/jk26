@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode, TransitionEvent } from "react";
 import { useRouter } from "next/navigation";
-import { getLenis } from "@/components/smooth-scroll";
+import { useOverlayLock } from "@/lib/use-overlay-lock";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { siteContent } from "@/lib/site-content";
 import styles from "@/components/work/case-study-modal.module.css";
@@ -28,45 +28,6 @@ export function CaseStudyModal({ label, children }: { label: string; children: R
   const [open, setOpen] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
 
-  /* Slide up on mount, and lock the page behind it. The rAF lets the initial
-     translateY(100%) paint before flipping to 0 so the transition actually runs
-     (setting both in one paint would show no animation).
-
-     Accessible-modal contract (a11y review): the frozen one-pager stays mounted
-     as a sibling behind the sheet, so on open we make every other <body> child
-     `inert` (removed from tab order and the a11y tree — this is also the Tab
-     trap's backstop), move focus into the dialog, and on close restore focus to
-     whatever opened it (the card). Lenis is stopped so the page can't scroll
-     behind; the inner scroller scrolls natively via data-lenis-prevent. */
-  useEffect(() => {
-    const sheet = sheetRef.current;
-    const lenis = getLenis();
-    lenis?.stop();
-
-    /* Capture the focus target BEFORE inerting: the trigger lives inside the
-       background we're about to make inert, and an engine that blurred inert
-       elements synchronously would otherwise capture <body> and lose the
-       focus-return on close. */
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-
-    const backgrounded = Array.from(document.body.children).filter(
-      (el): el is HTMLElement => el instanceof HTMLElement && el !== sheet && !el.contains(sheet),
-    );
-    backgrounded.forEach((el) => (el.inert = true));
-
-    const raf = requestAnimationFrame(() => {
-      setOpen(true);
-      sheet?.focus({ preventScroll: true });
-    });
-
-    return () => {
-      cancelAnimationFrame(raf);
-      lenis?.start();
-      backgrounded.forEach((el) => (el.inert = false));
-      previouslyFocused?.focus?.({ preventScroll: true });
-    };
-  }, []);
-
   /* Close: slide down, then pop history when the transform settles. Reduced
      motion has no slide to wait on, so it navigates straight away. */
   const close = () => {
@@ -83,43 +44,16 @@ export function CaseStudyModal({ label, children }: { label: string; children: R
     }
   };
 
+  // Slide up on mount. The rAF lets translateY(100%) paint before flipping to 0
+  // so the transition runs (setting both in one paint would show no animation).
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        close();
-        return;
-      }
-      /* Trap Tab inside the sheet. The inert background already keeps focus out
-         of the page, but this keeps the cycle closed (last→first, first→last)
-         rather than escaping to the browser chrome at the ends. */
-      if (event.key !== "Tab") return;
-      const sheet = sheetRef.current;
-      if (!sheet) return;
-      const focusable = Array.from(
-        sheet.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])',
-        ),
-      ).filter((el) => el.offsetParent !== null);
-      if (focusable.length === 0) {
-        event.preventDefault();
-        sheet.focus({ preventScroll: true });
-        return;
-      }
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const active = document.activeElement;
-      if (event.shiftKey && (active === first || active === sheet)) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && active === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-    // `close` reads `reduced`; re-bind when it changes so the branch is current.
-  }, [reduced]);
+    const raf = requestAnimationFrame(() => setOpen(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // Stop-Lenis + inert-background + focus-trap + Esc live in the shared hook,
+  // which also feeds Escape to `close` (reduced-aware via the ref it keeps).
+  useOverlayLock({ containerRef: sheetRef, onDismiss: close });
 
   return (
     <div
