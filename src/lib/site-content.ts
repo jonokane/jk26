@@ -44,9 +44,9 @@ export const siteContent = {
    *  `about` is currently read by nothing — the About h2 renders its own title
    *  from content/site/about.mdx. */
   titles: {
-    about: "About",
-    work: "Selected work.",
-    contact: "Let's talk.",
+    about: "Nice to meet you",
+    work: "Selected work",
+    contact: "Let's talk",
   },
   /** About section CTAs, below the teleprompter (spec §7). The title and
    *  statements live in content/site/about.mdx. */
