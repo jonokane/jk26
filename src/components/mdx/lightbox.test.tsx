@@ -23,7 +23,8 @@ describe("Lightbox", () => {
     const onClose = vi.fn();
     render(<Lightbox src="/x.jpg" alt="A screen" origin={origin} onClose={onClose} />);
     fireEvent.keyDown(window, { key: "Escape" });
-    // reduced-motion path (jsdom) dismisses immediately
+    // jsdom rects are zero-size, so the enter FLIP is skipped and dismiss
+    // takes the immediate-onClose path (no captured flip transform).
     expect(onClose).toHaveBeenCalled();
   });
 

@@ -19,6 +19,10 @@ function flipTransform(o: LightboxOrigin, t: DOMRect): string {
   return `translate(${tx}px, ${ty}px) scale(${sx}, ${sy})`;
 }
 
+function prefersReducedMotion(): boolean {
+  return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 /**
  * The zoomed image (spec: 2026-07-28 image zoom). FLIP-animates from the
  * clicked image's rect (`origin`) up to a full-viewport figure, over a stark
@@ -49,7 +53,7 @@ export function Lightbox({
     if (phase === "exit") return;
     setPhase("exit");
     const fig = figureRef.current;
-    if (reduced || !fig || !flip.current) {
+    if (reduced || prefersReducedMotion() || !fig || !flip.current) {
       onClose();
       return;
     }
@@ -64,7 +68,7 @@ export function Lightbox({
   // animates origin -> target.
   useEffect(() => {
     const fig = figureRef.current;
-    if (reduced || !fig) {
+    if (reduced || prefersReducedMotion() || !fig) {
       setPhase("open");
       return;
     }
@@ -83,7 +87,7 @@ export function Lightbox({
   }, [reduced, origin]);
 
   const onFigureTransitionEnd = (event: React.TransitionEvent) => {
-    if (phase === "exit" && event.propertyName === "transform") onClose();
+    if (phase === "exit" && event.target === figureRef.current && event.propertyName === "transform") onClose();
   };
 
   return createPortal(
