@@ -11,7 +11,6 @@
 
 .body {
   margin-top: 7vh;
-  max-width: 62ch;
 }
 
 /* The MDX `##` headings compile to a tag one level below the title (see
@@ -24,6 +23,7 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--work);
+  max-width: 62ch;
 }
 
 .body :where(h2, h3, h4, h5, h6) a {
@@ -35,6 +35,7 @@
   font-size: clamp(1.05rem, 1.5vw, 1.28rem);
   line-height: 1.6;
   color: var(--ink);
+  max-width: 62ch;
 }
 
 .body :where(p) {
@@ -43,6 +44,7 @@
 
 .body :where(ul, ol) {
   margin: 14px 0 14px 1.2em;
+  max-width: 62ch;
 }
 
 .body :where(a) {
