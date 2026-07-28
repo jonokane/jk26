@@ -1,3 +1,4 @@
+import { ZoomableImage } from "@/components/mdx/zoomable-image";
 import styles from "@/components/mdx/figure.module.css";
 
 /**
@@ -13,11 +14,7 @@ export function MdxImage({ src, alt, title }: { src?: string; alt?: string; titl
   if (!src) return null;
   return (
     <figure className={styles.figure}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- markdown images
-          carry no intrinsic width/height, which next/image needs (or a sized
-          fill container, wrong for a flowing figure). A lazy <img> is correct
-          here; covers, which do have dimensions, use next/image. */}
-      <img src={src} alt={alt ?? ""} loading="lazy" decoding="async" className={styles.image} />
+      <ZoomableImage src={src} alt={alt ?? ""} caption={title} imgClassName={styles.image} />
       {title ? <figcaption className={styles.caption}>{title}</figcaption> : null}
     </figure>
   );

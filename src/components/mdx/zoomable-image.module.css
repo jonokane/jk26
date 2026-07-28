@@ -1,0 +1,54 @@
+/* The zoom trigger (spec 2026-07-28): a reset button wrapping the figure image,
+   with a zoom-in cursor and a subtle corner cue on hover/focus. The image's own
+   look (hairline frame, width) stays in figure.module.css, passed via className. */
+.trigger {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: zoom-in;
+  position: relative;
+}
+
+.trigger img {
+  display: block;
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--work);
+  outline-offset: 3px;
+}
+
+/* Corner cue: inverse pill, fades in on hover/keyboard focus. Theme-aware via
+   ink/canvas so it reads in both palettes. */
+.trigger::after {
+  content: "⤢";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--canvas);
+  background: var(--ink);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.trigger:hover::after,
+.trigger:focus-visible::after {
+  opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger::after {
+    transition: none;
+  }
+}
