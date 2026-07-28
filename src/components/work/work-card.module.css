@@ -83,6 +83,17 @@
   opacity: 1;
 }
 
+/* Never two concentric --work strokes on one card. The focus-visible outline and
+   the trace ring are both the accent colour and both perimeter rectangles, so on
+   a card that is BOTH keyboard-focused AND the active (tracing) card they stack
+   into a double border. The outline wins — it is the reliable focus indicator
+   (it lands on any card, active or not; WCAG 2.4.7) — so the decorative trace
+   yields here. More specific than `.traceRect[data-tracing]`, so it overrides;
+   the trace's own opacity transition fades it out on focus and back on blur. */
+.card:focus-visible .traceRect {
+  opacity: 0;
+}
+
 /* The card content sits above the stroke. */
 .text,
 .shot {
