@@ -1,0 +1,73 @@
+/* Full-viewport image lightbox (spec 2026-07-28). Stark theme-canvas backdrop
+   (matching the modal's no-scrim look). The figure FLIP-animates via inline
+   transforms set in JS; only the backdrop opacity is driven by data-phase. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100; /* above the case-study sheet (z-index: 90) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8vh 6vw;
+  background: var(--canvas);
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.backdrop[data-phase="open"] {
+  opacity: 1;
+}
+
+.figure {
+  margin: 0;
+  max-width: 88vw;
+  max-height: 84vh;
+  transform-origin: top left;
+  cursor: zoom-out;
+}
+
+.image {
+  display: block;
+  max-width: 88vw;
+  max-height: 78vh;
+  width: auto;
+  height: auto;
+  border: 1px solid var(--hairline);
+}
+
+.caption {
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--mute);
+}
+
+.close {
+  position: absolute;
+  top: 24px;
+  right: 6vw;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: 100px;
+  padding: 13px 18px; /* ≥44px touch target */
+  cursor: pointer;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+.close::after {
+  content: " ✕";
+}
+.close:hover {
+  color: var(--work);
+  border-color: var(--work);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop {
+    transition: opacity 0.2s linear;
+  }
+}

@@ -87,6 +87,11 @@ export const siteContent = {
     // The modal's close pill. The "✕" is decoration, added in CSS, so the
     // accessible name stays the plain word (spec §15).
     detailCloseLabel: "Close",
+    /** The image lightbox's close control (spec 2026-07-28). "✕" is CSS. */
+    lightboxCloseLabel: "Close",
+    /** Accessible name for a zoomable figure's button, and the fallback when an
+     *  image has no alt. Paired with aria-haspopup="dialog" to convey "enlarge". */
+    zoomActionLabel: "Enlarge image",
     /** Between the active card's number and the total: "01 / 05". */
     counterSeparator: " / ",
     /** The gallery's own landmark name. */
