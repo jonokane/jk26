@@ -3,6 +3,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeUnwrapImages from "rehype-unwrap-images";
+import { remarkStandaloneImages } from "./src/lib/remark-standalone-images";
 import { tokenizeStatements } from "./src/components/about/statement-tokens";
 
 const work = defineCollection({
@@ -120,7 +121,10 @@ export default defineConfig({
   },
   collections: { work, earlier, site },
   mdx: {
-    remarkPlugins: [remarkGfm],
+    /* remarkStandaloneImages fails the build (with file + line) when an image
+       is glued to text in a paragraph — that case never gets unwrapped below
+       and would render <figure> inside a <p>, crashing hydration at runtime. */
+    remarkPlugins: [remarkGfm, remarkStandaloneImages],
     rehypePlugins: [
       rehypeSlug,
       [rehypeAutolinkHeadings, { behavior: "wrap" }],
