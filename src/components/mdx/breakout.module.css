@@ -1,0 +1,16 @@
+/* Wider-than-text image band (spec 2026-07-28). Escapes the centred article
+   toward the viewport edges and re-centres on the page: margin-left:50% moves
+   to the column's centre (== page centre, the article is centred), then
+   translateX(-50%) pulls back half our own width. Capped so it stays a band;
+   `100vw - 12vw` keeps a 6vw gutter each side, so it never causes h-scroll.
+   On narrow screens the min() resolves to ~full width and it reads as inline. */
+.breakout {
+  width: min(1280px, 100vw - 12vw);
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+/* The inner figure (MdxImage) fills the band; give the band its own rhythm. */
+.breakout :global(figure) {
+  margin: 8vh 0;
+}

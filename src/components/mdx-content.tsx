@@ -1,6 +1,7 @@
 import * as runtime from "react/jsx-runtime";
 import type { ComponentType } from "react";
 import { MdxImage } from "@/components/mdx/figure";
+import { Breakout } from "@/components/mdx/breakout";
 
 // Velite compiles each MDX body to a string of JS that, when executed with a
 // jsx-runtime, returns the MDX component. This runs on the server by default.
@@ -12,8 +13,12 @@ function useMDXComponent(code: string): ComponentType<{
 }
 
 /** Custom components available to every MDX file (extend as the site grows).
-    `img` upgrades every markdown image into a captioned <figure> (figure.tsx). */
-const mdxComponents: Record<string, ComponentType> = { img: MdxImage };
+    `img` upgrades every markdown image into a captioned <figure> (figure.tsx).
+    `any` here: this map holds components with incompatible prop shapes
+    (MdxImage's props are all optional; Breakout requires `children`), so no
+    single non-`any` prop type is contravariantly compatible with every entry. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mdxComponents: Record<string, ComponentType<any>> = { img: MdxImage, Breakout };
 
 export function MDXContent({
   code,
