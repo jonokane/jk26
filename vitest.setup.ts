@@ -28,3 +28,27 @@ if (typeof window !== "undefined" && !window.matchMedia) {
     dispatchEvent: () => false,
   }) as unknown as MediaQueryList;
 }
+
+// Shim the `inert` IDL attribute for jsdom, which doesn't implement it
+// (`'inert' in HTMLElement.prototype` is false — confirmed against jsdom
+// 29.1.1). use-overlay-lock (and anything built on it) reads and sets
+// `el.inert` to freeze the rest of the page; without this, a freshly created
+// element's `.inert` reads back as `undefined` instead of the real-DOM
+// default `false`, breaking prior-state save/restore assertions for reasons
+// that have nothing to do with the hook under test. Reflects the boolean
+// content attribute, same as a real browser.
+if (
+  typeof window !== "undefined" &&
+  !("inert" in window.HTMLElement.prototype)
+) {
+  Object.defineProperty(window.HTMLElement.prototype, "inert", {
+    get(this: HTMLElement) {
+      return this.hasAttribute("inert");
+    },
+    set(this: HTMLElement, value: boolean) {
+      if (value) this.setAttribute("inert", "");
+      else this.removeAttribute("inert");
+    },
+    configurable: true,
+  });
+}
