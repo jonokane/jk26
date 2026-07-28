@@ -77,11 +77,17 @@ describe("activeCenter", () => {
 
 describe("TELEPROMPTER config", () => {
   /* These are tunables, not literals — Jono adjusts them by feel and that must
-     stay a one-line edit in one file (spec §8). */
-  it("carries the prototype's values", () => {
-    expect(T.focalPosition).toBe(0.6);
+     stay a one-line edit in one file (spec §8). This test is a change-detector,
+     not a spec: it exists so a value can never drift silently, and it moves WITH
+     the config on purpose. Two now diverge from the Portfolio v2 prototype:
+     focalPosition (0.6 → 0.5) lifts the read higher under the pinned title, and
+     blurAbove (7 → 3) softens already-read lines so a visitor scrolling quickly
+     in from Welcome can still read the opening line. The rest are the
+     prototype's verbatim. */
+  it("carries the current tuned values", () => {
+    expect(T.focalPosition).toBe(0.5);
     expect(T.focalRange).toBe(0.24);
-    expect(T.blurAbove).toBe(7);
+    expect(T.blurAbove).toBe(3);
     expect(T.blurBelow).toBe(2);
     expect(T.opacityAbove).toBe(0.5);
     expect(T.opacityBelow).toBe(0.14);

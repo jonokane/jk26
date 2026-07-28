@@ -4,16 +4,22 @@
  * edit in one file. The values are the Portfolio v2 prototype's verbatim.
  */
 export const TELEPROMPTER = {
-  /** × vh — where the focused line sits. */
-  focalPosition: 0.6,
+  /** × vh — where the focused line sits. Lifted from 0.6 so the read sits
+      higher up the viewport, closer under the pinned title, rather than leaving
+      a dead gap between "Nice to meet you" and the first line (Jono's ask). */
+  focalPosition: 0.5,
   /** × vh — falloff radius either side of the focus. */
   focalRange: 0.24,
 
   /* The asymmetry IS the design. Words above the focus are already read: they
-     blur hard but hold presence. Words below are not yet read: they stay sharp
-     but recede. */
+     soften and hold presence. Words below are not yet read: they stay sharp
+     but recede. blurAbove was 7 — hard enough that the FIRST just-read line was
+     an unreadable smear, so a visitor scrolling quickly in from Welcome missed
+     the opening line before they could decelerate on it. At 3 the line one step
+     above focus stays legible where it sits while lines further up (near the
+     title) still clearly recede. */
   /** px at zero focus, already-read. */
-  blurAbove: 7,
+  blurAbove: 3,
   /** px at zero focus, not-yet-read. */
   blurBelow: 2,
   /** floor at zero focus, already-read. */
