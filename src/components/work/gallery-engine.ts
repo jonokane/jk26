@@ -176,10 +176,12 @@ export function cardStrokeProgress(
  * would be a second source of truth for the same pixel and the next vertical
  * frame would snap the track back out from under the gesture.
  *
- * This converts a pixel of finger to the scroll that moves the track a pixel on
- * AVERAGE (`budget / travel`). The dwell makes the instantaneous rate vary, so a
- * pan resists slightly at a card's hold and gives at the transition — which
- * reads as the same magnetism the eye sees, not as a fault.
+ * The base conversion moves the track a pixel per pixel of finger on AVERAGE
+ * (`budget / travel`). But `dwell` (0.9) holds each card for most of its cell,
+ * so on a horizontal swipe most of the finger travel is spent in holds where
+ * the track barely moves — a 1:1 pan feels like far too much swiping. `panGain`
+ * gears the swipe up to punch through the holds. It multiplies only this
+ * horizontal path; vertical scroll never calls here, so its feel is untouched.
  */
 export function scrollDeltaForPan(
   deltaX: number,
@@ -188,5 +190,5 @@ export function scrollDeltaForPan(
   travel: number,
 ): number {
   if (travel <= 0) return 0;
-  return (deltaX * (wrapHeight - viewportHeight)) / travel;
+  return (deltaX * WORK.panGain * (wrapHeight - viewportHeight)) / travel;
 }

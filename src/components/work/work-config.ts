@@ -39,6 +39,18 @@ export const WORK = {
    *  section taller. The prototype hardcoded 520vh and let this drift. */
   scrollPerPixel: 1,
 
+  /**
+   * Horizontal-pan velocity: how many track-pixels a pixel of horizontal
+   * (two-finger / shift+wheel) swipe is worth. The base pan is 1:1 with the
+   * finger, but `dwell` holds each card for most of its cell — so at 1 a swipe
+   * spends most of itself in those holds, where nothing visibly moves, and the
+   * gesture feels like it takes far too much swiping. This gears the swipe up so
+   * it punches through the holds. Affects ONLY horizontal input; the
+   * vertical-scroll feel is untouched. Jono's dial — higher is snappier, too
+   * high and cards zip past before they register.
+   */
+  panGain: 3,
+
   /** A card at full opacity sits within this fraction of viewport width of the
    *  focus. Spec §9: `0.55 × innerWidth`. */
   focalBand: 0.55,

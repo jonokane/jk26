@@ -202,11 +202,11 @@ describe("cardStrokeProgress", () => {
 describe("scrollDeltaForPan", () => {
   /* The pan converts a pixel of finger into the scroll that moves the track a
      pixel on average (budget / travel), so panning and scrolling stay one hand. */
-  it("moves the track a pixel per pixel of gesture on average", () => {
+  it("gears each pixel of gesture up by panGain (base rate is 1:1)", () => {
     const wrapHeight = 2000, vh = 800, travel = 1200;
     const delta = scrollDeltaForPan(120, wrapHeight, vh, travel);
-    // budget = wrapHeight - vh = 1200 = travel, so the average rate is 1:1.
-    expect(delta).toBeCloseTo(120, 5);
+    // budget = wrapHeight - vh = 1200 = travel, so the base rate is 1:1; panGain amplifies it.
+    expect(delta).toBeCloseTo(120 * WORK.panGain, 5);
   });
 
   it("is 0 when there is no travel, so a pan cannot scroll the page sideways-by-proxy", () => {
