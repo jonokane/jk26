@@ -19,33 +19,34 @@ cover: ./media/collaya/cover.jpg
 
 Collaya is an artist-first music-tech platform and audio plugin. It generates new ideas from a musician's own audio and MIDI rather than from other people's records, and acts as a virtual co-producer: a consent-based stance on music AI, taken when most of the industry was moving the other way.
 
+![Collaya running within the DAW](./media/collaya/collaya-listener-indaw-tab.jpg "The Collaya Plugin.")
+
 I founded the company, set the direction, and designed and built the plugin, the marketing site, and all the connective tissue in between.
 
-Collaya started as a web app. I assembled the small team that built it, designed the product, and wrote parts of the front end myself. The most consequential decision I made was to stop building it and start again as a plugin and native macOS app.
+Collaya started as a web app. I assembled the small team that built it, designed the product, and wrote parts of the front end myself. The most consequential decision I made was to stop building the web variant and start again from the ground up as a plugin and native macOS app.
 
-<Breakout>
-
-{/* Placeholder image — swap ./media/collaya/cover.jpg for a real wide screenshot. */}
-![Collaya loaded in the rack, beside FabFilter, NI and U-He](./media/collaya/cover.jpg "In the same rack as tools from companies many times its size.")
-
-</Breakout>
 
 ## Where it belongs
 
 <Pin>
 
-{/* Placeholder image — swap ./media/collaya/cover.jpg for the real DAW screenshot. */}
-![Collaya, loaded in the DAW](./media/collaya/cover.jpg "Collaya, loaded in the DAW")
+![A screenshot of the Collaya webapp beta.](./media/collaya/collaya-webbeta.jpg "The Collaya webapp beta, our earliest vision of Collaya")
 
 The web app worked. You uploaded your sounds, Collaya listened and thought about them, and then you could have a real conversation about the material you were working on. That part was good, and it is still the heart of the product today.
 
 The core concept was the innovation. The workflow around it was the problem. Stop the session, switch apps, bounce a reference out of the DAW, upload it, wait, then talk. Every step is trivial, and together they cost more than most ideas are worth. The workflow also capped what Collaya could know: beyond what a user deliberately handed it, it couldn't see the work. Not the tempo, the key, the arrangement, or anything on the timeline. Every session began with a musician describing their song to software that could not hear it, which is a strange thing to ask of a collaborator.
 
-The plugin was always the intention. It predates the web version, which existed because it was the fastest way to put the idea in front of people and learn whether the conversation was worth having. Beta users answered that, then kept answering a question I hadn't asked: they wanted Collaya where they already worked. The feedback didn't set the direction so much as collapse the time it took to commit to it.
-
 </Pin>
 
+The plugin was always the intention. It predates the web version, which existed because it was the fastest way to put the idea in front of people and learn whether the conversation was worth having. Beta users answered that, then kept answering a question I hadn't asked: they wanted Collaya where they already worked. The feedback didn't set the direction so much as collapse the time it took to commit to it.
+
+<Pin>
+
+![Collaya Plugin](./media/collaya/collaya-v1-mainui-01.png "The totally revised Collaya Plugin")
+
 A plugin closes both gaps at once. Inside the session, Collaya reads tempo, key and transport state directly from the host. It auditions sounds through the DAW's own output, time-stretched and pitch-shifted to the project, against the track already playing. A generated MIDI clip leaves as a drag onto the timeline. Bringing in your own sounds is still there whenever you want it. It just stopped being the price of admission.
+
+</Pin>
 
 I priced most of this in before committing. It still arrived in five parts:
 
@@ -75,11 +76,27 @@ This is the tax every plugin developer pays, and the bar is set by companies who
 
 Snapshots rather than a survey. Three problems that came out of that constraint, and what each took.
 
-**The spacebar.** Producers hit space to play back the track they're working on. Collaya's embedded web view swallowed it, and the standard hook for intercepting a keystroke isn't even called for a bare space in Logic or Ableton, so the obvious fix doesn't exist. It took native first-responder management: the web view holds the keyboard only while a text field is focused, otherwise space passes to the host. Tab turned out to be unforwardable, since macOS hands it to the focused window and there is no appeal. So I documented the limit rather than ship a fix that half-worked.
+**The spacebar.** Producers hit space to play back the track they're working on. Collaya's embedded web view swallowed it, and the standard hook for intercepting a keystroke isn't even called for a bare space in Logic or Ableton, so the obvious fix doesn't exist. 
 
-**The chords.** Language models name chords reliably and _fret_ them unreliably; one labeled "A" came back spelling a B minor. A guitarist catches that instantly, and it costs you every subsequent benefit of the doubt. So the model's frets never reach the player: the server rewrites each shape against a canonical chord database before it renders it. The diagram shows the chord's name, not the model's guess.
+**_Solution:_** It took native first-responder management: the web view holds the keyboard only while a text field is focused, otherwise space passes to the host. Tab turned out to be unforwardable, since macOS hands it to the focused window and there is no appeal. So I documented the limit rather than ship a fix that half-worked.
 
-**The dialog I didn't cause.** macOS 15 began throwing a system permission prompt at users and blaming _Logic Pro_ for it. Ten hours to find: the plugin read a small settings file in a shared container, and macOS judges that read against whichever app performs it. The break came from noticing that Collaya's own Listener touched the same container over a socket and never triggered it. The file read was the trigger, not the container. Storage now routes through the companion app, which holds that permission legitimately. Users see nothing. That was the entire goal.
+![Spacebar passthrough settings screen](./media/collaya/collaya-spacebar.png "Spacebar passthrough")
+
+**The chords.** 
+The underlying language models that Collaya utilizes would name chords reliably and _fret_ them unreliably; one labeled "A" came back spelling a B minor. A guitarist catches that instantly - this is a critical moment of broken trust for most users. 
+
+<Pin>
+
+![Collaya plugin providing correct guitar chords](./media/collaya/collaya-chords.png "Collaya gets guitar chords right")
+
+
+**_Solution:_** Instead, I designed a mini-model which rewrites each shape against a **correct** canonical chord database before it renders it. The diagram shows the chord's name, plus the correct chord diagram, not the model's guess.
+
+</Pin>
+
+**The dialog I didn't cause.** macOS 15 began throwing a system permission prompt at users and blaming _Logic Pro_ for it. 
+
+**_Solution:_** Ten hours to find: the plugin read a small settings file in a shared container, and macOS judges that read against whichever app performs it. The break came from noticing that Collaya's own Listener touched the same container over a socket and never triggered it. The file read was the trigger, not the container. Storage now routes through the companion app, which holds that permission legitimately. Users see nothing - "no news is good news".
 
 ## What the Listener taught us
 
@@ -87,7 +104,16 @@ The Listener is a second plugin. It sits on a channel and reports what it hears,
 
 Early users heard something else in the name. They put it on a guitar track and waited for it to tell them which chords were being strummed, what the rhythm under the arpeggiated bass was doing, what the synth pad breathing underneath the song actually was. Not the mix. The composition.
 
-The gap between what we built and what people assumed was a better brief than the one we wrote ourselves. So we rebuilt the analysis to hear compositional detail and feed it into Collaya's chat, so the co-producer arrives already knowing what is in the song. It ships shortly, and it moves the whole workflow somewhere new.
+<Pin>
+
+![Collaya Compositional Listener Plugin](./media/collaya/collaya-listener-plugin.png "The Compositional Listener Plugin allows Collaya to hear the user's sound in realtime")
+
+
+
+
+**_Solution:_** The gap between what we built and what people assumed was a better brief than the one we wrote ourselves. So we rebuilt the analysis to hear compositional detail and feed it into Collaya's chat, so the co-producer arrives already knowing what is in the song. It ships shortly, and it moves the whole workflow somewhere new.
+
+</Pin>
 
 ## Working across four codebases
 
