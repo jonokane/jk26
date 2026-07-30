@@ -14,7 +14,7 @@ export const siteContent = {
   wordmark: "JONOKANE",
   /** The site sign-off footer, at the very bottom of the one-pager. Jono's words. */
   footer:
-    "Made with a smile by Jono in LA ©2026 (unless otherwise noted). Thanks for stopping by. Have a rad day!",
+    "Made with ❤️ by Jono in LA, ©2026 (unless otherwise noted). Thanks for stopping by. Have a rad day!",
   nav: [
     { label: "About", target: "about" },
     { label: "Work", target: "work" },
@@ -23,7 +23,7 @@ export const siteContent = {
   /** Control + landmark labels (accessible names are copy too — spec §15). */
   labels: {
     backToTop: "Back to top",
-    home: "Jono Kane — home",
+    home: "Jono Kane • home",
     allWork: "← All work",
     /** The floating scroll aid: nudges down the page, and flips to "Top" (a
      *  scroll-to-top) once the reader reaches the very bottom. */
@@ -133,11 +133,11 @@ export const siteContent = {
   },
   /** Contact section (spec §12). */
   contact: {
-    lede: "Tell me what you are building. I read everything that comes through here.",
+    lede: "Say hi. Get in touch with me here.",
     fields: {
       name: "Name",
       email: "Email",
-      message: "What are you building?",
+      message: "What's going on?",
     },
     /** The footer's links, in order. Each `key` indexes `links` below for its
      *  href; `resume` is hidden while that href is empty — the same rule the

@@ -49,7 +49,7 @@ export const WORK = {
    * vertical-scroll feel is untouched. Jono's dial — higher is snappier, too
    * high and cards zip past before they register.
    */
-  panGain: 3,
+  panGain: 5,
 
   /** A card at full opacity sits within this fraction of viewport width of the
    *  focus. Spec §9: `0.55 × innerWidth`. */
