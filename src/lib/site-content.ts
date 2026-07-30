@@ -92,6 +92,15 @@ export const siteContent = {
     /** Accessible name for a zoomable figure's button, and the fallback when an
      *  image has no alt. Paired with aria-haspopup="dialog" to convey "enlarge". */
     zoomActionLabel: "Enlarge image",
+    /** The inline click-to-advance slide gallery (<Slides>). `status` is the
+     *  live-region announcement read on each step. */
+    slides: {
+      label: "Screen-by-screen walkthrough",
+      prev: "Previous screen",
+      next: "Next screen",
+      hint: "Click, or use ← → to step through",
+      status: (n: number, total: number) => `Screen ${n} of ${total}`,
+    },
     /** Between the active card's number and the total: "01 / 05". */
     counterSeparator: " / ",
     /** The gallery's own landmark name. */
