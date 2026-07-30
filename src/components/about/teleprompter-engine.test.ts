@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  activeCenter, blockStyle, focusFor, smoothstep, wordWeight,
+  activeCenter, blockStyle, edgeDistance, focusFor, smoothstep, wordWeight,
 } from "@/components/about/teleprompter-engine";
 import { TELEPROMPTER as T } from "@/components/about/teleprompter-config";
 
@@ -22,6 +22,35 @@ describe("focusFor", () => {
 
   it("is symmetric — distance decides focus, not direction", () => {
     expect(focusFor(-100, 240)).toBe(focusFor(100, 240));
+  });
+});
+
+describe("edgeDistance", () => {
+  it("is zero the whole time the focal line sits within the block's height", () => {
+    expect(edgeDistance(0, 100)).toBe(0);
+    expect(edgeDistance(80, 100)).toBe(0);
+    expect(edgeDistance(-80, 100)).toBe(0);
+    expect(edgeDistance(100, 100)).toBe(0); // exactly at the edge
+    expect(edgeDistance(-100, 100)).toBe(0);
+  });
+
+  it("measures the gap to the nearest edge once the line is outside the block", () => {
+    expect(edgeDistance(150, 100)).toBe(50);
+    expect(edgeDistance(-150, 100)).toBe(50);
+  });
+
+  it("reduces to the raw centre distance for a zero-height block", () => {
+    expect(edgeDistance(120, 0)).toBe(120);
+    expect(edgeDistance(-120, 0)).toBe(120);
+  });
+
+  it("holds a statement taller than the focal range fully in focus while it spans the line", () => {
+    /* The mobile bug, in numbers: a 291px statement (half 145.5) whose centre
+       has drifted 143px off the focal line still covers it, so it must resolve
+       to full focus — not the 0.21 the centre distance produced (a 2.4px blur
+       on the lines being read). */
+    expect(focusFor(edgeDistance(143, 145.5), 0.24 * 844)).toBe(1);
+    expect(focusFor(143, 0.24 * 844)).toBeLessThan(0.25); // what the old centre-based path gave
   });
 });
 

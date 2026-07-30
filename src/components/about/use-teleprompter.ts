@@ -3,7 +3,7 @@
 import { useEffect, type RefObject } from "react";
 import { ScrollTrigger } from "@/lib/gsap";
 import { TELEPROMPTER as T } from "@/components/about/teleprompter-config";
-import { activeCenter, blockStyle, focusFor, wordWeight } from "@/components/about/teleprompter-engine";
+import { activeCenter, blockStyle, edgeDistance, focusFor, wordWeight } from "@/components/about/teleprompter-engine";
 import type { WordRole } from "@/components/about/statement-tokens";
 
 interface Opts {
@@ -37,6 +37,7 @@ export function useTeleprompter({ wrapRef, columnRef, active, onActiveStatement 
       el,
       words: [...el.querySelectorAll<HTMLElement>("[data-word]")],
       center: 0,
+      half: 0,
     }));
     if (blocks.length === 0) return;
 
@@ -52,7 +53,10 @@ export function useTeleprompter({ wrapRef, columnRef, active, onActiveStatement 
 
     let measured = false;
     const measure = () => {
-      for (const b of blocks) b.center = b.el.offsetTop + b.el.offsetHeight / 2;
+      for (const b of blocks) {
+        b.half = b.el.offsetHeight / 2;
+        b.center = b.el.offsetTop + b.half;
+      }
       measured = blocks.length > 0;
     };
 
@@ -71,7 +75,13 @@ export function useTeleprompter({ wrapRef, columnRef, active, onActiveStatement 
       let nearestDist = Infinity;
       blocks.forEach((b, i) => {
         const delta = b.center - center;
-        const focus = focusFor(delta, focalRange);
+        /* Focus falls off from the block's nearest EDGE, not its centre: a
+           statement taller than the focal range — every one on a phone — stays
+           resolved while it spans the read line, instead of blurring the lines
+           you're reading the instant its midpoint drifts off (see
+           edgeDistance). blockStyle still takes the signed delta for its
+           already-read/not-yet-read split. */
+        const focus = focusFor(edgeDistance(delta, b.half), focalRange);
         const { blur, opacity } = blockStyle(delta, focus);
         b.el.style.opacity = opacity.toFixed(3);
         b.el.style.filter = blur > 0.12 ? `blur(${blur.toFixed(1)}px)` : "none";

@@ -28,6 +28,26 @@ export function focusFor(delta: number, focalRange: number): number {
 }
 
 /**
+ * Distance from the focal line to a block's NEAREST EDGE — zero the whole time
+ * the line sits within the block's own height (`half` is its half-height).
+ *
+ * Focus keys off THIS, not the raw centre distance. A statement gets ONE blur
+ * and opacity for its whole box, which only reads as "sharp where you're
+ * reading, soft above and below" while the box is short next to the focal
+ * range. On a phone a paragraph wraps to a third of the viewport — taller than
+ * the range itself — so keyed off its centre it blurred as a whole the instant
+ * its midpoint drifted off the line, smearing the very lines sitting in the
+ * read zone. Keyed off the nearest edge, a block stays fully resolved while it
+ * spans the line and only falls off once the line clears its top or bottom. On
+ * desktop, where `half` is a fraction of the range, this is within a hair of
+ * the centre distance.
+ */
+export function edgeDistance(delta: number, half: number): number {
+  const gap = Math.abs(delta) - half;
+  return gap > 0 ? gap : 0;
+}
+
+/**
  * A block's blur and opacity, from its signed distance to the focus.
  * `delta < 0` means the block sits ABOVE the focus — already read.
  */
