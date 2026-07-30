@@ -71,6 +71,10 @@ export function WorkCard({ study, number }: { study: CaseStudy; number: number }
             src={study.cover.src}
             alt={study.title}
             fill
+            /* Covers are UI screenshots — fine text and flat gradients that the
+               default quality (75) mushes into visible WebP/AVIF artifacts. 90
+               keeps them crisp for a modest size bump. */
+            quality={90}
             /* The shot is ~0.4 of a min(66vw, 820px) card, so it caps ~320px;
                the gallery only renders above 900px (below, the index shows). */
             sizes="(min-width: 1242px) 320px, 26vw"

@@ -17,6 +17,9 @@ export function CaseStudyCover({ study }: { study: CaseStudy }) {
           src={study.cover.src}
           alt={study.title}
           fill
+          /* UI screenshots go soft at the default quality (75) — WebP/AVIF
+             artifacts on fine text and gradients. 90 keeps them crisp. */
+          quality={90}
           /* The cover sits in the max-width:1000px article (6vw padding), so it
              tops out ~880px, never the full viewport. */
           sizes="(min-width: 1000px) 880px, 88vw"
