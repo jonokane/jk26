@@ -29,16 +29,19 @@
   margin: 0.2em 0 0.26em 0;
   font-family: var(--font-wordmark);
   font-size: clamp(3rem, 9vw, 8rem);
-  /* Pin the upright cut. The Adobe kit ships config-variable as BOTH a normal
-     and an italic variable face under one family name; with only
-     font-variation-settings set, iOS WebKit resolved the wordmark to the
-     ITALIC face (desktop Blink picks normal, so it never showed there).
-     font-style + a concrete font-weight hand the matcher an unambiguous
-     normal-300 target — 300 is already the rendered weight, so desktop is
-     unchanged. The fly (nav brand) composes this class, so it's fixed too. */
+  /* config-variable is ONE variable font (axes: wght, wdth 50–100, slnt 0–9),
+     not a roman/italic pair. The wordmark pinned only "wght" and left wdth and
+     slnt to the CSS-property→axis mapping (font-stretch → wdth, font-style →
+     slnt). Desktop Blink honours that mapping; iOS WebKit drove the slnt axis
+     off zero with font-variation-settings present, so the wordmark rendered
+     slanted on phones — and font-style: normal alone did NOT reach the axis to
+     correct it. Pin every axis explicitly here; an explicit variation value is
+     the one thing a browser can't reinterpret. font-style/weight stay for the
+     sans-serif fallback if the kit never loads; wdth 100 is normal width, slnt
+     0 upright. The fly (nav brand) composes this class, so it's fixed too. */
   font-style: normal;
   font-weight: 300;
-  font-variation-settings: "wght" 300;
+  font-variation-settings: "wght" 300, "wdth" 100, "slnt" 0;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   line-height: 0.9;
