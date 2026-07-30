@@ -7,7 +7,12 @@
  * House style: no em-dashes anywhere in visitor-facing copy.
  */
 export const siteContent = {
-  kicker: "Product Design Leader & Strategist",
+  /* The ` ` (no-break space) glues "& Strategist" together so a narrow
+     viewport breaks the line after "Leader" — "Product Design Leader /
+     & Strategist" — never orphaning "Strategist" on its own line. Invisible on
+     one line (desktop) and reads as a normal space everywhere, including the
+     document title that composes this string. */
+  kicker: "Product Design Leader &\u00A0Strategist",
   tagline:
     "I shape strategy, build teams, lead design, and bring digital products to life.",
   /** The hero wordmark and the nav brand render this. */
