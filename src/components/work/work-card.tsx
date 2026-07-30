@@ -75,9 +75,14 @@ export function WorkCard({ study, number }: { study: CaseStudy; number: number }
                default quality (75) mushes into visible WebP/AVIF artifacts. 90
                keeps them crisp for a modest size bump. */
             quality={90}
-            /* The shot is ~0.4 of a min(66vw, 820px) card, so it caps ~320px;
-               the gallery only renders above 900px (below, the index shows). */
-            sizes="(min-width: 1242px) 320px, 26vw"
+            /* The shot box is PORTRAIT but covers are landscape (~2:1), so
+               object-fit:cover scales the image up to fill the box HEIGHT and
+               crops the sides — the image renders ~box-height × 2 wide (~950px),
+               far wider than the ~290px box. Hinting the box width (320px) made
+               next/image serve a ~320px variant that then upscaled ~3× into the
+               crop, reading as low-fi. Hint the cover-crop's true render width so
+               a sharp variant is served (height-driven, so a flat value). */
+            sizes="1000px"
             placeholder="blur"
             blurDataURL={study.cover.blurDataURL}
             className={styles.cover}
