@@ -6,6 +6,7 @@ import { Contact } from "@/components/contact/contact";
 import { SiteFooter } from "@/components/site-footer";
 import { ScrollButton } from "@/components/scroll-button";
 import { HashScroll } from "@/components/hash-scroll";
+import { ContactReached } from "@/components/analytics/contact-reached";
 
 export default function Home() {
   return (
@@ -20,6 +21,9 @@ export default function Home() {
       <SiteFooter />
       <ScrollButton />
       <HashScroll />
+      {/* Fires contact_reached once when Contact scrolls into view. One-pager
+          only, so it never runs on /work/[slug]. Renders nothing. */}
+      <ContactReached />
     </>
   );
 }

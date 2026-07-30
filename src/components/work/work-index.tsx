@@ -14,6 +14,7 @@ import {
 import type { Facet, WorkFilter } from "@/components/work/work-filters";
 import { formatStudyNumber } from "@/components/work/work-lists";
 import { siteContent } from "@/lib/site-content";
+import { ANALYTICS_EVENTS, trackEvent } from "@/lib/analytics";
 import styles from "@/components/work/work.module.css";
 
 /**
@@ -145,7 +146,13 @@ export function WorkIndex({ toggle }: { toggle?: ReactNode }) {
       <ol className={styles.rows}>
         {shown.map((study) => (
           <li key={study.slug} className={styles.row} data-work-row>
-            <Link href={study.url} className={styles.rowLink}>
+            {/* Same case-study open event the gallery card fires — the index is
+                the other way into a study from the home page. */}
+            <Link
+              href={study.url}
+              className={styles.rowLink}
+              onClick={() => trackEvent(ANALYTICS_EVENTS.caseStudyOpen, { slug: study.slug })}
+            >
               <span className={styles.rowNum}>
                 {formatStudyNumber(publishedWork.indexOf(study) + 1)}
               </span>

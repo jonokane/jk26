@@ -5,6 +5,7 @@ import { AnimatePresence, motion, type Variants } from "motion/react";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { siteContent } from "@/lib/site-content";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
+import { ANALYTICS_EVENTS, OUTBOUND_LABELS, trackEvent } from "@/lib/analytics";
 import styles from "@/components/contact/contact.module.css";
 
 type Status = "idle" | "sending" | "success" | "error";
@@ -180,6 +181,12 @@ export function Contact() {
         // Capture what was sent before the form unmounts, for the echo panel.
         setSent({ name: body.name, email: body.email, message: body.message });
         setStatus("success");
+        /* Only on a genuine success response — never on click. When
+           RESEND_API_KEY is unset the route answers 500 and we land in the
+           `error` branch instead, so this does NOT fire in the mailto fallback;
+           the visitor's click on the fallback mailto records as outbound_click
+           (label "email") below. */
+        trackEvent(ANALYTICS_EVENTS.contactSubmit);
       } else {
         setStatus("error");
         // A Turnstile token is single-use; refresh it so a retry can succeed.
@@ -390,7 +397,12 @@ export function Contact() {
               {status === "error" && (
                 <p className={styles.errorMessage}>
                   {siteContent.contact.error}{" "}
-                  <a href={`mailto:${siteContent.links.email}`}>{siteContent.links.email}</a>
+                  <a
+                    href={`mailto:${siteContent.links.email}`}
+                    onClick={() => trackEvent(ANALYTICS_EVENTS.outboundClick, { label: OUTBOUND_LABELS.email })}
+                  >
+                    {siteContent.links.email}
+                  </a>
                 </p>
               )}
             </div>
@@ -399,14 +411,26 @@ export function Contact() {
       </AnimatePresence>
 
       <div className={styles.footer} data-contact-footer>
-        <a href={`mailto:${siteContent.links.email}`}>{siteContent.links.email}</a>
+        <a
+          href={`mailto:${siteContent.links.email}`}
+          onClick={() => trackEvent(ANALYTICS_EVENTS.outboundClick, { label: OUTBOUND_LABELS.email })}
+        >
+          {siteContent.links.email}
+        </a>
         {siteContent.contact.footerLinks.map((link) => {
           const href = siteContent.links[link.key];
           /* A link with no URL is not rendered — the About CTA's rule. Résumé
              waits on links.resume. */
           if (!href) return null;
+          /* The résumé is a download, not a destination — its own event. Every
+             other footer link is an external destination; its key doubles as the
+             stable outbound label (see analytics.ts). */
+          const onClick =
+            link.key === "resume"
+              ? () => trackEvent(ANALYTICS_EVENTS.resumeDownload)
+              : () => trackEvent(ANALYTICS_EVENTS.outboundClick, { label: link.key });
           return (
-            <a key={link.key} href={href} target="_blank" rel="noreferrer">
+            <a key={link.key} href={href} target="_blank" rel="noreferrer" onClick={onClick}>
               {link.label}
             </a>
           );

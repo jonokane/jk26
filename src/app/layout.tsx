@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { FontsReady } from "@/components/fonts-ready";
@@ -91,6 +92,10 @@ export default function RootLayout({
         <FontsReady />
         <SmoothScroll>{children}</SmoothScroll>
         {modal}
+        {/* Vercel Web Analytics: cookieless pageviews + client-route changes,
+            tracked automatically. Custom lead-gen events are fired from
+            src/lib/analytics.ts. Lives in <body> after content, never <head>. */}
+        <Analytics />
       </body>
     </html>
   );

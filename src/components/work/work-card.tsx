@@ -1,8 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import type { CaseStudy } from "#site/content";
 import { formatStudyNumber } from "@/components/work/work-lists";
 import { siteContent } from "@/lib/site-content";
+import { ANALYTICS_EVENTS, trackEvent } from "@/lib/analytics";
 import styles from "@/components/work/work-card.module.css";
 
 /**
@@ -27,6 +30,10 @@ export function WorkCard({ study, number }: { study: CaseStudy; number: number }
       data-work-card
       data-slug={study.slug}
       style={{ opacity: 1 }}
+      /* A step toward the work — record which study, by its Velite slug (spec
+         analytics). "use client" is here for this handler; the card is
+         otherwise the same markup. */
+      onClick={() => trackEvent(ANALYTICS_EVENTS.caseStudyOpen, { slug: study.slug })}
     >
       {/* The perimeter stroke the gallery traces while this card holds at the
           focus (spec §9): the moving proof that a still card is still catching

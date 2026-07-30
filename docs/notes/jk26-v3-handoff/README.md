@@ -109,7 +109,7 @@ All scroll handlers are `requestAnimationFrame`-throttled. **Everything gates be
 - **Mechanic:** Scroll progress maps to a moving focal center at **60% of viewport height**, focus range **±24% vh**. For each word: weight interpolates **440 → 780**, color mixes `#bcbcbc → accent/ink`, opacity + blur fall off with distance from focus. Words **above** the focus blur harder (up to 7px) than words **below** (up to 2px) — the "already read" feel. Certain words are emphasized (role `e` → heavier target weight / accent), some italic (role `i`).
 - **Copy (4 statements):**
   1. "I help teams build products people love, spanning design, product management, strategy, and hands-on building to turn concept and vision into shipped products."
-  2. "For two decades I have solved challenging product and UX problems at Yahoo!, Amazon, Meta, and smaller startups, and now as founder of Collaya."
+  2. "For two decades I have solved challenging product and UX problems at Meta, Amazon, Yahoo!, and smaller startups, and now as founder of Collaya."
   3. "I care about people and real user needs, and I balance that with the metrics that grow a business."
   4. "Available now for fractional work. ~20+ hours a week with early-stage teams in music, creative, AI, IoT, and automotive industries. Remote-first, LA/SF hybrid."
 

@@ -267,7 +267,7 @@ Create `content/site/about.mdx`. The statements are Jono's locked copy, lifted v
 ```mdx
 ---
 title: "Who I am."
-lede: "Twenty years shipping products at Yahoo!, Amazon, and Meta, and now as founder of Collaya. Equal parts designer, design manager, and product strategist, with enough front-end fluency to build what I draw."
+lede: "Twenty years shipping products at Meta, Amazon, and Yahoo!, and now as founder of Collaya. Equal parts designer, design manager, and product strategist, with enough front-end fluency to build what I draw."
 ---
 
 I help teams build products people love, spanning **design**, **product management**, **strategy**, and hands-on building to turn concept and vision into **shipped products**.

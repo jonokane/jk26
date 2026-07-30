@@ -123,7 +123,7 @@ Locked recipe (tuned in wordmark lab v12):
 Content, four titled beats (source of truth in `site-content.ts`):
 
 1. **What I do** — "I help teams build products people love, spanning design, product management, strategy, and hands-on building to turn concept and vision into shipped products."
-2. **Track record** — "For two decades I have solved challenging product and UX problems at Yahoo!, Amazon, Meta, and smaller startups, and now as founder of Collaya."
+2. **Track record** — "For two decades I have solved challenging product and UX problems at Meta, Amazon, Yahoo!, and smaller startups, and now as founder of Collaya."
 3. **How I work** — "I care about people and real user needs, and I balance that with the metrics that grow a business."
 4. **Available now** — "Available now for fractional work, around 20+ hours a week, mostly with early-stage teams in music, creative, AI, IoT, and automotive. Remote-first, open to LA or SF hybrid for the right opportunity."
 
