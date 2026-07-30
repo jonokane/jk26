@@ -7,17 +7,18 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { siteContent } from "@/lib/site-content";
 
 /* Title and description are Jono's locked positioning copy (site-content.ts):
-   the kicker as the title suffix, the tagline as the description. The " — "
-   separator matches the existing title template; the "no em-dash" house rule is
-   about visitor PROSE, and titles have always used it here. */
-const title = `${SITE_NAME} — ${siteContent.kicker}`;
+   the kicker as the title suffix, the tagline as the description. A middle dot
+   " · " separates name from role, and page from site — the house rule bars
+   em-dashes from visitor copy (a title is visitor copy), so no "—". Swap the
+   two " · " below for "|", ":", "," etc. to taste. */
+const title = `${SITE_NAME} · ${siteContent.kicker}`;
 const description = siteContent.tagline;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: title,
-    template: `%s — ${SITE_NAME}`,
+    template: `%s · ${SITE_NAME}`,
   },
   description,
   applicationName: SITE_NAME,

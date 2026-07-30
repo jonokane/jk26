@@ -7,7 +7,7 @@ import { siteContent } from "@/lib/site-content";
    next/og's built-in font — deliberately not Mae (Typekit isn't available to
    the OG generator), but a clean stark card in the site's black-on-white. */
 
-export const alt = `${SITE_NAME} — ${siteContent.kicker}`;
+export const alt = `${SITE_NAME} · ${siteContent.kicker}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
