@@ -21,17 +21,21 @@
   pointer-events: auto;
 }
 
-/* The slide's figure carries the image + its step caption. Kill its default
-   margin (the .slides wrapper owns the outer rhythm), and bound the media so a
-   tall portrait screen doesn't dominate — it centers within the column. */
+/* The slide's figure carries the image + its step caption. Shrink-wrap the
+   figure to the image and centre it (margin auto), so the caption sits at the
+   image's LEFT edge — same as a full-width image, not stranded at the column
+   edge under a centred portrait shot. Bound the media so a tall portrait screen
+   doesn't dominate. */
 .slide :global(figure) {
-  margin: 0;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
 }
 .slide :global(img) {
+  display: block;
   width: auto;
   max-width: 100%;
   max-height: 70vh;
-  margin-inline: auto;
 }
 
 .controls {
@@ -63,6 +67,43 @@
 .arrow:focus-visible {
   color: var(--work);
   border-color: var(--work);
+}
+
+/* The interactivity cue: rings emanate outward from the Next arrow to pull the
+   eye and invite a click. Two staggered rings make a ripple. They stop once the
+   reader has stepped once (data-seen) — the cue has done its job. */
+.arrowNext {
+  position: relative;
+}
+.arrowNext::before,
+.arrowNext::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 100px;
+  border: 1px solid var(--work);
+  opacity: 0;
+  pointer-events: none;
+  animation: slidesRipple 2.4s ease-out infinite;
+}
+.arrowNext::after {
+  animation-delay: 1.2s;
+}
+.slides[data-seen="true"] .arrowNext::before,
+.slides[data-seen="true"] .arrowNext::after {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes slidesRipple {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
 }
 
 .counter {
@@ -106,5 +147,10 @@
   .slide,
   .hint {
     transition: none;
+  }
+  .arrowNext::before,
+  .arrowNext::after {
+    animation: none;
+    opacity: 0;
   }
 }

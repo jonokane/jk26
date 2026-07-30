@@ -45,7 +45,14 @@ export function Slides({ children }: { children: ReactNode }) {
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- role=group
     // with an arrow-key handler is a stepper affordance; the labelled prev/next
     // buttons below are the primary, focusable controls.
-    <div className={styles.slides} data-slides role="group" aria-label={copy.label} onKeyDown={onKeyDown}>
+    <div
+      className={styles.slides}
+      data-slides
+      data-seen={seen}
+      role="group"
+      aria-label={copy.label}
+      onKeyDown={onKeyDown}
+    >
       <ZoomDisabled>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events --
             click-to-advance is a pointer enhancement; keyboard and AT users step
@@ -68,7 +75,12 @@ export function Slides({ children }: { children: ReactNode }) {
           {siteContent.work.counterSeparator}
           {total}
         </span>
-        <button type="button" className={styles.arrow} aria-label={copy.next} onClick={() => go(active + 1)}>
+        <button
+          type="button"
+          className={`${styles.arrow} ${styles.arrowNext}`}
+          aria-label={copy.next}
+          onClick={() => go(active + 1)}
+        >
           ›
         </button>
       </div>
