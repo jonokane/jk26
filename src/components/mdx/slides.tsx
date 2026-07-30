@@ -85,12 +85,15 @@ export function Slides({ children }: { children: ReactNode }) {
         </button>
       </div>
 
-      <p className={styles.hint} data-seen={seen}>
+      {/* <div>, not <p>: a <p> here collides with the case study's
+          `.body :where(p)` rule (equal specificity), which was overriding the
+          size and forcing a left-aligned 62ch box — knocking the hint off-centre. */}
+      <div className={styles.hint} data-seen={seen}>
         {copy.hint}
-      </p>
-      <p className={styles.srOnly} aria-live="polite">
+      </div>
+      <div className={styles.srOnly} aria-live="polite">
         {copy.status(active + 1, total)}
-      </p>
+      </div>
     </div>
   );
 }

@@ -115,11 +115,17 @@
   color: var(--mute);
 }
 
-/* The "it's interactive" hint. Present until the first step, then it fades —
-   the arrows and counter carry the ongoing signal. */
+/* The "it's interactive" hint — a centred pill with a light stroke to set it
+   apart from the controls above. `fit-content` + auto margins wrap the stroke
+   to the text and centre the pill. Present until the first step, then it fades;
+   the ripple, arrows and counter carry the ongoing signal. */
 .hint {
-  margin-top: 10px;
-  text-align: center;
+  width: fit-content;
+  max-width: 100%;
+  margin: 14px auto 0;
+  padding: 7px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 100px;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.06em;
