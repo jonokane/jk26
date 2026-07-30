@@ -49,6 +49,38 @@
   color: var(--about);
 }
 
+/* Clear the nav pill. It stands ~13vh tall on a phone, so at the base 13vh the
+   title's crown hid beneath it (Jono's report); desktop's pill is shorter and
+   already clears, so only narrow viewports drop the title. */
+@media (max-width: 767px) {
+  .title {
+    top: 20vh;
+  }
+}
+
+/* The fog under the pinned title. Content translating up through the top of the
+   stage passes BEHIND this and blurs + washes toward the canvas, so a sharp read
+   line — a tall statement now holds focus edge-to-edge (use-teleprompter) — can
+   never collide with the equally sharp title. It sits above the column and below
+   the title (z 8) and rail (z 10), so the title reads cleanly on top; the blur
+   and the wash both ramp off well above the mid-viewport read zone, so nothing
+   hard-edges where the fog ends. Prefixed backdrop-filter first — Turbopack drops
+   the unprefixed declaration otherwise (site-header.module.css, same trap). */
+.titleScrim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 34vh;
+  z-index: 6;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  background: linear-gradient(to bottom, var(--canvas), transparent 75%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 68%, transparent);
+  mask-image: linear-gradient(to bottom, #000 68%, transparent);
+}
+
 .column {
   position: absolute;
   top: 0;
@@ -175,6 +207,12 @@
   }
 
   .rail {
+    display: none;
+  }
+
+  /* No sticky stage to pin against here, so the fog would land at the top of the
+     whole static section — and there is no scrolling-under-title to soften. */
+  .titleScrim {
     display: none;
   }
 

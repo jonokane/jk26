@@ -125,6 +125,11 @@ export function About() {
     <section className={styles.about} id="about" aria-labelledby="about-title">
       <div ref={wrapRef} className={styles.wrap}>
         <div className={styles.stage}>
+          {/* The fog band under the pinned title (about.module.css): content
+              scrolling up behind it blurs and washes toward the canvas, so a
+              sharp read line never collides with the equally sharp title.
+              Decorative — it sits behind the title and reports nothing. */}
+          <div className={styles.titleScrim} aria-hidden="true" />
           <h2 className={styles.title} id="about-title">
             {aboutPage.title}
           </h2>
