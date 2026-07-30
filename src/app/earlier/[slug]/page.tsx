@@ -19,7 +19,15 @@ export async function generateMetadata({
   const { slug } = await params;
   const item = sortedEarlierWork.find((i) => i.slug === slug);
   if (!item) return {};
-  return { title: item.title };
+  /* Earlier projects carry no summary/cover in their schema, so there's no
+     per-item description or image — title + canonical, and the root OG default
+     and description are inherited. */
+  return {
+    title: item.title,
+    alternates: { canonical: item.url },
+    openGraph: { type: "article", url: item.url, title: item.title },
+    twitter: { card: "summary_large_image", title: item.title },
+  };
 }
 
 /**

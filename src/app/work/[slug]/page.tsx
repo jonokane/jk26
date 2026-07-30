@@ -19,7 +19,31 @@ export async function generateMetadata({
   const { slug } = await params;
   const study = publishedWork.find((s) => s.slug === slug);
   if (!study) return {};
-  return { title: study.title, description: study.summary };
+  /* The cover is this study's share card — it's already ~2:1, so it crops
+     cleanly to the OG frame. When a study has no cover yet, omit images and the
+     root opengraph-image (the designed default) is inherited. Root-relative
+     `src`/`url` resolve against metadataBase to absolutes. */
+  const images = study.cover
+    ? [{ url: study.cover.src, width: study.cover.width, height: study.cover.height, alt: study.title }]
+    : undefined;
+  return {
+    title: study.title,
+    description: study.summary,
+    alternates: { canonical: study.url },
+    openGraph: {
+      type: "article",
+      url: study.url,
+      title: study.title,
+      description: study.summary,
+      ...(images ? { images } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: study.title,
+      description: study.summary,
+      ...(images ? { images: images.map((i) => i.url) } : {}),
+    },
+  };
 }
 
 /**
