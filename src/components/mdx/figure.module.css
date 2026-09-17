@@ -1,6 +1,8 @@
 /* Body image treatment for case-study prose (spec §14: materials live in CSS).
-   Stark and quiet — a hairline frame like the cover slots, a mono caption in the
-   same register as the shot captions. */
+   Stark and quiet — the image bare on the canvas, a mono caption in the same
+   register as the shot captions. No frame: the hairline that used to sit here
+   read as a stray grey outline, worst around screenshots that carry their own
+   rounded window chrome. */
 .figure {
   margin: 3rem 0;
 }
@@ -9,7 +11,6 @@
   display: block;
   width: 100%;
   height: auto;
-  border: 1px solid var(--hairline);
 }
 
 .caption {
