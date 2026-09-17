@@ -56,6 +56,32 @@ describe("Slides", () => {
     expect(activeIndex(container)).toBe(0);
   });
 
+  it("marks the direction and the exiting slide so CSS can run the filmstrip", () => {
+    const { container } = render(three());
+    const group = container.querySelector("[data-slides]")!;
+    const slides = container.querySelectorAll("[data-slide]");
+    expect(group.getAttribute("data-dir")).toBe("next"); // first step enters from the right
+    expect(container.querySelector('[data-slide][data-exiting="true"]')).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Next screen" }));
+    expect(group.getAttribute("data-dir")).toBe("next");
+    expect(slides[0].getAttribute("data-exiting")).toBe("true");
+    expect(slides[1].getAttribute("data-active")).toBe("true");
+
+    fireEvent.click(screen.getByRole("button", { name: "Previous screen" }));
+    expect(group.getAttribute("data-dir")).toBe("prev");
+    expect(slides[1].getAttribute("data-exiting")).toBe("true");
+    expect(slides[0].getAttribute("data-exiting")).toBe("false");
+  });
+
+  it("wrapping follows the button pressed, not the index order", () => {
+    const { container } = render(three());
+    const group = container.querySelector("[data-slides]")!;
+    fireEvent.click(screen.getByRole("button", { name: "Previous screen" })); // 1 → wraps → 3
+    expect(activeIndex(container)).toBe(2);
+    expect(group.getAttribute("data-dir")).toBe("prev"); // slide 3 enters from the left
+  });
+
   it("ignores whitespace text between slides — a newline is not a slide", () => {
     // MDX compiles images authored on consecutive lines inside <Slides> (no
     // blank lines) to `img, "\n", img, "\n", img`. Only the images are slides.

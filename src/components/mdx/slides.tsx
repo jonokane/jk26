@@ -8,10 +8,12 @@ import styles from "@/components/mdx/slides.module.css";
 /**
  * An inline click-to-advance slide gallery (spec: 2026-07-29 slides). Each child
  * — a markdown image rendered as a figure — is one slide; the gallery shows one
- * at a time and cross-dissolves between them via a CSS grid-stack (so the frame
- * sizes to the tallest slide and never jumps between same-size shots). Click the
- * image, use the ← → buttons, or press the arrow keys to step; it wraps at both
- * ends. Manual only — no auto-advance.
+ * at a time on a CSS grid-stack (so the frame sizes to the tallest slide and
+ * never jumps between same-size shots) and steps between them as a filmstrip:
+ * the new slide enters from the side you stepped toward, the old one leaves the
+ * other way, both crossfading (slides.module.css owns the motion and its dials).
+ * Click the image, use the ← → buttons, or press the arrow keys to step; it
+ * wraps at both ends. Manual only — no auto-advance.
  *
  * Wrapped in <ZoomDisabled> so a click ADVANCES rather than opening the
  * lightbox. Reduced motion cuts instead of fading (CSS). A lone child (or none)
@@ -27,23 +29,32 @@ export function Slides({ children }: { children: ReactNode }) {
   );
   const total = slides.length;
   const [active, setActive] = useState(0);
+  /* The filmstrip needs two facts the CSS can't infer: which way the last
+     step went (so the new slide enters from that side and the old one leaves
+     the other way, wrapping included) and which slide is the old one. */
+  const [dir, setDir] = useState<"next" | "prev">("next");
+  const [exiting, setExiting] = useState<number | null>(null);
   const [seen, setSeen] = useState(false);
   const copy = siteContent.work.slides;
 
   if (total <= 1) return <>{children}</>;
 
-  const go = (to: number) => {
+  const go = (to: number, direction: "next" | "prev") => {
+    setExiting(active);
+    setDir(direction);
     setActive(((to % total) + total) % total); // wrap both directions
     setSeen(true);
   };
+  const next = () => go(active + 1, "next");
+  const prev = () => go(active - 1, "prev");
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      go(active + 1);
+      next();
     } else if (event.key === "ArrowLeft") {
       event.preventDefault();
-      go(active - 1);
+      prev();
     }
   };
 
@@ -55,6 +66,7 @@ export function Slides({ children }: { children: ReactNode }) {
       className={styles.slides}
       data-slides
       data-seen={seen}
+      data-dir={dir}
       role="group"
       aria-label={copy.label}
       onKeyDown={onKeyDown}
@@ -63,9 +75,16 @@ export function Slides({ children }: { children: ReactNode }) {
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events --
             click-to-advance is a pointer enhancement; keyboard and AT users step
             via the labelled prev/next buttons and the group's arrow-key handler. */}
-        <div className={styles.stack} data-slides-stack onClick={() => go(active + 1)}>
+        <div className={styles.stack} data-slides-stack onClick={next}>
           {slides.map((slide, i) => (
-            <div key={i} className={styles.slide} data-slide data-active={i === active} aria-hidden={i !== active}>
+            <div
+              key={i}
+              className={styles.slide}
+              data-slide
+              data-active={i === active}
+              data-exiting={i === exiting}
+              aria-hidden={i !== active}
+            >
               {slide}
             </div>
           ))}
@@ -73,7 +92,7 @@ export function Slides({ children }: { children: ReactNode }) {
       </ZoomDisabled>
 
       <div className={styles.controls}>
-        <button type="button" className={styles.arrow} aria-label={copy.prev} onClick={() => go(active - 1)}>
+        <button type="button" className={styles.arrow} aria-label={copy.prev} onClick={prev}>
           ‹
         </button>
         <span className={styles.counter}>
@@ -85,7 +104,7 @@ export function Slides({ children }: { children: ReactNode }) {
           type="button"
           className={`${styles.arrow} ${styles.arrowNext}`}
           aria-label={copy.next}
-          onClick={() => go(active + 1)}
+          onClick={next}
         >
           ›
         </button>

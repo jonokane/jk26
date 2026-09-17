@@ -1,24 +1,58 @@
 /* Inline click-to-advance slide gallery (spec: 2026-07-29). The slides stack in
-   ONE css-grid cell so the frame sizes to the tallest and cross-dissolves via
-   opacity — no absolute positioning, no aspect guesswork. Reduced motion cuts. */
+   ONE css-grid cell so the frame sizes to the tallest — no absolute positioning,
+   no aspect guesswork. Stepping runs a filmstrip: the new slide enters from the
+   side you stepped toward while the old one leaves the other way, both
+   crossfading. Reduced motion cuts. */
 .slides {
   margin: 3rem 0;
+
+  /* The filmstrip's dials. Distance is a % of the slide's own width — 0 turns
+     the motion back into a plain crossfade. The curve is the site's standard
+     (stark spec §11). */
+  --slide-distance: 10%;
+  --slide-duration: 0.55s;
+  --slide-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Where a slide waits before it enters, and where it goes when it leaves,
+   follow the last step's direction (data-dir from the component). Wrapping
+   follows the button too: Next from the last slide brings the first in from
+   the right, because that is the way the reader pushed. */
+.slides[data-dir="next"] {
+  --slide-enter-x: var(--slide-distance);
+  --slide-exit-x: calc(-1 * var(--slide-distance));
+}
+.slides[data-dir="prev"] {
+  --slide-enter-x: calc(-1 * var(--slide-distance));
+  --slide-exit-x: var(--slide-distance);
 }
 
 .stack {
   display: grid;
   cursor: pointer; /* the interactivity cue — the image itself advances */
+  /* An exiting slide travels past the stack's edge; clip it there without
+     making the stack a scroll container. */
+  overflow-x: clip;
 }
 
 .slide {
   grid-area: 1 / 1; /* every slide in the same cell → they overlap */
   opacity: 0;
-  transition: opacity 0.35s ease;
+  transform: translateX(var(--slide-enter-x)); /* parked on the entering side */
+  transition:
+    opacity var(--slide-duration) var(--slide-ease),
+    transform var(--slide-duration) var(--slide-ease);
   pointer-events: none;
 }
 .slide[data-active="true"] {
   opacity: 1;
+  transform: none;
   pointer-events: auto;
+}
+/* The slide that just stepped out leaves the way the reader pushed. It is
+   already opacity 0 via .slide; only its destination differs. */
+.slide[data-exiting="true"] {
+  transform: translateX(var(--slide-exit-x));
 }
 
 /* The slide's figure carries the image + its step caption. Shrink-wrap the
