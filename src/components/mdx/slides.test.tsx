@@ -56,6 +56,25 @@ describe("Slides", () => {
     expect(activeIndex(container)).toBe(0);
   });
 
+  it("ignores whitespace text between slides — a newline is not a slide", () => {
+    // MDX compiles images authored on consecutive lines inside <Slides> (no
+    // blank lines) to `img, "\n", img, "\n", img`. Only the images are slides.
+    const { container } = render(
+      <Slides>
+        <figure data-testid="a">a</figure>
+        {"\n"}
+        <figure data-testid="b">b</figure>
+        {"\n"}
+        <figure data-testid="c">c</figure>
+      </Slides>,
+    );
+    expect(container.querySelectorAll("[data-slide]")).toHaveLength(3);
+    expect(screen.getByText(/1\s*\/\s*3/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Next screen" }));
+    expect(activeIndex(container)).toBe(1);
+    expect(container.querySelector('[data-slide][data-active="true"]')?.textContent).toBe("b");
+  });
+
   it("renders a lone child plainly — no stepper chrome", () => {
     render(
       <Slides>

@@ -18,7 +18,13 @@ import styles from "@/components/mdx/slides.module.css";
  * is just an image — no stepper chrome.
  */
 export function Slides({ children }: { children: ReactNode }) {
-  const slides = Children.toArray(children);
+  /* Images authored on consecutive lines (no blank lines between them) reach
+     us as `img, "\n", img, …` — MDX keeps the line breaks as text. A bare
+     newline is not a slide; without this filter each one was a blank frame
+     and the counter read 13 for 7 images. */
+  const slides = Children.toArray(children).filter(
+    (child) => !(typeof child === "string" && child.trim() === ""),
+  );
   const total = slides.length;
   const [active, setActive] = useState(0);
   const [seen, setSeen] = useState(false);
