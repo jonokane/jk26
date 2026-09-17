@@ -39,9 +39,16 @@ The core concept was the innovation. The workflow around it was the problem. Sto
 
 </Pin>
 
-The plugin was always the intention. It predates the web version, which existed because it was the fastest way to put the idea in front of people and learn whether the conversation was worth having. Beta users answered that, then kept answering a question I hadn't asked: they wanted Collaya where they already worked. The feedback didn't set the direction so much as collapse the time it took to commit to it.
+The plugin was always the long-term plan. The web version shipped first because it was the fastest way to put the idea in front of musicians and learn whether it deserved to exist. Beta users answered that, and more: the idea was worth building, just not in a browser. They wanted Collaya inside the DAW, where they already work. So we stopped building the web app. It went into maintenance mode, then offline entirely, and the plugin got our full focus until launch.
+
+<Pin>
+
+![Collaya displaying the same BPM as the DAW](./media/collaya/collaya-tempo-transport-02.jpg "Collaya follows the DAW transport state.")
+
 
 A plugin closes both gaps. Inside the session, Collaya reads tempo and transport state directly from the host, and hears key and chords through its own analysis. It auditions ideas matched to the project's tempo, in time with the track already playing. A generated MIDI clip leaves as a drag onto the timeline. Bringing in your own sounds is still there whenever you want it. It just stopped being the price of admission.
+
+</Pin>
 
 ## What stayed behind
 
@@ -57,7 +64,6 @@ By the time we moved, the web app had grown into a destination: an arrangement e
 
 What stayed was what mattered: the conversation, and the musician's own sounds.
 
-<Pin>
 
 ![Collaya Plugin](./media/collaya/collaya-v1-mainui-01.png "The plugin: the conversation and your own sounds, inside the session.")
 
@@ -75,7 +81,6 @@ I priced most of the move's costs in before committing. They still arrived in fi
 
 I took the trade because of what sits on the other side of it. A tool you can adopt in a browser tab is also a tool you can abandon in one. A tool that lives in the session, that knows the tempo without being told, becomes part of how someone works. The web app was easier to build, easier to ship, and easier to forget. Moving into the DAW made the product harder in every dimension and made it real.
 
-</Pin>
 
 ## Starting at the hub
 
@@ -126,7 +131,7 @@ The Listener holds the same line. Its hearing is computed on the Mac, and only t
 
 ## A guest in someone else's app
 
-Moving into the DAW has a consequence: Collaya is a guest in someone else's app.
+All of this happens inside someone else's app.
 
 It loads inside Logic, Ableton, Bitwig and most other Mac DAWs, hosts I don't control, can't patch, and can't ask to behave differently. On the other side is a professional in flow, carrying a decade of muscle memory and no interest whatsoever in learning my software. Their tolerance for friction isn't low. It's zero.
 
@@ -134,11 +139,11 @@ An unexpected system dialog. A keystroke that stops doing what it has always don
 
 This is the tax every plugin developer pays, and the bar is set by companies who have been paying it for twenty years. Collaya loads into the same rack as tools from FabFilter, Native Instruments and u-he, and nobody grades a newcomer on a curve.
 
-**The spacebar.** Producers hit space to play the track they're working on. It's the key their hand rests on, and Collaya's embedded interface was swallowing it: a guest breaking the most basic house rule. Now Collaya holds the keyboard only while a musician is typing into it, and the rest of the time space belongs to the DAW. Getting there took native first-responder handling, because the standard keystroke hook isn't even called for a bare space in Logic or Ableton. Tab can't be forwarded at all, since macOS hands it to the focused window, so I documented that limit rather than ship a fix that half worked.
+**The spacebar.** Producers hit space to play the track they're working on. It's the key their hand rests on, and Collaya's embedded interface was swallowing it: a guest breaking the most basic house rule. Now the DAW gets the spacebar by default, and Collaya keeps it only while a musician is typing in chat. Musicians who would rather use space to audition sounds in Collaya can turn that off, and the arrow keys work the same way. Getting there took native first-responder handling, because the standard keystroke hook isn't even called for a bare space in Logic or Ableton. Tab can't be forwarded at all, since macOS hands it to the focused window, so I left that limit in place rather than ship a fix that half worked.
 
 {/* VERIFY: confirm the Tab limit is actually in the help docs. The instrument-slot issue turned out not to be. */}
 
-![Spacebar passthrough settings screen](./media/collaya/collaya-spacebar.png "Space belongs to the DAW unless you're typing to Collaya.")
+![Spacebar passthrough settings screen](./media/collaya/collaya-spacebar.png "Space and arrow keys belong to the DAW by default. Musicians can claim them for Collaya.")
 
 **The dialog I didn't cause.** macOS 15 began showing users a system permission prompt that named Logic Pro as the culprit. A scary dialog that looks like your DAW's fault shakes confidence in your whole setup. The trigger turned out to be the plugin reading a small settings file, which macOS judges against whichever app performs the read. Storage now routes through Collaya Connect, which holds that permission legitimately. Ten hours to find. Users see nothing, which is the point.
 
