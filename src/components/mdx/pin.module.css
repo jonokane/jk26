@@ -23,8 +23,23 @@
 
 .text {
   flex: 1;
-  /* room so the last paragraph can clear the held image before it releases */
-  padding-bottom: 30vh;
+  /* No bottom runway. Sticky already holds the image until the pin's bottom
+     edge meets the image's bottom, i.e. until the last line of prose has
+     scrolled level with it — then the two ride up together. A fixed runway
+     (this was 30vh) only bought a phase where the image sat beside an empty
+     column, and on a one-paragraph Pin it was ~250px of dead space. */
+}
+
+/* Side by side, the first line should sit on the image's top edge. The body
+   rule gives every paragraph a top margin, and the line box carries half its
+   leading above the glyphs; between them the caps landed ~22px low. Cancel the
+   margin and pull up by the half-leading — (1lh - 1em) / 2 — so the ascenders
+   meet the edge whatever the prose size or line-height. Complement of the
+   820px stack below: stacked, the text wants its normal paragraph gap. */
+@media (min-width: 821px) {
+  .text > :first-child {
+    margin-top: calc((1em - 1lh) / 2);
+  }
 }
 
 /* Narrow screens: stack. Media on top, static; prose full width beneath. */
@@ -37,8 +52,5 @@
     position: static;
     flex-basis: auto;
     width: 100%;
-  }
-  .text {
-    padding-bottom: 0;
   }
 }
