@@ -71,6 +71,18 @@
   max-width: 100%;
   max-height: 70vh;
 }
+/* A caption longer than the image is wide must not widen the figure — that
+   left the image at the figure's left edge, off-centre by half the difference.
+   width: 0 takes the caption out of the shrink-to-fit measure so the figure
+   sizes to the image alone; min-width: 100% then stretches the caption back to
+   the image's width, so long captions wrap under it instead of past it. The
+   24ch floor is for the moment before a lazy image has dimensions: the figure
+   is then 2px wide, and without the floor the caption wrapped one character
+   per line. */
+.slide :global(figcaption) {
+  width: 0;
+  min-width: max(100%, 24ch);
+}
 
 .controls {
   display: flex;
