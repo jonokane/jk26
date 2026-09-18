@@ -95,9 +95,6 @@ Today the shape is smaller. I work across all four codebases with Justin as a se
 
 Collaya Connect installs and updates every piece of Collaya software, so it's the first thing a musician opens, and onboarding lives there. A handful of steps takes a musician from welcome to ready: choose which components to install, activate, pick a home for their sounds, scan their studio, and finish. The scan detects their DAW, plugins, and audio and MIDI devices so Collaya starts out knowing their setup. The library step answers the question every musician has before they ask it: nothing is moved or deleted from its original location.
 
-{/* IMAGE PLACEHOLDER: Collaya Connect onboarding (the six steps, or the studio scan).
-   ![alt](./media/collaya/FILE "Caption") */}
-
 <Slides>
 ![Collaya Connect FTUX](./media/collaya/collaya-onboarding-01-welcome.png "1 — Welcome, and what to expect")
 ![Install screen](./media/collaya/collaya-onboarding-02-install.png "2 — Choose what to install")
@@ -188,7 +185,7 @@ Being right turned out to be only half of it. The chord reader won't name a chor
 
 Collaya renders in four places that share almost no code: a React interface inside a plugin window, a Swift app, a second plugin, and the marketing site. Nothing about that arrangement keeps them looking like one product. Our design system does.
 
-Ours is a working system, not a showpiece. A Figma library and a component layer in code cover color, type, spacing and the handful of components the product actually leans on: the clip card, the chat message, the guitar-tab card, the modal views, the panel header, and the controls a musician touches while the a clip is playing. Our brand typeface, Outfit, runs through every surface. The palette carries from collaya.com into the plugin and the Listener, so the thing that loads in a DAW is recognizably the thing that was bought on the site.
+Ours is a working system, not a showpiece. A Figma library and a component layer in code cover color, type, spacing and the handful of components the product actually leans on: the clip card, the chat message, the guitar-tab card, the modal views, the panel header, and the controls a musician touches while a clip is playing. Our brand typeface, Outfit, runs through every surface. The palette carries from collaya.com into the plugin and the Listener, so the thing that loads in a DAW is recognizably the thing that was bought on the site.
 
 What makes it a system rather than a style guide is the behavior inside the components. A clip card knows Drag stays disabled until the save lands. The guitar-tab card folds its actions into a responsive menu when the window gets narrow. Panels collapse and rebalance instead of clipping. Musicians can scale the type up or down and reset the layout in one click. I don't control the size of the window my interface appears in, so every component has to survive being handed less room than it wants.
 
