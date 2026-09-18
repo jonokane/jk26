@@ -17,15 +17,15 @@ cover: ./media/collaya/cover.jpg
 
 ## Overview
 
-Collaya is an artist-first music-tech platform and audio plugin. It generates new ideas from a musician's own audio and MIDI rather than from other people's records, and acts as a virtual co-producer: a consent-based stance on music AI, taken when most of the industry was moving the other way.
+Collaya is an artist-first music-tech platform and audio plugin. It works from what a musician brings it, a written idea or their own audio and MIDI, and it generates MIDI ideas and written suggestions, never finished audio. The line is deliberate. The point is to get a songwriter past a block, or hand a musician a start, not to do the part that makes the song theirs. Collaya acts as a virtual co-producer: a consent-based stance on music AI, taken when most of the industry was moving the other way.
 
 ![Collaya running within the DAW](./media/collaya/collaya-listener-indaw-tab.jpg "Collaya in the session, already knowing the song.")
 
 {/* VERIFY: this file is named "listener-indaw-tab". Confirm it shows what the caption says. */}
 
-I founded the company, set the direction, and designed and built the plugin, the marketing site, and the connective tissue in between.
+I founded the company, set the direction, hired and ran the team that built the first version, and designed and built the plugin, the marketing site, and the connective tissue in between.
 
-Collaya started as a web app. I assembled the small team that built it, designed the product, and wrote parts of the front end myself. The most consequential decision I made was to stop building the web version and start again from the ground up as a plugin and native macOS app. Seven months after the plugin's first commit, it launched publicly.
+Collaya started as a web app. I designed the product and wrote parts of the front end myself. The most consequential decision I made was to stop building the web version and start again from the ground up as a plugin and native macOS app. Seven months after the plugin's first commit, it launched publicly.
 
 ## Where it belongs
 
@@ -69,7 +69,7 @@ What stayed was what mattered: the conversation, and the musician's own sounds.
 
 I priced most of the move's costs in before committing. They still arrived in five parts:
 
-**The addressable market got much smaller.** A browser reaches everyone. An AU/VST3 plugin reaches macOS, initially Apple Silicon only, with Windows moving from a question to a later one. What came back was focus: everyone left is someone actually writing music in a DAW, bedroom producers through working professionals. A far clearer audience than everyone.
+**The addressable market got much smaller.** A browser reaches everyone. An AU/VST3 plugin reaches macOS, initially Apple Silicon only, with Windows moving from a question to a later one. What came back was focus: everyone left is someone actually writing music in a DAW, from bedroom producers to working professionals. A far clearer audience than everyone.
 
 **Distribution stopped being a URL.** A signed installer, Apple notarization, a self-updating companion app, separate install paths per format. There is no hot fix. A version that goes out stays out until users update it, which changes how carefully you think before shipping.
 
@@ -81,22 +81,31 @@ I priced most of the move's costs in before committing. They still arrived in fi
 
 I took the trade because of what sits on the other side of it. A tool you can adopt in a browser tab is also a tool you can abandon in one. A tool that lives in the session, that knows the tempo without being told, becomes part of how someone works. The web app was easier to build, easier to ship, and easier to forget. Moving into the DAW made the product harder in every dimension and made it real.
 
+## The team around the work
+
+Collaya has never been only me. The web app was built by a team I hired and ran: a CTO, a couple of engineers, a fractional COO, and Justin Rognier on QA. Dino Campanella, a working drummer and songwriter, came on as creative advisor. I set the design direction and ran the reviews where work got argued over before it got built.
+
+The reviews earned their place because the team kept each other honest about what a musician will put up with inside a session. Dino in particular. That pressure shows up in the product as unusually heavy first-run guidance and in-context nudges, which a product this complex needs in order to survive its first ten minutes.
+
+Past that is a standing circle of producers and engineers who tell me the truth about a build before strangers get the chance.
+
+Today the shape is smaller. I work across all four codebases with Justin as a second pair of eyes on QA. What reaches a musician still comes out of a conversation, not a solo call.
 
 ## Starting at the hub
 
-Collaya Connect installs and updates every piece of Collaya software, so it's the first thing a musician opens, and onboarding lives there. Six steps take a new user from welcome to ready: choose which components to install, activate, pick a home for their sounds, scan their studio, and finish. The scan detects their DAW, plugins, and audio and MIDI devices so Collaya starts out knowing their setup. The library step answers the question every musician has before they ask it: nothing is moved or deleted from its original location.
+Collaya Connect installs and updates every piece of Collaya software, so it's the first thing a musician opens, and onboarding lives there. A handful of steps takes a musician from welcome to ready: choose which components to install, activate, pick a home for their sounds, scan their studio, and finish. The scan detects their DAW, plugins, and audio and MIDI devices so Collaya starts out knowing their setup. The library step answers the question every musician has before they ask it: nothing is moved or deleted from its original location.
 
 {/* IMAGE PLACEHOLDER: Collaya Connect onboarding (the six steps, or the studio scan).
    ![alt](./media/collaya/FILE "Caption") */}
 
 <Slides>
-![Collaya Connect FTUX](./media/collaya/collaya-onboarding-01-welcome.png "1 — Collaya Connect FTUX - the user is welcomed and expectations are set")
-![Install screen](./media/collaya/collaya-onboarding-02-install.png "2 — The user can select which software they want to install")
-![Activation](./media/collaya/collaya-onboarding-03-activate.png "3 — The user activates Collaya via a code provided in the browser and via email")
-![Assets Folder](./media/collaya/collaya-onboarding-04-assets.png "4 — The user selects a folder for their assets")
-![Scan Studio](./media/collaya/collaya-onboarding-05-scanstudio.png "5 — The user is then prompted to scan their studio configuration.")
-![Scan Complete](./media/collaya/collaya-onboarding-06-scancomplete.png "6 — Collaya shows the user what it found in their studio")
-![Collaya is ready](./media/collaya/collaya-onboarding-07-ready.png "7 — Collaya setup is complete and ready to use")
+![Collaya Connect FTUX](./media/collaya/collaya-onboarding-01-welcome.png "1 — Welcome, and what to expect")
+![Install screen](./media/collaya/collaya-onboarding-02-install.png "2 — Choose what to install")
+![Activation](./media/collaya/collaya-onboarding-03-activate.png "3 — Activate with a code from the browser or email")
+![Assets Folder](./media/collaya/collaya-onboarding-04-assets.png "4 — Pick a home for your sounds")
+![Scan Studio](./media/collaya/collaya-onboarding-05-scanstudio.png "5 — Scan the studio")
+![Scan Complete](./media/collaya/collaya-onboarding-06-scancomplete.png "6 — What Collaya found")
+![Collaya is ready](./media/collaya/collaya-onboarding-07-ready.png "7 — Ready to use")
 </Slides>
 
 Because of how Connect handles onboarding, by the time a musician opens Collaya in their DAW, setup is behind them.
@@ -167,7 +176,7 @@ Early users heard something else in the name. They put it on a guitar track and 
 
 ![Collaya Compositional Listener Plugin](./media/collaya/collaya-listener-plugin.png "The Listener hears key, chords, notes, tone, and rhythm on the Mac, then tells the co-producer.")
 
-The gap between what we built and what people assumed was a better brief than the one we wrote ourselves. So we rebuilt its hearing around composition: key, chords, single notes, tone, and rhythm, all worked out on the Mac without sending audio anywhere, and fed into Collaya's chat so the co-producer arrives already knowing what's in the song. It reached our Catalyst plan in June and every plan in September.
+The gap between what we built and what people assumed was a better brief than the one we wrote ourselves. So we rebuilt its hearing around composition: key, chords, single notes, tone, and rhythm, all worked out on the Mac without sending audio anywhere, and fed into Collaya's chat so the co-producer arrives already knowing what's in the song. It reached our Catalyst tier in June and every plan in September.
 
 Being right turned out to be only half of it. The chord reader won't name a chord until three notes are sounding, which is correct, but a bassline or a held melody note left the center of the display blank, and the feature read as broken. So the Listener learned to name single notes too. A sustained pad flipped to "Percussive" as its notes faded, so the label now holds steady through the fade. Underneath, chord accuracy went from 65% to 99% across a test sweep of chord types and voicings.
 
@@ -175,13 +184,19 @@ Being right turned out to be only half of it. The chord reader won't name a chor
 
 {/* CONFIRM: claim only the Listener decisions you made or directed. */}
 
-## The system underneath
+## One system, four surfaces
 
-The brand's palette carries from collaya.com through the plugin, the standalone app, and the Listener, and one typeface, Outfit, runs through every surface. Inside a window the host controls, the interface adapts to the space it's given: panels collapse and rebalance, and components like the guitar-tab card fold their actions into a menu when room runs short. Musicians can scale the type up or down and reset the layout in one click.
+Collaya renders in four places that share almost no code: a React interface inside a plugin window, a Swift app, a second plugin, and the marketing site. Nothing about that arrangement keeps them looking like one product. Our design system does.
+
+Ours is a working system, not a showpiece. A Figma library and a component layer in code cover color, type, spacing and the handful of components the product actually leans on: the clip card, the chat message, the guitar-tab card, the modal views, the panel header, and the controls a musician touches while the a clip is playing. Our brand typeface, Outfit, runs through every surface. The palette carries from collaya.com into the plugin and the Listener, so the thing that loads in a DAW is recognizably the thing that was bought on the site.
+
+What makes it a system rather than a style guide is the behavior inside the components. A clip card knows Drag stays disabled until the save lands. The guitar-tab card folds its actions into a responsive menu when the window gets narrow. Panels collapse and rebalance instead of clipping. Musicians can scale the type up or down and reset the layout in one click. I don't control the size of the window my interface appears in, so every component has to survive being handed less room than it wants.
+
+It has limits, and they are the ordinary ones. The Swift surfaces match by convention rather than through shared components. It does the job a design system exists to do, which is to let one person ship four surfaces that feel like one product.
 
 {/* VERIFY: run the palette check before publishing the first sentence. */}
 
-The team has changed shape more than once since 2024. Today I work across all four codebases myself, with a second pair of eyes on QA. That's only possible with heavy AI leverage, and it stays shippable because of what surrounds it: unit tests on the correctness-critical signal processing, adversarial code review, and a security script gating every release. The models make the building fast. Deciding what gets verified before it reaches a musician is the part I own.
+Working across all four codebases at once is only possible with heavy AI leverage, and it stays shippable because of what surrounds it: unit tests on the correctness-critical signal processing, adversarial code review, and a security script gating every release. The models make the building fast. Deciding what gets verified before it reaches a musician is the part I own.
 
 ## Outcome
 
