@@ -1,0 +1,161 @@
+/* "How I lead" (how-i-lead.tsx): one quiet card closing out About.
+   Stark language: the faint --row-hover surface and a hairline, sharp corners
+   (the house default), About's accent on the title and the numbers only, and
+   everything else in ink. No shadow — the work cards lift; this one sits. */
+
+/* The section gutter is About's own --about-gutter (about.module.css), which
+   this inherits from .about — written once there, never repeated here. The
+   bottom padding is the breath before Work's pinned title arrives. */
+.wrap {
+  padding: 6vh var(--about-gutter, 6vw) 12vh;
+}
+
+.card {
+  max-width: 1180px;
+  background: var(--row-hover);
+  border: 1px solid var(--hairline);
+  padding: clamp(24px, 4.4vw, 64px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 48px);
+  counter-reset: principle;
+}
+
+/* Desktop: the intro holds the left column and the principles run down the
+   right, the work card's text | shot split in a quieter key. */
+@media (min-width: 900px) {
+  .card {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 5vw;
+  }
+
+  /* The intro rides along while the principles scroll past it, so the title
+     never leaves the card it names. Sticky is bounded by the card, and clears
+     the nav by its live measured height. */
+  .intro {
+    position: sticky;
+    top: calc(var(--header-h, 84px) + 32px);
+    align-self: start;
+  }
+}
+
+.title {
+  font-size: clamp(2rem, 3.8vw, 3.4rem);
+  font-variation-settings: "wght" 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--about);
+}
+
+.lede {
+  margin-top: clamp(16px, 2vw, 24px);
+  max-width: 34ch;
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+/* The résumé link: the work card's "View case study" treatment in About's
+   accent — mono, and an arrow that is CSS, never copy (spec §15). */
+.cta {
+  margin-top: clamp(22px, 3vw, 34px);
+  font-family: var(--font-mono);
+  font-variation-settings: "wght" 400;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--about);
+  text-decoration: none;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  transition: gap 0.3s ease;
+}
+
+.cta::after {
+  content: "→";
+}
+
+.cta:hover {
+  gap: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--about);
+  outline-offset: 4px;
+}
+
+.principles {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.principle {
+  counter-increment: principle;
+  border-top: 1px solid var(--hairline);
+  padding: clamp(16px, 2vw, 22px) 0;
+}
+
+.principle:last-child {
+  padding-bottom: 0;
+}
+
+/* The counter is design, not copy: a CSS counter in mono, so it never reaches
+   site-content.ts and needs no renumbering when a principle is added. */
+.principle::before {
+  content: counter(principle, decimal-leading-zero);
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wght" 400;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--about);
+}
+
+.principleTitle {
+  font-size: clamp(1.1rem, 1.4vw, 1.3rem);
+  font-variation-settings: "wght" 640;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.principleBody {
+  margin-top: 6px;
+  max-width: 56ch;
+  font-size: clamp(1rem, 1.15vw, 1.1rem);
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+/* The spec §11 reveal: opacity 0 -> 1 and a 26px rise, 0.85s on the standard
+   curve. The from-state is keyed on data-reveal="pending", which only ever
+   exists client-side for a card that was off screen when it armed (use-reveal),
+   so the server HTML always paints the card resolved. */
+.card {
+  transition:
+    opacity 0.85s ease,
+    transform 0.85s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.card[data-reveal="pending"] {
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+/* Reduced motion: the card is simply there. A media query, so it is right at
+   first paint with no JavaScript to ask (spec §11). After the from-state rule
+   above, so it wins the specificity tie. */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  .card[data-reveal="pending"] {
+    opacity: 1;
+    transform: none;
+  }
+}
