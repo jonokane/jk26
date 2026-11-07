@@ -2,6 +2,8 @@
  * All site copy lives here, never in JSX (spec §15).
  *
  * Locked copy (Jono's own words, do not rewrite): `kicker`, `tagline`.
+ * The tagline was rewritten by Jono for the leadership refresh (2026-11-07)
+ * and is locked again as written.
  * Drafted copy awaiting his edit: `work.filters.empty`, `contact.*`.
  * The About statements live in content/site/about.mdx, not here.
  * House style: no em-dashes anywhere in visitor-facing copy.
@@ -14,7 +16,7 @@ export const siteContent = {
      document title that composes this string. */
   kicker: "Product Design Leader &\u00A0Strategist",
   tagline:
-    "I shape strategy, build teams, lead design, and bring digital products to life.",
+    "I build and support design teams that keep the bar high, from first sketch to launch.",
   /** The hero wordmark and the nav brand render this. */
   wordmark: "JONOKANE",
   /** The site sign-off footer, at the very bottom of the one-pager. Jono's words. */
@@ -171,7 +173,7 @@ export const siteContent = {
       name: "Your name, so I know who I am talking to.",
       email: "An email address, so I can write back.",
       emailInvalid: "That email address does not look quite right.",
-      message: "Tell me a little about what you are building.",
+      message: "Tell me a little about what's on your mind.",
     },
   },
   /** Outbound links used by the About CTAs (spec §7) and contact fallback. */
