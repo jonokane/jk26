@@ -59,3 +59,6 @@ next-env.d.ts
 # Session scratch: rendered screenshots land at the repo root and are never
 # shipped. A `git add -A` swept 25 of them (26 MiB) into a docs commit once.
 /*.png
+
+# Claude Code per-machine settings (local permission allowlist). Never shared.
+.claude/settings.local.json
