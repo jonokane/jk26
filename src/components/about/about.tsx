@@ -7,6 +7,7 @@ import { takeHashClick } from "@/lib/scroll-nav";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { useReservedWidths } from "@/components/about/use-reserved-widths";
 import { useTeleprompter } from "@/components/about/use-teleprompter";
+import { HowILead } from "@/components/about/how-i-lead";
 import styles from "@/components/about/about.module.css";
 
 /** A run of words that render together: a link, or a stretch of plain text. */
@@ -170,6 +171,11 @@ export function About() {
           </ol>
         </div>
       </div>
+
+      {/* After the teleprompter wrapper, never in its column (see the rule on
+          the column above). Inside this <section>, so the nav keeps "About"
+          active while the card is on screen. */}
+      <HowILead />
     </section>
   );
 }

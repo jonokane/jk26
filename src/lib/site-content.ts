@@ -1,7 +1,9 @@
 /**
  * All site copy lives here, never in JSX (spec §15).
  *
- * Locked copy (Jono's own words, do not rewrite): `kicker`, `tagline`.
+ * Locked copy (Jono's own words, do not rewrite): `kicker`, `tagline`,
+ * `howILead`. The tagline was rewritten by Jono for the leadership refresh
+ * (2026-11-07) and is locked again as written.
  * Drafted copy awaiting his edit: `work.filters.empty`, `contact.*`.
  * The About statements live in content/site/about.mdx, not here.
  * House style: no em-dashes anywhere in visitor-facing copy.
@@ -14,7 +16,7 @@ export const siteContent = {
      document title that composes this string. */
   kicker: "Product Design Leader &\u00A0Strategist",
   tagline:
-    "I shape strategy, build teams, lead design, and bring digital products to life.",
+    "I build and support design teams that keep the bar high, from first sketch to launch.",
   /** The hero wordmark and the nav brand render this. */
   wordmark: "JONOKANE",
   /** The site sign-off footer, at the very bottom of the one-pager. Jono's words. */
@@ -68,6 +70,37 @@ export const siteContent = {
       { label: "LinkedIn", key: "linkedin" },
       { label: "Collaya", key: "collaya" },
     ],
+  },
+  /** The "How I lead" card: a sub-section of About, rendered after the
+   *  teleprompter (never inside its statement column). Jono's words, locked.
+   *  The principle numbers are a CSS counter, not copy. `resumeCta` links to
+   *  `links.resume` and is hidden while that is empty — Contact's rule. */
+  howILead: {
+    title: "How I lead",
+    lede: "My style is support. I give my team what they need, offer design input where it helps, and get out of the way so people have room to grow.",
+    principles: [
+      {
+        title: "Teams that bond.",
+        body: "I build teams that genuinely like working together, with a respectful space for regular critique, product reviews and testing. I keep them insulated from turbulence so they can do their best work.",
+      },
+      {
+        title: "Hiring well.",
+        body: "I've interviewed and hired designers at Meta, Amazon and 8tracks, and partnered with hiring teams to assess talent.",
+      },
+      {
+        title: "Mentorship, both ways.",
+        body: "I've always had mentors, and I still mentor designers whenever I can.",
+      },
+      {
+        title: "Whose number does this move?",
+        body: "At Meta, a good idea I pitched in the wrong language lost the first round. Now I help designers make the case in terms their partners care about.",
+      },
+      {
+        title: "Engineering from the first sketch.",
+        body: "A beautiful idea that can't be built is wasted motion.",
+      },
+    ],
+    resumeCta: "Grab my résumé",
   },
   /** Work section (spec §9). Two views over one dataset. */
   work: {
@@ -171,7 +204,7 @@ export const siteContent = {
       name: "Your name, so I know who I am talking to.",
       email: "An email address, so I can write back.",
       emailInvalid: "That email address does not look quite right.",
-      message: "Tell me a little about what you are building.",
+      message: "Tell me a little about what's on your mind.",
     },
   },
   /** Outbound links used by the About CTAs (spec §7) and contact fallback. */
