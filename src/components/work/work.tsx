@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { WorkGallery } from "@/components/work/work-gallery";
 import { WorkIndex } from "@/components/work/work-index";
+import { useWorkCatch } from "@/components/work/use-work-catch";
 import { navigateTo } from "@/lib/scroll-nav";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { useNarrowViewport } from "@/lib/use-narrow-viewport";
@@ -33,6 +34,10 @@ export function Work() {
   const narrow = useNarrowViewport();
   const [view, setView] = useState<View>("gallery");
   const sectionRef = useRef<HTMLElement>(null);
+
+  /* A fling headed past Work's door is caught there and eased onto the first
+     study (use-work-catch). Off under reduced motion. */
+  useWorkCatch(sectionRef, !reduced);
 
   const forced = reduced || narrow;
   const showing: View = forced ? "index" : view;

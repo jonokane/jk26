@@ -57,4 +57,26 @@ export const WORK = {
 
   /** What a card outside the focal band fades to. Spec §9: 0.42. */
   cardDimOpacity: 0.42,
+
+  /**
+   * The catch at Work's door (use-work-catch). A fast downward fling, wheel or
+   * trackpad, that would carry past the start of Work is stopped and eased to
+   * rest there, on the first card's hold, so the most recent study is never
+   * flown past. Once per trip down. Touch, the keyboard, nav links and the
+   * Scroll button are never caught, and reduced motion turns it off.
+   * Jono's pick by feel (2026-11-08).
+   */
+  catch: {
+    /** How far ahead of the page its scroll target must be, in vh, to count
+     *  as a fling. Lower catches gentler scrolls; higher, only hard flings. */
+    fling: 0.45,
+    /** Seconds the glide to rest takes. Scroll input is held for this long,
+     *  which is what absorbs the rest of the fling. */
+    duration: 1.25,
+    /** Scroll back above Work by this much (vh) to re-arm it for the next
+     *  trip down. */
+    rearm: 0.6,
+    /** The glide: quick off the mark, then a long soft landing (quartic out). */
+    easing: (t: number) => 1 - (1 - t) ** 4,
+  },
 } as const;
