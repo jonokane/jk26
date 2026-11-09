@@ -29,6 +29,7 @@ describe("type tokens", () => {
 const TOKENS = [
   "--canvas", "--ink", "--mute", "--dim", "--slate",
   "--hairline", "--row-hover", "--about", "--work", "--contact",
+  "--about-inverse",
 ];
 
 /** `:root { ... }` and `:root[data-theme="dark"] { ... }` bodies. */

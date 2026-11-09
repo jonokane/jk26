@@ -28,6 +28,9 @@
   --about:     #3f9b4e;
   --work:      #6d4bd8;
   --contact:   #2f7d8f;
+  /* About's accent on an INVERTED surface (How I lead's ink band): the other
+     theme's green, because #3f9b4e is tuned for white, not near-black. */
+  --about-inverse: #57c46a;
 
   --nav-glass: rgba(255, 255, 255, 0.6);
   --nav-edge:  rgba(15, 15, 15, 0.06);
@@ -62,6 +65,9 @@
   --about:     #57c46a;
   --work:      #9d86f0;
   --contact:   #5ab6cb;
+  /* On dark the band inverts to #f2f2f2, so this is a deeper green: 4.56:1
+     on the band (the light theme's #3f9b4e lands 3.1:1 there). */
+  --about-inverse: #2e7d3b;
 
   --nav-glass: rgba(0, 0, 0, 0.6);
   --nav-edge:  rgba(255, 255, 255, 0.08);
