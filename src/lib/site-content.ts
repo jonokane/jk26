@@ -222,8 +222,8 @@ export const siteContent = {
     github: "https://github.com/jonokane",
     collaya: "https://collaya.com",
     /** Every résumé link (header, How I lead, Contact) points here and hides
-     *  if this is empty. A placeholder, visible everywhere by Jono's call
-     *  (2026-11-08): it 404s until the PDF lands at public/resume.pdf. */
-    resume: "/resume.pdf",
+     *  if this is empty. The file is public/jono-kane-resume.pdf: named for
+     *  Jono, so it is still findable in a hiring manager's downloads. */
+    resume: "/jono-kane-resume.pdf",
   },
 } as const;

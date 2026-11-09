@@ -38,17 +38,17 @@ async function renderWithResume(resume: string) {
 
 describe("SiteHeader résumé link", () => {
   it("ends the nav's links with the résumé, opening the PDF in a new tab", async () => {
-    await renderWithResume("/resume.pdf");
+    await renderWithResume("/jono-kane-resume.pdf");
     const nav = screen.getByRole("navigation", { name: "Site" });
     const resume = within(nav).getByRole("link", { name: siteContent.labels.resume });
-    expect(resume.getAttribute("href")).toBe("/resume.pdf");
+    expect(resume.getAttribute("href")).toBe("/jono-kane-resume.pdf");
     expect(resume.getAttribute("target")).toBe("_blank");
     /* After About, Work and Contact: the file sits past the section links. */
     expect(within(nav).getAllByRole("link").at(-1)).toBe(resume);
   });
 
   it("is never marked as the current section", async () => {
-    await renderWithResume("/resume.pdf");
+    await renderWithResume("/jono-kane-resume.pdf");
     const resume = screen.getByRole("link", { name: siteContent.labels.resume });
     expect(resume.hasAttribute("aria-current")).toBe(false);
   });
