@@ -40,7 +40,7 @@ export const TELEPROMPTER = {
   weightEmphasis: 780,
 } as const;
 
-/* NOT here, deliberately: the stage height (640vh), and the rail dot sizes
+/* NOT here, deliberately: the stage height (340vh), and the rail dot sizes
    (6px / 9px). Spec §8 lists them as tunables, but nothing in JS reads them —
    they are laid out entirely by about.module.css (`.wrap`, `.dot`,
    `.dot[data-active]`), and CSS cannot read this file. Carrying them here made

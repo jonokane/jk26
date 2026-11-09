@@ -10,11 +10,14 @@
   position: relative;
 }
 
-/* The tall wrapper is the scroll budget: 640vh drives a sticky 100vh stage,
-   so 540vh of scroll sweeps the focal center from the first statement to the
-   last (spec §8). */
+/* The tall wrapper is the scroll budget: 340vh drives a sticky 100vh stage,
+   so 240vh of scroll sweeps the focal center from the first statement to the
+   last, 80vh per statement. Spec §8's 640vh (180vh per statement) read as a
+   slow crawl once How I lead followed it; Jono picked this pace by feel
+   (2026-11-08). The deceleration it used to provide before Work now lives at
+   Work's door instead (use-work-catch). Tune the pace here. */
 .wrap {
-  height: 640vh;
+  height: 340vh;
 }
 
 /* `clip`, NOT `hidden`. They clip identically, and that is where the likeness

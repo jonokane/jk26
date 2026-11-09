@@ -95,7 +95,7 @@ function Statement({ words }: { words: Word[] }) {
 }
 
 /**
- * About, the teleprompter (spec §8). A 640vh wrapper drives a sticky 100vh
+ * About, the teleprompter (spec §8). A 340vh wrapper drives a sticky 100vh
  * stage; the statements translate through a fixed focal zone and resolve word
  * by word as they pass it.
  *
