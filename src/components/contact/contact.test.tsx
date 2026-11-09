@@ -34,9 +34,12 @@ describe("Contact", () => {
     expect(scope.getByRole("link", { name: siteContent.links.email }).getAttribute("href")).toBe(
       `mailto:${siteContent.links.email}`,
     );
-    // LinkedIn and Collaya have URLs -> rendered
+    // LinkedIn, GitHub and Collaya have URLs -> rendered
     expect(scope.getByRole("link", { name: "LinkedIn" }).getAttribute("href")).toBe(
       siteContent.links.linkedin,
+    );
+    expect(scope.getByRole("link", { name: "GitHub" }).getAttribute("href")).toBe(
+      "https://github.com/jonokane",
     );
     expect(scope.getByRole("link", { name: "Collaya" }).getAttribute("href")).toBe(
       siteContent.links.collaya,

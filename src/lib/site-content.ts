@@ -187,6 +187,7 @@ export const siteContent = {
      *  third link) is dropped: sunset in 2024 and not in `links`. */
     footerLinks: [
       { label: "LinkedIn", key: "linkedin" },
+      { label: "GitHub", key: "github" },
       { label: "Collaya", key: "collaya" },
       { label: "Résumé", key: "resume" },
     ],
@@ -215,6 +216,7 @@ export const siteContent = {
   links: {
     email: "contact@jonokane.com",
     linkedin: "https://linkedin.com/in/jonokane",
+    github: "https://github.com/jonokane",
     collaya: "https://collaya.com",
     /** No public résumé URL yet. The Résumé pill stays hidden while this is empty. */
     resume: "",

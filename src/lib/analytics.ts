@@ -45,6 +45,7 @@ export const ANALYTICS_EVENTS = {
 export const OUTBOUND_LABELS = {
   email: "email",
   linkedin: "linkedin",
+  github: "github",
   collaya: "collaya",
 } as const;
 
