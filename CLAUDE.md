@@ -34,7 +34,10 @@ pnpm build    # Velite build, then next build (run this to verify before committ
 pnpm test     # vitest unit tests — already non-watch; do NOT append `run`
 pnpm start    # serve production build
 pnpm lint     # eslint
+pnpm resume <export.pdf>  # publish a Figma résumé export: copies it to public/ + links.resume, stamps siteContent.resumePdf's title/author
 ```
+
+> Jono names Figma frames after his local files (`jonokane-resume-11-2026-1col`), and Figma writes the frame name into the PDF as its title, which is what a browser tab shows. `pnpm resume` swaps it on the shipped copy only. A test fails if `public/` holds an unstamped export.
 
 > `package.json` declares `"test": "vitest run"`. `pnpm test run` passes `run` as a *filename filter*, matches nothing, and exits 1. Use `pnpm test`, or `pnpm test <path>` for one file.
 

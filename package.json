@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "resume": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/resume.mts"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.3",
@@ -31,6 +32,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "jsdom": "^29.1.1",
+    "pdf-lib": "1.17.1",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",

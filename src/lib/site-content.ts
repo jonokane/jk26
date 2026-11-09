@@ -226,4 +226,12 @@ export const siteContent = {
      *  Jono, so it is still findable in a hiring manager's downloads. */
     resume: "/jono-kane-resume.pdf",
   },
+  /** Stamped into the résumé PDF by `pnpm resume`: the title a browser shows
+   *  in the tab when it opens, and the author. Figma writes the frame's name
+   *  there, which Jono keeps matched to his local filename, so the command
+   *  swaps it on the copy the site ships. */
+  resumePdf: {
+    title: "Jono Kane Résumé",
+    author: "Jono Kane",
+  },
 } as const;
