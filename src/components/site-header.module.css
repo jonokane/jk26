@@ -154,6 +154,27 @@
   border-color: var(--hairline);
 }
 
+/* The résumé link's hairline: section links on one side, the file on the
+   other. A box of its own, not a border on the link, so the nav's gap puts it
+   dead center between "Contact" and "Résumé" (the link's padded touch target
+   would push a border off center). */
+.split {
+  align-self: center;
+  width: 1px;
+  height: 1em;
+  background: var(--hairline);
+}
+
+.resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.resumeIcon {
+  flex: none;
+}
+
 /* Below ~30rem the wordmark + nav + toggle no longer share one row (the theme
    toggle was clipping off the right edge, unreachable). Wrap the nav onto its
    own centered line: the brand stays shrink-wrapped and centers on row 1 (so the
@@ -169,6 +190,19 @@
     flex-basis: 100%;
     margin-left: 0;
     justify-content: center;
+    /* The résumé link and its hairline add two items to the row; at the
+       desktop gap (1.75rem) "About" ran into a 360px screen's edge. Touch
+       targets still clear each other (8px padding a side). */
+    gap: 1.25rem;
+  }
+}
+
+/* 320px phones: the row still overruns, so the hairline and the arrow go and
+   the label stays. */
+@media (max-width: 21rem) {
+  .split,
+  .resumeIcon {
+    display: none;
   }
 }
 

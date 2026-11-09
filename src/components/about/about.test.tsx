@@ -122,7 +122,9 @@ describe("links in a statement", () => {
     const { About: Linked } = await import("@/components/about/about");
     const { container } = render(<Linked />);
 
-    const links = container.querySelectorAll("a");
+    /* Scoped to the statement: the rest of About (How I lead's résumé link)
+       has links of its own. */
+    const links = container.querySelectorAll("[data-statement] a");
     expect(links).toHaveLength(1);
     expect(links[0].getAttribute("href")).toBe("#contact");
     /* the link's words still animate individually inside it */

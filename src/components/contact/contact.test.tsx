@@ -46,12 +46,26 @@ describe("Contact", () => {
     );
   });
 
-  /* Résumé has no URL yet (links.resume === ""), so it must not render — the
-     same rule the About CTA follows. This asserts the CONDITIONAL, which is the
-     thing most likely to regress. */
-  it("hides a footer link whose URL is empty", () => {
-    expect(siteContent.links.resume).toBe(""); // guard: this test's premise
-    render(<Contact />);
+  it("ends the footer with the résumé once links.resume has a URL", () => {
+    const { container } = render(<Contact />);
+    const footer = container.querySelector("[data-contact-footer]") as HTMLElement;
+    const resume = within(footer).getByRole("link", { name: "Résumé" });
+    expect(resume.getAttribute("href")).toBe(siteContent.links.resume);
+    expect(within(footer).getAllByRole("link").at(-1)).toBe(resume);
+  });
+
+  /* A link with no URL must not render: the same rule How I lead's CTA and
+     the header follow. Rendered against an emptied résumé URL, whatever the
+     real file says, because this CONDITIONAL is the thing most likely to
+     regress. */
+  it("hides a footer link whose URL is empty", async () => {
+    vi.resetModules();
+    vi.doMock("@/lib/site-content", () => ({
+      siteContent: { ...siteContent, links: { ...siteContent.links, resume: "" } },
+    }));
+    const { Contact: ContactNoResume } = await import("@/components/contact/contact");
+    render(<ContactNoResume />);
     expect(screen.queryByRole("link", { name: "Résumé" })).toBeNull();
+    vi.doUnmock("@/lib/site-content");
   });
 });

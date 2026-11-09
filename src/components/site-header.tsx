@@ -8,6 +8,8 @@ import { siteContent } from "@/lib/site-content";
 import { useHeaderHeight } from "@/lib/use-header-height";
 import { useReducedMotionPref } from "@/lib/use-reduced-motion";
 import { useScrollSpy } from "@/lib/use-scroll-spy";
+import { ANALYTICS_EVENTS, trackEvent } from "@/lib/analytics";
+import { ArrowDownIcon } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import styles from "@/components/site-header.module.css";
 
@@ -163,6 +165,25 @@ export function SiteHeader() {
               {label}
             </Link>
           ))}
+          {/* The résumé is a file, not a place on the page: a hairline sets
+              it apart from the scroll-spy's section links, and it never takes
+              aria-current. Hidden while links.resume is empty, the rule every
+              résumé link follows. */}
+          {siteContent.links.resume ? (
+            <>
+              <span className={styles.split} aria-hidden="true" />
+              <a
+                href={siteContent.links.resume}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.resume}
+                onClick={() => trackEvent(ANALYTICS_EVENTS.resumeDownload)}
+              >
+                {siteContent.labels.resume}
+                <ArrowDownIcon size={14} className={styles.resumeIcon} />
+              </a>
+            </>
+          ) : null}
           <ThemeToggle />
         </nav>
       </div>

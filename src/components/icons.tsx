@@ -75,3 +75,12 @@ export function CircleArrowUpIcon(props: SVGProps<SVGSVGElement> & { size?: numb
     </Icon>
   );
 }
+
+export function ArrowDownIcon(props: SVGProps<SVGSVGElement> & { size?: number }) {
+  return (
+    <Icon {...props}>
+      <path d="M12 5v14" />
+      <path d="m19 12-7 7-7-7" />
+    </Icon>
+  );
+}

@@ -38,6 +38,9 @@ export const siteContent = {
      *  scroll-to-top) once the reader reaches the very bottom. */
     scroll: "Scroll",
     top: "Top",
+    /** The header's résumé link, after the section links and a hairline.
+     *  Hidden while `links.resume` is empty. */
+    resume: "Résumé",
     /* No aboutRail label. The teleprompter's rail of dots (spec §8) is a
        decorative progress indicator with nothing to activate, so it is
        aria-hidden and has no accessible name to write. */
@@ -218,7 +221,9 @@ export const siteContent = {
     linkedin: "https://linkedin.com/in/jonokane",
     github: "https://github.com/jonokane",
     collaya: "https://collaya.com",
-    /** No public résumé URL yet. The Résumé pill stays hidden while this is empty. */
-    resume: "",
+    /** Every résumé link (header, How I lead, Contact) points here and hides
+     *  if this is empty. A placeholder, visible everywhere by Jono's call
+     *  (2026-11-08): it 404s until the PDF lands at public/resume.pdf. */
+    resume: "/resume.pdf",
   },
 } as const;
