@@ -1,69 +1,93 @@
-/* "How I lead" (how-i-lead.tsx): one quiet card closing out About.
-   Stark language: the faint --row-hover surface and a hairline, sharp corners
-   (the house default), About's accent on the title and the numbers only, and
-   everything else in ink. No shadow — the work cards lift; this one sits. */
+/* "How I lead" (how-i-lead.tsx): the leadership sub-section closing out About.
+   The page's two colors swap for one band: --ink ground, --canvas type, and
+   --about-inverse (About's green, tuned for an inverted surface) on the
+   eyebrow, the numbers and the résumé link. Sharp corners, the house default.
 
-/* The section gutter is About's own --about-gutter (about.module.css), which
-   this inherits from .about — written once there, never repeated here. The
-   bottom padding is the breath before Work's pinned title arrives. */
+   Every color here is a palette token, never mixed or computed: the cards'
+   lift is a translucent veil of the band's own text color (see .principle),
+   so it inverts with the band in both themes without a derived hex. */
+
+/* No horizontal padding: the band is full bleed. The vertical padding is the
+   breath after the teleprompter and before Work's pinned title arrives. */
 .wrap {
-  padding: 6vh var(--about-gutter, 6vw) 12vh;
+  padding: 8vh 0 14vh;
 }
 
-.card {
-  max-width: 1180px;
-  background: var(--row-hover);
-  border: 1px solid var(--hairline);
-  padding: clamp(24px, 4.4vw, 64px);
+/* The clip is the band's resting state, full width. Motion draws it in and
+   back out from here (how-i-lead-config.ts), so the server HTML, a visitor
+   without JavaScript and reduced motion all get the finished band. */
+.band {
+  background: var(--ink);
+  color: var(--canvas);
+  clip-path: inset(0% 0% 0% 0%);
+  will-change: clip-path;
+}
+
+/* The text column keeps About's gutter, --about-gutter, inherited from .about
+   (about.module.css): written once there, never repeated here. */
+.inner {
+  padding: clamp(72px, 11vw, 160px) var(--about-gutter, 6vw);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(28px, 4vw, 48px);
+  gap: clamp(36px, 5vw, 64px);
   counter-reset: principle;
 }
 
-/* Desktop: the intro holds the left column and the principles run down the
-   right, the work card's text | shot split in a quieter key. */
+/* Desktop: the intro holds the left column and the cards run down the right.
+   The intro rides along while the cards scroll past, so the title never
+   leaves the band it names. Sticky is bounded by the band, and clears the nav
+   by its live measured height. */
 @media (min-width: 900px) {
-  .card {
+  .inner {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 5vw;
+    gap: 6vw;
   }
 
-  /* The intro rides along while the principles scroll past it, so the title
-     never leaves the card it names. Sticky is bounded by the card, and clears
-     the nav by its live measured height. */
   .intro {
     position: sticky;
-    top: calc(var(--header-h, 84px) + 32px);
+    top: calc(var(--header-h, 84px) + 56px);
     align-self: start;
   }
 }
 
+/* The sub-section signal: a mono label, the role mono plays everywhere else. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-variation-settings: "wght" 400;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--about-inverse);
+}
+
+/* About half of "Nice to meet you" (clamp(2.6rem, 7vw, 6.5rem)): a heading
+   inside About, not a peer of it. Balanced, so a two-line title splits evenly
+   instead of orphaning its last word. */
 .title {
-  font-size: clamp(2rem, 3.8vw, 3.4rem);
+  margin-top: clamp(14px, 1.6vw, 20px);
+  font-size: clamp(2rem, 3.6vw, 3.4rem);
   font-variation-settings: "wght" 700;
   letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--about);
+  line-height: 1.02;
+  text-wrap: balance;
 }
 
 .lede {
   margin-top: clamp(16px, 2vw, 24px);
   max-width: 34ch;
-  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+  font-size: clamp(1.1rem, 1.5vw, 1.35rem);
   line-height: 1.45;
-  color: var(--ink);
 }
 
-/* The résumé link: the work card's "View case study" treatment in About's
-   accent — mono, and an arrow that is CSS, never copy (spec §15). */
+/* The résumé link: the work card's "View case study" treatment in the band's
+   accent. Mono, and an arrow that is CSS, never copy (spec §15). */
 .cta {
   margin-top: clamp(22px, 3vw, 34px);
   font-family: var(--font-mono);
   font-variation-settings: "wght" 400;
   font-size: 13px;
   letter-spacing: 0.06em;
-  color: var(--about);
+  color: var(--about-inverse);
   text-decoration: none;
   display: inline-flex;
   gap: 8px;
@@ -82,7 +106,7 @@
 }
 
 .cta:focus-visible {
-  outline: 2px solid var(--about);
+  outline: 2px solid var(--about-inverse);
   outline-offset: 4px;
 }
 
@@ -90,16 +114,31 @@
   list-style: none;
   display: flex;
   flex-direction: column;
+  gap: clamp(14px, 1.6vw, 22px);
 }
 
+/* Each principle is a card. It grows in from its center (how-i-lead.tsx);
+   `isolation` keeps the veil below behind the card's own text. */
 .principle {
+  position: relative;
+  isolation: isolate;
   counter-increment: principle;
-  border-top: 1px solid var(--hairline);
-  padding: clamp(16px, 2vw, 22px) 0;
+  padding: clamp(24px, 2.8vw, 40px);
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
 }
 
-.principle:last-child {
-  padding-bottom: 0;
+/* The card's surface: the band's text color at 7%, so it lifts off the band in
+   both themes (lighter on the light theme's ink band, darker on the dark
+   theme's light one) from palette tokens alone. Tune the lift here. */
+.principle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: currentColor;
+  opacity: 0.07;
+  pointer-events: none;
 }
 
 /* The counter is design, not copy: a CSS counter in mono, so it never reaches
@@ -107,55 +146,33 @@
 .principle::before {
   content: counter(principle, decimal-leading-zero);
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: clamp(14px, 1.8vw, 22px);
   font-family: var(--font-mono);
   font-variation-settings: "wght" 400;
   font-size: 12px;
   letter-spacing: 0.05em;
-  color: var(--about);
+  color: var(--about-inverse);
 }
 
 .principleTitle {
-  font-size: clamp(1.1rem, 1.4vw, 1.3rem);
-  font-variation-settings: "wght" 640;
-  letter-spacing: -0.005em;
-  line-height: 1.25;
-  color: var(--ink);
+  font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+  font-variation-settings: "wght" 660;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .principleBody {
-  margin-top: 6px;
+  margin-top: 10px;
   max-width: 56ch;
   font-size: clamp(1rem, 1.15vw, 1.1rem);
   line-height: 1.55;
-  color: var(--ink);
 }
 
-/* The spec §11 reveal: opacity 0 -> 1 and a 26px rise, 0.85s on the standard
-   curve. The from-state is keyed on data-reveal="pending", which only ever
-   exists client-side for a card that was off screen when it armed (use-reveal),
-   so the server HTML always paints the card resolved. */
-.card {
-  transition:
-    opacity 0.85s ease,
-    transform 0.85s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.card[data-reveal="pending"] {
-  opacity: 0;
-  transform: translateY(26px);
-}
-
-/* Reduced motion: the card is simply there. A media query, so it is right at
-   first paint with no JavaScript to ask (spec §11). After the from-state rule
-   above, so it wins the specificity tie. */
+/* Reduced motion: nothing animates (the component never starts its tweens),
+   so nothing needs a compositor layer held for it. */
 @media (prefers-reduced-motion: reduce) {
-  .card {
-    transition: none;
-  }
-
-  .card[data-reveal="pending"] {
-    opacity: 1;
-    transform: none;
+  .band,
+  .principle {
+    will-change: auto;
   }
 }
