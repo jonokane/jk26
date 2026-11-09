@@ -50,12 +50,11 @@ export function useWorkCatch(sectionRef: RefObject<HTMLElement | null>, active: 
       if (isFlingPastWork({ scroll, target, direction: lenis.direction, workTop, viewportHeight: vh }, fling)) {
         armed = false;
         /* A whole pixel, never the raw offset. Work's top is fractional
-           (5089.74 measured), a 2x screen snaps the page to the half pixel
-           (5089.5), and every later wheel step then aims at an exact .5.
-           Lenis finishes a smooth scroll only when the rounded position
-           equals the rounded target, and approaching N.5 from below rounds
-           to N forever: it never finishes, stays in smooth mode, and fights
-           the scrollbar and the keyboard. Measured, then fixed here.
+           (5089.74 measured) and a 2x screen would park the page on the half
+           pixel. Unpatched Lenis never finishes a smooth scroll that aims at
+           an exact .5, and every later wheel step would; the real fix is
+           patches/lenis@1.3.25.patch (pinned by lenis-half-pixel.test.ts).
+           Rounding stays so the catch always lands on a whole pixel anyway.
            lock: input is ignored for the glide, which swallows the rest of
            the fling's momentum. force: run even if Lenis is mid-animation. */
         lenis.scrollTo(Math.round(workTop), { duration, easing, lock: true, force: true });

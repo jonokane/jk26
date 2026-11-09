@@ -1,0 +1,13 @@
+diff --git a/dist/lenis.mjs b/dist/lenis.mjs
+index 90ce6973b63f1ebd56d7d9fdd13a9c77a03a9719..1a6b74245d54ebcadef0d8801b1be68db0f4413f 100644
+--- a/dist/lenis.mjs
++++ b/dist/lenis.mjs
+@@ -84,7 +84,7 @@ var Animate = class {
+ 			this.value = this.from + (this.to - this.from) * easedProgress;
+ 		} else if (this.lerp) {
+ 			this.value = damp(this.value, this.to, this.lerp * 60, deltaTime);
+-			if (Math.round(this.value) === Math.round(this.to)) {
++			if (Math.abs(this.to - this.value) < .5) { /* patched (jk26): a rounding test never completes on an N.5 target approached from below */
+ 				this.value = this.to;
+ 				completed = true;
+ 			}
