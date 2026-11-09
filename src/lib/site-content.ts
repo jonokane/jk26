@@ -3,7 +3,9 @@
  *
  * Locked copy (Jono's own words, do not rewrite): `kicker`, `tagline`,
  * `howILead`. The tagline was rewritten by Jono for the leadership refresh
- * (2026-11-07) and is locked again as written.
+ * (2026-11-07) and is locked again as written. `howILead`'s eyebrow, title and
+ * principles 04 and 05 were redrafted with Jono and approved by him
+ * (2026-11-08); locked as written.
  * Drafted copy awaiting his edit: `work.filters.empty`, `contact.*`.
  * The About statements live in content/site/about.mdx, not here.
  * House style: no em-dashes anywhere in visitor-facing copy.
@@ -76,7 +78,9 @@ export const siteContent = {
    *  The principle numbers are a CSS counter, not copy. `resumeCta` links to
    *  `links.resume` and is hidden while that is empty — Contact's rule. */
   howILead: {
-    title: "How I lead",
+    /** The mono label above the title: the plain name for the sub-section. */
+    eyebrow: "How I lead",
+    title: "Design leadership, in practice",
     lede: "My style is support. I give my team what they need, offer design input where it helps, and get out of the way so people have room to grow.",
     principles: [
       {
@@ -92,12 +96,12 @@ export const siteContent = {
         body: "I've always had mentors, and I still mentor designers whenever I can.",
       },
       {
-        title: "Whose number does this move?",
-        body: "At Meta, a good idea I pitched in the wrong language lost the first round. Now I help designers make the case in terms their partners care about.",
+        title: "Making the case.",
+        body: "I've had my share of wins and losses, and I pass along what both taught me. I help designers make the case in terms their partners care about.",
       },
       {
-        title: "Engineering from the first sketch.",
-        body: "A beautiful idea that can't be built is wasted motion.",
+        title: "Craft is more than polish.",
+        body: "Craft is the thinking and care behind how something works, not just how it looks. I coach designers to bring that care to every decision, from the first flow to the final pixel.",
       },
     ],
     resumeCta: "Grab my résumé",
