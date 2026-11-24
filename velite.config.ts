@@ -76,6 +76,10 @@ const earlier = defineCollection({
   schema: s
     .object({
       title: s.string().max(120),
+      /* The page's meta + og/twitter description. Required: without it the
+         page inherits the home tagline, which is what every earlier page
+         shipped with until each got its own. */
+      description: s.string().max(320),
       sector: s.array(s.string()).min(1),
       discipline: s.array(s.string()).min(1),
       platform: s.array(s.string()).default([]),
